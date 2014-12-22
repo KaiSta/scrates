@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<providers>
+	<provider placeholder="$Dropbox" location="F:\Dropbox" />
+	<provider placeholder="$GoogleDrive" location="F:\GoogleDrive" />
+	<provider placeholder="$OneDrive" location="C:\Users\Kai\SkyDrive" />
+</providers>

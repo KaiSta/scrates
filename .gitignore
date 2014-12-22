@@ -26,3 +26,16 @@
 *.exe
 *.out
 *.app
+
+# VS files
+*.sdf
+*.tlog
+*.pdb
+*.log
+*.ilk
+*.idb
+
+# Folders
+lib/cryptopp
+lib/pugixml
+
