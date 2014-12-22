@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<container name="mycrypt" version="1.0" compressed="true">
+	<locations>
+		<location name="Local" path="$Local/tempestTests" quota="53687091200" used="262735094" />
+	</locations>
+	<seed>83029a8394824f9ff828abc</seed>
+</container>
