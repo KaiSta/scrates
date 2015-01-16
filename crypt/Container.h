@@ -160,7 +160,6 @@ private:
 	bool container_open_;
 	std::string containercrc_;
 
-//	std::string name_from_path(const std::string& path);
 	bool file_exists(const path& relative_path);
 
 	template <typename T>
@@ -169,13 +168,10 @@ private:
 		using namespace CryptoPP;
 		std::string recovered_front;
 		FileSource source(path_.str().data(), false, new StringSink(recovered_front));
-		//source.Pump(salt_length + 4);
 		source.Pump(salt_length);
 
 		std::string recovered_salt(recovered_front.begin(), 
 			recovered_front.begin() + salt_length);
-		/*std::string recovered_teststring(recovered_front.begin() + salt_length, 
-			recovered_front.end());*/
 		
 		SecByteBlock recovered_derived_key(T::MAX_KEYLENGTH);
 		SecByteBlock recovered_iv(T::BLOCKSIZE);
@@ -192,16 +188,6 @@ private:
 			1000);
 		CFB_Mode<T>::Decryption decrypt;
 		decrypt.SetKeyWithIV(recovered_derived_key, recovered_derived_key.size(), recovered_iv);
-		//std::string teststring;
-		//StringSource(recovered_teststring, true, 
-		//	new StreamTransformationFilter(decrypt, 
-		//	new StringSink(teststring)));
-
-		//if (teststring != "TRUE")
-		//{
-		//	//ERROR
-		//	return;
-		//}
 		
 		source.Detach(new CryptoPP::StreamTransformationFilter(decrypt,
 			new StringSink(container_raw_)));
@@ -212,17 +198,11 @@ private:
 	void helper_create()
 	{
 		using namespace CryptoPP;
-
-	//	AutoSeededX917RNG<T> prng;
-		//RandomPool prng;
 		
 		char tmp_key[T::MAX_KEYLENGTH];
 		std::string key;
 		prng_.GenerateBlock(reinterpret_cast<byte*>(&tmp_key), T::MAX_KEYLENGTH);
 		StringSource(reinterpret_cast<const byte*>(&tmp_key), T::MAX_KEYLENGTH, true, new HexEncoder(new StringSink(key)));
-		
-		/*std::cout << "rawkey=" << tmp_key << "\n" << "size=" << sizeof(tmp_key) << std::endl;
-		std::cout << "encoded " << key << std::endl;*/
 
 		container_handle::container_node cnode;
 		cnode.name = container_name_;
@@ -234,7 +214,6 @@ private:
 		std::string xmlcode = handle_.str();
 
 		//create SALT
-		//AutoSeededRandomPool prng;
 		SecByteBlock salt(salt_length);
 		prng_.GenerateBlock(salt, salt.size());
 
@@ -266,42 +245,6 @@ private:
 	}
 
 	template <typename T>
-	bool is_used()
-	{
-		using namespace CryptoPP;
-		std::string recovered_front;
-		FileSource source(path_.str().data(), false, new StringSink(recovered_front));
-		source.Pump(salt_length + 4);
-
-		std::string recovered_salt(recovered_front.begin(),
-			recovered_front.begin() + salt_length);
-		std::string recovered_teststring(recovered_front.begin() + salt_length,
-			recovered_front.end());
-
-		SecByteBlock recovered_derived_key(T::MAX_KEYLENGTH);
-		SecByteBlock recovered_iv(T::BLOCKSIZE);
-		PKCS5_PBKDF2_HMAC<SHA512> pwbase;
-		pwbase.DeriveKey(recovered_derived_key, recovered_derived_key.size(),
-			pwbase.UsesPurposeByte(),
-			reinterpret_cast<const byte*>(pw_.data()), pw_.size(),
-			reinterpret_cast<const byte*>(recovered_salt.data()), recovered_salt.size(),
-			2000);
-		pwbase.DeriveKey(recovered_iv, recovered_iv.size(),
-			pwbase.UsesPurposeByte(),
-			reinterpret_cast<const byte*>(pw_.data()), pw_.size(),
-			reinterpret_cast<const byte*>(recovered_salt.data()), recovered_salt.size(),
-			1000);
-		CFB_Mode<T>::Decryption decrypt;
-		decrypt.SetKeyWithIV(recovered_derived_key, recovered_derived_key.size(), recovered_iv);
-		std::string teststring;
-		StringSource(recovered_teststring, true,
-			new StreamTransformationFilter(decrypt,
-			new StringSink(teststring)));
-
-		return teststring == "TRUE";
-	}
-
-	template <typename T>
 	void helper_save()
 	{
 		using namespace CryptoPP;
@@ -314,9 +257,6 @@ private:
 		std::string recovered_teststring(recovered_front.begin() + salt_length,
 			recovered_front.end());
 
-		//AutoSeededX917RNG<T> prng;
-		//RandomPool prng;
-		//prng_.IncorporateEntropy(seed_, seed_.size());
 		SecByteBlock salt(salt_length);
 		prng_.GenerateBlock(salt, salt.size());
 
@@ -326,13 +266,11 @@ private:
 		pwbase.DeriveKey(recovered_derived_key, recovered_derived_key.size(),
 			pwbase.UsesPurposeByte(),
 			reinterpret_cast<const byte*>(pw_.data()), pw_.size(),
-			/*reinterpret_cast<const byte*>(recovered_salt.data()), recovered_salt.size(),*/
 			salt, salt.size(),
 			2000);
 		pwbase.DeriveKey(recovered_iv, recovered_iv.size(),
 			pwbase.UsesPurposeByte(),
 			reinterpret_cast<const byte*>(pw_.data()), pw_.size(),
-			/*reinterpret_cast<const byte*>(recovered_salt.data()), recovered_salt.size(),*/
 			salt, salt.size(),
 			1000);
 		CFB_Mode<T>::Encryption encrypt;
@@ -341,8 +279,7 @@ private:
 		//create File and add salt
 		std::string file;
 		StringSink* strsink = new StringSink(file);
-		strsink->Put(/*reinterpret_cast<const byte*>(recovered_salt.data()), recovered_salt.size()*/
-			salt, salt.size());
+		strsink->Put(salt, salt.size());
 
 		std::string xmlcode = handle_.str();
 
@@ -353,7 +290,6 @@ private:
 		StringSource(xmlcode, true, new StreamTransformationFilter(encrypt, strsink));
 		//write to file
 		StringSource(file, true, new FileSink(path_.str().data()));
-
 	}
 	
 
@@ -362,9 +298,6 @@ private:
 	{
 		using namespace CryptoPP;	
 
-	//	AutoSeededX917RNG<T> prng;
-		//RandomPool prng;
-		//prng_.IncorporateEntropy(seed_, seed_.size());
 		SecByteBlock salt(salt_length);
 		prng_.GenerateBlock(salt, salt_length);
 
@@ -396,19 +329,6 @@ private:
 		
 		bool ret = secure_encrypt(src.str(), compress, new StreamTransformationFilter(encrypt, fsink));
 		return ret;
-		//if (compress)
-		//{
-		//	/*FileSource(src.str().data(), true, new ZlibCompressor(
-		//		new StreamTransformationFilter(encrypt, fsink), 
-		//		ZlibCompressor::MAX_DEFLATE_LEVEL));*/
-		//	secure_encrypt(src.str(), compress, new StreamTransformationFilter(encrypt, fsink));
-		//}
-		//else
-		//{
-		//	/*FileSource(src.str().data(), true, new StreamTransformationFilter(
-		//		encrypt, fsink));*/
-		//	secure_encrypt(src.str(), compress, new StreamTransformationFilter(encrypt, fsink));
-		//}
 	}
 
 	template <typename T>
@@ -416,7 +336,6 @@ private:
 	{
 		using namespace CryptoPP;
 
-		//AutoSeededX917RNG<T> prng;
 		SecByteBlock salt(salt_length);
 		prng_.GenerateBlock(salt, salt_length);
 
@@ -447,17 +366,6 @@ private:
 		bool compress = handle_.is_compressed();
 		bool ret = secure_encrypt(src.str(), compress, new StreamTransformationFilter(encrypt, fsink));
 		return ret;
-		//if (compress)
-		//{
-		//	/*FileSource(src.str().data(), true, new ZlibCompressor( new StreamTransformationFilter(encrypt, fsink),
-		//		ZlibCompressor::MAX_DEFLATE_LEVEL));*/
-		//	secure_encrypt(src.str(), compress, new StreamTransformationFilter(encrypt, fsink));
-		//}
-		//else
-		//{
-		//	//FileSource(src.str().data(), true, new StreamTransformationFilter(encrypt, fsink));
-		//	secure_encrypt(src.str(), compress, new StreamTransformationFilter(encrypt, fsink));
-		//}
 	}
 
 	template <typename T>
@@ -476,15 +384,11 @@ private:
 				FileSystem::make_folders(extract_to.str());
 				extract_to = extract_to.append_filename(filename);
 
-				/*path extract_to(dest.str());
-				extract_to = extract_to.append_filename(filename);*/
-
 				path src(handle_.get_location_path(locationname));
 				src = src.append_filename(hashname);
 
-				//std::string recovered_salt;
 				std::vector<byte> recovered_salt(salt_length);
-				FileSource source(src.str().data(), false, new ArraySink(&recovered_salt[0], salt_length));//new StringSink(recovered_salt));
+				FileSource source(src.str().data(), false, new ArraySink(&recovered_salt[0], salt_length));
 				source.Pump(salt_length);
 
 				PKCS5_PBKDF2_HMAC<SHA512> pwbase;

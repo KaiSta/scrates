@@ -12,6 +12,7 @@
 #include "CloudManager.h"
 #include <cryptopp\hex.h>
 #include "helper_files.h"
+#include <mtl/fromtorange.h>
 
 Container::Container(encryption_algorithm algo) : algo_(algo), volume_(nullptr), seed_(16), is_syncing(false), container_open_(false)
 {
@@ -44,7 +45,14 @@ void Container::set_vhd(VirtualDisk_Impl::volume_handle* v)
 void Container::set_seed(CryptoPP::SecByteBlock seed)
 {
 	seed_ = seed;
-	prng_.IncorporateEntropy(seed, seed.size());
+	CryptoPP::AutoSeededRandomPool prng;
+	CryptoPP::SecByteBlock t(seed.size());
+	prng.GenerateBlock(t, t.size());
+	for (auto p : mtl::count_until(t.size()))
+	{
+		seed_[p] ^= t[p];
+	}
+	prng_.IncorporateEntropy(seed_, seed_.size());
 }
 
 Container::~Container()
