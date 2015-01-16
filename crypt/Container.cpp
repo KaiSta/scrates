@@ -8,7 +8,6 @@
 #include <cryptopp\crc.h>
 #include "FileSystem.h"
 #include <sstream>
-#include "Storage_Balancer.h"
 #include "CloudManager.h"
 #include <cryptopp\hex.h>
 #include "helper_files.h"

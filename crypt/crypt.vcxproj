@@ -150,7 +150,6 @@
     <ClInclude Include="local_file.h" />
     <ClInclude Include="number_helper.h" />
     <ClInclude Include="Path.h" />
-    <ClInclude Include="Storage_Balancer.h" />
     <ClInclude Include="string_helper.h" />
     <ClInclude Include="Synchronizer.h" />
     <ClInclude Include="uarng.h" />

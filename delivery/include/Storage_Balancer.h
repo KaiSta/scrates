@@ -20,33 +20,6 @@ public:
 		return inst;
 	}
 
-	/*bool where_to_store(pugi::xml_document& container_file, size_t size, std::string& store_path)
-	{
-		static std::vector<size_t> visited;
-		pugi::xpath_node_set location = container_file.select_nodes("/container/locations/location");
-		if (visited.size() == location.size()) { visited.clear(); }
-		size_t s = location.size();
-		for (auto idx = 0; idx < location.size(); ++idx)
-		{
-			if (std::find(visited.begin(), visited.end(), idx) != visited.end()) { continue; }
-
-			size_t used = std::stoi(location[idx].node().attribute("used").value());
-			size_t available = std::stoi(location[idx].node().attribute("quota").value());
-			if (available > (used+size))
-			{
-				used += size;
-				location[idx].node().remove_attribute("used");
-				std::stringstream ss;
-				ss << used;
-				location[idx].node().append_attribute("used") = ss.str().data();
-				store_path = location[idx].node().attribute("path").value();
-				visited.push_back(idx);
-				return true;
-			}
-		}
-		return false;
-	}*/
-
 
 	//deprecated
 	bool has_space(pugi::xml_document& container_file, const std::string& location, int64_t size)

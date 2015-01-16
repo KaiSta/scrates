@@ -29,6 +29,8 @@ Synchronizer::Synchronizer(const std::string& vhd_location, const std::string& c
 void Synchronizer::init()
 {
 	using namespace CryptoPP;
+	timer_sync();
+	return;
 
 	auto cloudfiles = FileSystem::list_files(cloud_location_, true);
 
@@ -71,7 +73,7 @@ void Synchronizer::init()
 	//vhdwatch_.run();
 	//cloudwatch_.run();
 
-	timer_sync();
+	
 }
 
 void Synchronizer::set_vhdlocation(const std::string& location)
