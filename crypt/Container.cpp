@@ -101,7 +101,6 @@ void Container::create(std::vector<std::pair<std::string, size_t>> locations)
 
 		handle_.add_locations_node(locations);
 		path p(locations[0].first);
-		//lof_.create(p, passphrase_);
 
 		syncer.set_vhdlocation((*volume_).drive_letter + handle_.get_containername());
 		syncer.set_cloudlocation(handle_.get_locations()[0].location.str());
@@ -149,7 +148,6 @@ void Container::open()
 	}
 	auto tmp = handle_.get_locations();
 	path p(tmp[0].location);
-	//lof_.create(p, passphrase_);
 
 	extract_all();
 

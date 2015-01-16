@@ -40,3 +40,4 @@ lib/cryptopp
 lib/pugixml
 lib/wxwidget
 
+*.opensdf

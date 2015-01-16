@@ -154,7 +154,6 @@ private:
 	Synchronizer syncer;
 	std::atomic<bool> is_syncing;
 
-	std::mutex rd_mtx_;
 	std::mutex wr_mtx_;
 	std::mutex sync_lock_;
 	bool container_open_;
