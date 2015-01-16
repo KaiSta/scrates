@@ -268,7 +268,7 @@ public:
 	/**
 	  \brief Opens the file with the default program.
 	*/
-	static void open_file_external(const std::string& path)
+	static void open_file_default(const std::string& path)
 	{
 		ShellExecute(0, 0, path.data(), 0, 0, SW_SHOW);
 	}
