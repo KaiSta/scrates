@@ -228,46 +228,13 @@ void Container::manual_sync()
 		path p(strpath);
 		tmp = FileSystem::list_files(p.str(), true);
 	}
-	/*for (auto f : tmp)
-	{
-		if (FileSystem::file_exists(f) && FileSystem::file_size(f) > 0)
-			add_file(f, handle_.get_containername());
-	}*/
+	
 	#pragma omp parallel for
 	for (int i = 0; i < tmp.size(); ++i)
 	{
 		add_file(tmp[i], handle_.get_containername());
 	}
 
-	//handle deletes
-	//{
-	//	std::lock_guard<std::mutex> guard2(wr_mtx_);
-	//	auto bla = handle_.get_filenodes();
-	//	for (auto& e : bla)
-	//	{
-	//		path x = e.path.append_filename(e.filename);
-
-	//		bool found = false;
-
-	//		for (int i = 0; i < tmp.size(); ++i)
-	//		{
-	//			path n(std::string(tmp[i].begin() + 3, tmp[i].end()));
-
-	//			if (n == x)
-	//			{
-	//				found = true;
-	//				break;
-	//			}
-	//		}
-
-	//		if (!found)
-	//		{
-	//			delete_file(x);
-	//			/*auto lof_f = lof_.get_file(e.blocks[0].filename);
-	//			lof_.delete_file(lof_f);
-	//			handle_.delete_filenode(x);*/
-	//		}
-	//	}
 	{
 		std::lock_guard<std::mutex> guard2(wr_mtx_);
 		update_containerCrC();
@@ -309,7 +276,7 @@ void Container::sync()
 		}
 		handle_.open(container_raw_);
 
-		auto oldnodes = handle_.get_filenodes();
+		auto oldnodes = oldhandle.get_filenodes();
 
 		for (auto& node : oldnodes)
 		{
