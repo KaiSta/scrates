@@ -221,12 +221,32 @@ void Container::manual_sync()
 	}
 
 	std::vector<std::string> tmp;
+	std::vector<container_handle::file_node> fnodes;
 	{
 		std::lock_guard<std::mutex> guard(wr_mtx_);
 
 		std::string strpath((*volume_).drive_letter + handle_.get_containername());
 		path p(strpath);
 		tmp = FileSystem::list_files(p.str(), true);
+		fnodes = handle_.get_filenodes();
+	}
+
+	for (auto fnode : fnodes)
+	{
+		path p(fnode.path);
+		p = p.append_filename(fnode.filename);
+		path containerpath((*volume_).drive_letter + handle_.get_containername());
+		std::string filepath(containerpath.str() + FileSystem::path_separator + p.str());
+		
+		if (!FileSystem::file_exists(filepath))
+		{
+			//quick fix container_handle needs a way to give store path for existing files!!!
+			path tmp;
+			handle_.where_to_store(0, tmp);
+			tmp = tmp.append_filename(fnode.blocks[0].filename);
+			if(FileSystem::delete_file(tmp.str()))
+				handle_.update_file_size(-1, p);
+		}
 	}
 	
 	#pragma omp parallel for
