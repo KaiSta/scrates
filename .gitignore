@@ -38,4 +38,6 @@
 # Folders
 lib/cryptopp
 lib/pugixml
+lib/wxwidget
 
+*.opensdf

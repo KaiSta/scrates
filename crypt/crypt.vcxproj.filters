@@ -30,9 +30,6 @@
     <ClInclude Include="CloudManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Storage_Balancer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Path.h">
       <Filter>Header Files</Filter>
     </ClInclude>

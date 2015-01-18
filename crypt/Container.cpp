@@ -8,10 +8,10 @@
 #include <cryptopp\crc.h>
 #include "FileSystem.h"
 #include <sstream>
-#include "Storage_Balancer.h"
 #include "CloudManager.h"
 #include <cryptopp\hex.h>
 #include "helper_files.h"
+#include <mtl/fromtorange.h>
 
 Container::Container(encryption_algorithm algo) : algo_(algo), volume_(nullptr), seed_(16), is_syncing(false), container_open_(false)
 {
@@ -44,7 +44,14 @@ void Container::set_vhd(VirtualDisk_Impl::volume_handle* v)
 void Container::set_seed(CryptoPP::SecByteBlock seed)
 {
 	seed_ = seed;
-	prng_.IncorporateEntropy(seed, seed.size());
+	CryptoPP::AutoSeededRandomPool prng;
+	CryptoPP::SecByteBlock t(seed.size());
+	prng.GenerateBlock(t, t.size());
+	for (auto p : mtl::count_until(t.size()))
+	{
+		seed_[p] ^= t[p];
+	}
+	prng_.IncorporateEntropy(seed_, seed_.size());
 }
 
 Container::~Container()
@@ -93,7 +100,6 @@ void Container::create(std::vector<std::pair<std::string, size_t>> locations)
 
 		handle_.add_locations_node(locations);
 		path p(locations[0].first);
-		//lof_.create(p, passphrase_);
 
 		syncer.set_vhdlocation((*volume_).drive_letter + handle_.get_containername());
 		syncer.set_cloudlocation(handle_.get_locations()[0].location.str());
@@ -141,7 +147,6 @@ void Container::open()
 	}
 	auto tmp = handle_.get_locations();
 	path p(tmp[0].location);
-	//lof_.create(p, passphrase_);
 
 	extract_all();
 
@@ -216,53 +221,46 @@ void Container::manual_sync()
 	}
 
 	std::vector<std::string> tmp;
+	std::vector<container_handle::file_node> fnodes;
 	{
 		std::lock_guard<std::mutex> guard(wr_mtx_);
 
 		std::string strpath((*volume_).drive_letter + handle_.get_containername());
 		path p(strpath);
 		tmp = FileSystem::list_files(p.str(), true);
+		fnodes = handle_.get_filenodes();
 	}
-	/*for (auto f : tmp)
+
+	for (auto fnode : fnodes)
 	{
+<<<<<<< HEAD
 		if (FileSystem::file_exists(f) && FileSystem::file_size(f) > 0)
 			add_file(f, handle_.get_containername());
 	}*/
+=======
+		path p(fnode.path);
+		p = p.append_filename(fnode.filename);
+		path containerpath((*volume_).drive_letter + handle_.get_containername());
+		std::string filepath(containerpath.str() + FileSystem::path_separator + p.str());
+		
+		if (!FileSystem::file_exists(filepath))
+		{
+			//quick fix container_handle needs a way to give store path for existing files!!!
+			path tmp;
+			handle_.where_to_store(0, tmp);
+			tmp = tmp.append_filename(fnode.blocks[0].filename);
+			if(FileSystem::delete_file(tmp.str()))
+				handle_.update_file_size(-1, p);
+		}
+	}
+	
+>>>>>>> origin/master
 	//#pragma omp parallel for
 	for (int i = 0; i < tmp.size(); ++i)
 	{
 		add_file(tmp[i], handle_.get_containername());
 	}
 
-	//handle deletes
-	//{
-	//	std::lock_guard<std::mutex> guard2(wr_mtx_);
-	//	auto bla = handle_.get_filenodes();
-	//	for (auto& e : bla)
-	//	{
-	//		path x = e.path.append_filename(e.filename);
-
-	//		bool found = false;
-
-	//		for (int i = 0; i < tmp.size(); ++i)
-	//		{
-	//			path n(std::string(tmp[i].begin() + 3, tmp[i].end()));
-
-	//			if (n == x)
-	//			{
-	//				found = true;
-	//				break;
-	//			}
-	//		}
-
-	//		if (!found)
-	//		{
-	//			delete_file(x);
-	//			/*auto lof_f = lof_.get_file(e.blocks[0].filename);
-	//			lof_.delete_file(lof_f);
-	//			handle_.delete_filenode(x);*/
-	//		}
-	//	}
 	{
 		std::lock_guard<std::mutex> guard2(wr_mtx_);
 		update_containerCrC();
@@ -304,7 +302,7 @@ void Container::sync()
 		}
 		handle_.open(container_raw_);
 
-		auto oldnodes = handle_.get_filenodes();
+		auto oldnodes = oldhandle.get_filenodes();
 
 		for (auto& node : oldnodes)
 		{
