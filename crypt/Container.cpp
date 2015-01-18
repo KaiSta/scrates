@@ -231,12 +231,12 @@ void Container::manual_sync()
 		fnodes = handle_.get_filenodes();
 	}
 
-	for (auto fnode : fnodes)
+/*	for (auto fnode : fnodes)
 	{
 <<<<<<< HEAD
 		if (FileSystem::file_exists(f) && FileSystem::file_size(f) > 0)
 			add_file(f, handle_.get_containername());
-	}*/
+	}
 =======
 		path p(fnode.path);
 		p = p.append_filename(fnode.filename);
@@ -254,7 +254,7 @@ void Container::manual_sync()
 		}
 	}
 	
->>>>>>> origin/master
+>>>>>>> origin/master*/
 	//#pragma omp parallel for
 	for (int i = 0; i < tmp.size(); ++i)
 	{
