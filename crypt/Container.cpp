@@ -249,7 +249,7 @@ void Container::manual_sync()
 		}
 	}
 	
-	#pragma omp parallel for
+	//#pragma omp parallel for
 	for (int i = 0; i < tmp.size(); ++i)
 	{
 		add_file(tmp[i], handle_.get_containername());
