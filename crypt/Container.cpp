@@ -228,7 +228,7 @@ void Container::manual_sync()
 		if (FileSystem::file_exists(f) && FileSystem::file_size(f) > 0)
 			add_file(f, handle_.get_containername());
 	}*/
-	#pragma omp parallel for
+	//#pragma omp parallel for
 	for (int i = 0; i < tmp.size(); ++i)
 	{
 		add_file(tmp[i], handle_.get_containername());

@@ -97,7 +97,7 @@ int main()
 
 	local_file f;
 	
-	path vhdp("C:\\Users\\Kai\\Desktop\\test\\");
+	path vhdp("C:\\tmp\\local\\");
 	
 	while (true)
 	{
