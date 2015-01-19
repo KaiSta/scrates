@@ -164,6 +164,7 @@ void Container::open()
 
 	update_containerCrC();
 	container_open_ = true;
+
 #ifdef TDEBUG
 	handle_.dump(std::string("C:\\Users\\Kai\\Desktop\\new_test.xml"));
 #endif
@@ -171,7 +172,7 @@ void Container::open()
 
 void Container::save()
 {
-	std::lock_guard<std::mutex> guard(wr_mtx_);
+	//std::lock_guard<std::mutex> guard(wr_mtx_);
 
 	if (!container_open_)
 		return;
@@ -222,14 +223,14 @@ void Container::manual_sync()
 
 	std::vector<std::string> tmp;
 	std::vector<container_handle::file_node> fnodes;
-	{
-		std::lock_guard<std::mutex> guard(wr_mtx_);
+	
+		//std::lock_guard<std::mutex> guard(wr_mtx_);
 
-		std::string strpath((*volume_).drive_letter + handle_.get_containername());
-		path p(strpath);
-		tmp = FileSystem::list_files(p.str(), true);
-		fnodes = handle_.get_filenodes();
-	}
+	std::string strpath((*volume_).drive_letter + handle_.get_containername());
+	path p(strpath);
+	tmp = FileSystem::list_files(p.str(), true);
+	fnodes = handle_.get_filenodes();
+	
 
 /*	for (auto fnode : fnodes)
 	{
@@ -261,13 +262,13 @@ void Container::manual_sync()
 		add_file(tmp[i], handle_.get_containername());
 	}
 
-	{
-		std::lock_guard<std::mutex> guard2(wr_mtx_);
-		update_containerCrC();
+	
+	//std::lock_guard<std::mutex> guard2(wr_mtx_);
+	update_containerCrC();
 #ifdef TDEBUG
-		handle_.dump(std::string("C:\\Users\\Kai\\Desktop\\new_test.xml"));
+	handle_.dump(std::string("C:\\Users\\Kai\\Desktop\\new_test.xml"));
 #endif
-	}
+	
 	//}
 	save();
 }
@@ -275,75 +276,75 @@ void Container::manual_sync()
 void Container::sync()
 { //needs merge of old and new handle
 	std::lock_guard<std::mutex> syncguard(sync_lock_);
+	
+	//std::lock_guard<std::mutex> guard(wr_mtx_);
+
+	//check if external sync is needed
+	std::string oldcrc = containercrc_;
+	update_containerCrC();
+	if (oldcrc == containercrc_)
+		return;
+
+	auto oldhandle = handle_;
+	container_raw_ = "";
+	switch (algo_)
 	{
-		std::lock_guard<std::mutex> guard(wr_mtx_);
-
-		//check if external sync is needed
-		std::string oldcrc = containercrc_;
-		update_containerCrC();
-		if (oldcrc == containercrc_)
-			return;
-
-		auto oldhandle = handle_;
-		container_raw_ = "";
-		switch (algo_)
-		{
-		case AES:
-			helper_open<CryptoPP::AES>();
-			break;
-		case SERPENT:
-			helper_open<CryptoPP::Serpent>();
-			break;
-		case TWOFISH:
-			helper_open<CryptoPP::Twofish>();
-			break;
-		default:
-			return;
-		}
-		handle_.open(container_raw_);
-
-		auto oldnodes = oldhandle.get_filenodes();
-
-		for (auto& node : oldnodes)
-		{
-			path tmp(node.path);
-			tmp = tmp.append_filename(node.filename);
-			auto xnode = handle_.get_filenode(tmp);
-
-			if (xnode.size == 0) // old handle contains nodes that aren't in the new one.
-			{
-				handle_.add_file_node(node);
-				//files should be already locally extracted, no further steps?
-			}
-			else
-			{
-				if (node.crc != xnode.crc) // both contain a conflicting node
-				{
-					//merge newer one into new handle.
-					if (node.rev > xnode.rev)
-						handle_.update_file_node(node);					
-				}
-			}
-		}
-
-		auto newnodes = handle_.get_filenodes();
-
-		for (auto& node : newnodes)
-		{
-			path tmp(node.path);
-			tmp = tmp.append_filename(node.filename);
-
-			auto oldnode = oldhandle.get_filenode(tmp);
-			if (node.crc != oldnode.crc)
-			{
-				extract_file(tmp);
-			}
-		}
-		update_containerCrC();
-#ifdef TDEBUG
-		handle_.dump(std::string("C:\\Users\\Kai\\Desktop\\new_test.xml"));
-#endif
+	case AES:
+		helper_open<CryptoPP::AES>();
+		break;
+	case SERPENT:
+		helper_open<CryptoPP::Serpent>();
+		break;
+	case TWOFISH:
+		helper_open<CryptoPP::Twofish>();
+		break;
+	default:
+		return;
 	}
+	handle_.open(container_raw_);
+
+	auto oldnodes = oldhandle.get_filenodes();
+
+	for (auto& node : oldnodes)
+	{
+		path tmp(node.path);
+		tmp = tmp.append_filename(node.filename);
+		auto xnode = handle_.get_filenode(tmp);
+
+		if (xnode.size == 0) // old handle contains nodes that aren't in the new one.
+		{
+			handle_.add_file_node(node);
+			//files should be already locally extracted, no further steps?
+		}
+		else
+		{
+			if (node.crc != xnode.crc) // both contain a conflicting node
+			{
+				//merge newer one into new handle.
+				if (node.rev > xnode.rev)
+					handle_.update_file_node(node);					
+			}
+		}
+	}
+
+	auto newnodes = handle_.get_filenodes();
+
+	for (auto& node : newnodes)
+	{
+		path tmp(node.path);
+		tmp = tmp.append_filename(node.filename);
+
+		auto oldnode = oldhandle.get_filenode(tmp);
+		if (node.crc != oldnode.crc)
+		{
+			extract_file(tmp);
+		}
+	}
+	update_containerCrC();
+#ifdef TDEBUG
+	handle_.dump(std::string("C:\\Users\\Kai\\Desktop\\new_test.xml"));
+#endif
+	
 	//save();
 	
 }
@@ -518,7 +519,7 @@ void Container::extract_file(const path& relative_path/*, const path& dest*/)
 void Container::update_file(const std::string& filename, const path& relative_path, const path& src)
 {
 	{
-		std::lock_guard<std::mutex> guard(wr_mtx_);
+		//std::lock_guard<std::mutex> guard(wr_mtx_);
 
 		if (!validate())
 		{

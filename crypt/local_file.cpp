@@ -216,6 +216,7 @@ CryptoPP::SecByteBlock local_file::get_seed()
 
 void local_file::manual_sync()
 {
+	container_.sync();
 	container_.manual_sync();
 }
 
