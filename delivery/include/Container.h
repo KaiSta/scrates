@@ -177,13 +177,13 @@ private:
 		PKCS5_PBKDF2_HMAC<SHA512> pwbase;
 		pwbase.DeriveKey(recovered_derived_key, recovered_derived_key.size(),
 			pwbase.UsesPurposeByte(),
-			reinterpret_cast<const byte*>(pw_.data()), pw_.size(),
-			reinterpret_cast<const byte*>(recovered_salt.data()), recovered_salt.size(),
+			&passphrase_[0], passphrase_.size(),
+			reinterpret_cast<const byte*>(recovered_salt.data()), salt_length,
 			derivation_iterations);
 		pwbase.DeriveKey(recovered_iv, recovered_iv.size(),
 			pwbase.UsesPurposeByte(),
-			reinterpret_cast<const byte*>(pw_.data()), pw_.size(),
-			reinterpret_cast<const byte*>(recovered_salt.data()), recovered_salt.size(),
+			&passphrase_[0], passphrase_.size(),
+			reinterpret_cast<const byte*>(recovered_salt.data()), salt_length,
 			1000);
 		CFB_Mode<T>::Decryption decrypt;
 		decrypt.SetKeyWithIV(recovered_derived_key, recovered_derived_key.size(), recovered_iv);
@@ -225,11 +225,11 @@ private:
 		SecByteBlock derived_key(T::MAX_KEYLENGTH);
 		SecByteBlock iv(T::BLOCKSIZE);
 		pwbase.DeriveKey(derived_key, derived_key.size(), pwbase.UsesPurposeByte(),
-			reinterpret_cast<const byte*>(pw_.data()), pw_.size(),
+			&passphrase_[0], passphrase_.size(),
 			salt, salt.size(),
 			derivation_iterations);
 		pwbase.DeriveKey(iv, iv.size(), pwbase.UsesPurposeByte(),
-			reinterpret_cast<const byte*>(pw_.data()), pw_.size(),
+			&passphrase_[0], passphrase_.size(),
 			salt, salt.size(),
 			1000);
 		CFB_Mode<T>::Encryption encrypt;
@@ -264,12 +264,12 @@ private:
 		PKCS5_PBKDF2_HMAC<SHA512> pwbase;
 		pwbase.DeriveKey(recovered_derived_key, recovered_derived_key.size(),
 			pwbase.UsesPurposeByte(),
-			reinterpret_cast<const byte*>(pw_.data()), pw_.size(),
+			&passphrase_[0], passphrase_.size(),
 			salt, salt.size(),
 			derivation_iterations);
 		pwbase.DeriveKey(recovered_iv, recovered_iv.size(),
 			pwbase.UsesPurposeByte(),
-			reinterpret_cast<const byte*>(pw_.data()), pw_.size(),
+			&passphrase_[0], passphrase_.size(),
 			salt, salt.size(),
 			1000);
 		CFB_Mode<T>::Encryption encrypt;
