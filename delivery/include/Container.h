@@ -179,7 +179,7 @@ private:
 			pwbase.UsesPurposeByte(),
 			reinterpret_cast<const byte*>(pw_.data()), pw_.size(),
 			reinterpret_cast<const byte*>(recovered_salt.data()), recovered_salt.size(),
-			2000);
+			derivation_iterations);
 		pwbase.DeriveKey(recovered_iv, recovered_iv.size(),
 			pwbase.UsesPurposeByte(),
 			reinterpret_cast<const byte*>(pw_.data()), pw_.size(),
@@ -227,7 +227,7 @@ private:
 		pwbase.DeriveKey(derived_key, derived_key.size(), pwbase.UsesPurposeByte(),
 			reinterpret_cast<const byte*>(pw_.data()), pw_.size(),
 			salt, salt.size(),
-			2000);
+			derivation_iterations);
 		pwbase.DeriveKey(iv, iv.size(), pwbase.UsesPurposeByte(),
 			reinterpret_cast<const byte*>(pw_.data()), pw_.size(),
 			salt, salt.size(),
@@ -266,7 +266,7 @@ private:
 			pwbase.UsesPurposeByte(),
 			reinterpret_cast<const byte*>(pw_.data()), pw_.size(),
 			salt, salt.size(),
-			2000);
+			derivation_iterations);
 		pwbase.DeriveKey(recovered_iv, recovered_iv.size(),
 			pwbase.UsesPurposeByte(),
 			reinterpret_cast<const byte*>(pw_.data()), pw_.size(),
@@ -306,7 +306,7 @@ private:
 		pwbase.DeriveKey(derived_key, derived_key.size(), pwbase.UsesPurposeByte(),
 			&passphrase_[0], passphrase_.size(),
 			salt, salt.size(),
-			2000);
+			derivation_iterations);
 		pwbase.DeriveKey(iv, iv.size(), pwbase.UsesPurposeByte(),
 			&passphrase_[0], passphrase_.size(),
 			salt, salt.size(),
@@ -344,7 +344,7 @@ private:
 		pwbase.DeriveKey(derived_key, derived_key.size(), pwbase.UsesPurposeByte(),
 			&passphrase_[0], passphrase_.size(),
 			salt, salt.size(),
-			2000);
+			derivation_iterations);
 		pwbase.DeriveKey(iv, iv.size(), pwbase.UsesPurposeByte(),
 			&passphrase_[0], passphrase_.size(),
 			salt, salt.size(),
@@ -396,7 +396,7 @@ private:
 				pwbase.DeriveKey(derived_key, derived_key.size(), pwbase.UsesPurposeByte(),
 					&passphrase_[0], passphrase_.size(),
 					&recovered_salt[0], salt_length,
-					2000);
+					derivation_iterations);
 				pwbase.DeriveKey(iv, iv.size(), pwbase.UsesPurposeByte(),
 					&passphrase_[0], passphrase_.size(),
 					&recovered_salt[0], salt_length,
@@ -429,6 +429,7 @@ private:
 		}
 	}
 
-	const int salt_length = 16;
+	const int salt_length = 32;
+	const int derivation_iterations = 16384;
 };
 

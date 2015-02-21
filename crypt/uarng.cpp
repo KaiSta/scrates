@@ -12,7 +12,7 @@ UARNG::UARNG()
 {
 }
 
-static CryptoPP::SecByteBlock seed(16);
+static CryptoPP::SecByteBlock seed(32);
 
 std::string seed_to_string()
 {

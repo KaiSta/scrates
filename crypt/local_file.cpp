@@ -3,7 +3,7 @@
 #include "number_helper.h"
 #include "uarng.h"
 
-local_file::local_file() : random_num_(16)
+local_file::local_file() : random_num_(32)
 {
 }
 
@@ -108,7 +108,7 @@ void local_file::create(const std::string& containername,
 	RandomPool prng;
 	prng.IncorporateEntropy(random_num_, random_num_.size());
 
-	SecByteBlock salt(16);
+	SecByteBlock salt(32);
 	prng.GenerateBlock(salt, salt.size());
 
 	PKCS5_PBKDF2_HMAC<SHA512> base;
@@ -116,7 +116,7 @@ void local_file::create(const std::string& containername,
 	SecByteBlock iv(Serpent::BLOCKSIZE);
 	base.DeriveKey(key, key.size(), base.UsesPurposeByte(),
 		reinterpret_cast<const byte*>(passphrase.data()), passphrase.size(),
-		salt, salt.size(), 1989);
+		salt, salt.size(), 19890);
 	base.DeriveKey(iv, iv.size(), base.UsesPurposeByte(),
 		reinterpret_cast<const byte*>(passphrase.data()), passphrase.size(),
 		salt, salt.size(), 3103);
@@ -143,17 +143,17 @@ void local_file::open(path& p, const std::string& passphrase,
 
 	using namespace CryptoPP;
 	//decrypt local file
-	std::vector<byte> salt(16);
+	std::vector<byte> salt(32);
 	std::string teststring;
-	FileSource source(p.str().data(), false, new ArraySink(&salt[0], 16));
-	source.Pump(16);
+	FileSource source(p.str().data(), false, new ArraySink(&salt[0], 32));
+	source.Pump(32);
 
 	PKCS5_PBKDF2_HMAC<SHA512> base;
 	SecByteBlock key(Serpent::MAX_KEYLENGTH);
 	SecByteBlock iv(Serpent::BLOCKSIZE);
 	base.DeriveKey(key, key.size(), base.UsesPurposeByte(),
 		reinterpret_cast<const byte*>(passphrase.data()), passphrase.size(),
-		&salt[0], salt.size(), 1989);
+		&salt[0], salt.size(), 19890);
 	base.DeriveKey(iv, iv.size(), base.UsesPurposeByte(),
 		reinterpret_cast<const byte*>(passphrase.data()), passphrase.size(),
 		salt.data(), salt.size(), 3103);
@@ -178,7 +178,7 @@ void local_file::open(path& p, const std::string& passphrase,
 	//get seed
 	auto seednode = file_.child("container").child("seed");
 	std::string encoded_seed(seednode.child_value());
-	StringSource(encoded_seed.data(), true, new HexDecoder(new ArraySink(random_num_, 16)));
+	StringSource(encoded_seed.data(), true, new HexDecoder(new ArraySink(random_num_, 32)));
 
 	//get cloud location
 	auto locationnode = file_.child("container").child("locations").child("location");
