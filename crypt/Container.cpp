@@ -13,18 +13,18 @@
 #include "helper_files.h"
 #include <mtl/fromtorange.h>
 
-Container::Container(encryption_algorithm algo) : algo_(algo), volume_(nullptr), seed_(16), is_syncing(false), container_open_(false)
+Container::Container(encryption_algorithm algo) : algo_(algo), volume_(nullptr), seed_(32), is_syncing(false), container_open_(false)
 {
 
 }
 
 Container::Container(VirtualDisk_Impl::volume_handle* volume, encryption_algorithm algo) : algo_(algo),
-volume_(volume), seed_(16), is_syncing(false), container_open_(false)
+volume_(volume), seed_(32), is_syncing(false), container_open_(false)
 {
 }
 
 Container::Container(const path& location, const std::string& pw, VirtualDisk_Impl::volume_handle* volume, encryption_algorithm algo) : volume_(volume), 
-passphrase_(pw.begin(), pw.end()), seed_(16), is_syncing(false), container_open_(false)
+passphrase_(pw.begin(), pw.end()), seed_(32), is_syncing(false), container_open_(false)
 {
 	using namespace CryptoPP;
 	StringSource(pw.data(), true, new HashFilter(SHA256(), new StringSink(pw_)));
@@ -34,6 +34,19 @@ passphrase_(pw.begin(), pw.end()), seed_(16), is_syncing(false), container_open_
 	path_ = location;
 	location.create_folderpath();
 	algo_ = algo;
+	if (enhanced_passphrase_.size())
+	{
+		std::vector<byte> tmp(std::begin(pw), std::end(pw));
+		tmp.insert(std::end(tmp), std::begin(enhanced_passphrase_), std::end(enhanced_passphrase_));
+		std::swap(tmp, enhanced_passphrase_);
+	}
+	else
+	{
+		for (byte b : pw)
+		{
+			enhanced_passphrase_.push_back(b);
+		}
+	}
 }
 
 void Container::set_vhd(VirtualDisk_Impl::volume_handle* v)
@@ -52,6 +65,12 @@ void Container::set_seed(CryptoPP::SecByteBlock seed)
 		seed_[p] ^= t[p];
 	}
 	prng_.IncorporateEntropy(seed_, seed_.size());
+
+	//enhance pw
+	for (auto b : seed)
+	{
+		enhanced_passphrase_.push_back(b);
+	}
 }
 
 Container::~Container()
@@ -63,7 +82,20 @@ void Container::init(const path& location, const std::string& pw, encryption_alg
 {
 	using namespace CryptoPP;
 	StringSource(pw.data(), true, new HashFilter(SHA256(), new StringSink(pw_)));
-	passphrase_.assign(pw.begin(), pw.end());
+	//passphrase_.assign(pw.begin(), pw.end());
+	if (enhanced_passphrase_.size())
+	{
+		std::vector<byte> tmp(std::begin(pw), std::end(pw));
+		tmp.insert(std::end(tmp), std::begin(enhanced_passphrase_), std::end(enhanced_passphrase_));
+		std::swap(tmp, enhanced_passphrase_);
+	}
+	else
+	{
+		for (byte b : pw)
+		{
+			enhanced_passphrase_.push_back(b);
+		}
+	}
 	container_name_ = location.get_filename();
 	container_name_.erase(container_name_.find_first_of('.'), container_name_.size());
 	path_ = location;

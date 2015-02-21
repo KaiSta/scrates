@@ -141,6 +141,7 @@ private:
 	std::string blocklocation_;
 	std::string pw_;
 	std::vector<byte> passphrase_;
+	std::vector<byte> enhanced_passphrase_;
 	encryption_algorithm algo_;
 	
 	std::string container_raw_;
@@ -177,12 +178,12 @@ private:
 		PKCS5_PBKDF2_HMAC<SHA512> pwbase;
 		pwbase.DeriveKey(recovered_derived_key, recovered_derived_key.size(),
 			pwbase.UsesPurposeByte(),
-			&passphrase_[0], passphrase_.size(),
+			&enhanced_passphrase_[0], enhanced_passphrase_.size(),
 			reinterpret_cast<const byte*>(recovered_salt.data()), salt_length,
 			derivation_iterations);
 		pwbase.DeriveKey(recovered_iv, recovered_iv.size(),
 			pwbase.UsesPurposeByte(),
-			&passphrase_[0], passphrase_.size(),
+			&enhanced_passphrase_[0], enhanced_passphrase_.size(),
 			reinterpret_cast<const byte*>(recovered_salt.data()), salt_length,
 			1000);
 		CFB_Mode<T>::Decryption decrypt;
@@ -225,11 +226,11 @@ private:
 		SecByteBlock derived_key(T::MAX_KEYLENGTH);
 		SecByteBlock iv(T::BLOCKSIZE);
 		pwbase.DeriveKey(derived_key, derived_key.size(), pwbase.UsesPurposeByte(),
-			&passphrase_[0], passphrase_.size(),
+			&enhanced_passphrase_[0], enhanced_passphrase_.size(),
 			salt, salt.size(),
 			derivation_iterations);
 		pwbase.DeriveKey(iv, iv.size(), pwbase.UsesPurposeByte(),
-			&passphrase_[0], passphrase_.size(),
+			&enhanced_passphrase_[0], enhanced_passphrase_.size(),
 			salt, salt.size(),
 			1000);
 		CFB_Mode<T>::Encryption encrypt;
@@ -264,12 +265,12 @@ private:
 		PKCS5_PBKDF2_HMAC<SHA512> pwbase;
 		pwbase.DeriveKey(recovered_derived_key, recovered_derived_key.size(),
 			pwbase.UsesPurposeByte(),
-			&passphrase_[0], passphrase_.size(),
+			&enhanced_passphrase_[0], enhanced_passphrase_.size(),
 			salt, salt.size(),
 			derivation_iterations);
 		pwbase.DeriveKey(recovered_iv, recovered_iv.size(),
 			pwbase.UsesPurposeByte(),
-			&passphrase_[0], passphrase_.size(),
+			&enhanced_passphrase_[0], enhanced_passphrase_.size(),
 			salt, salt.size(),
 			1000);
 		CFB_Mode<T>::Encryption encrypt;
@@ -304,11 +305,11 @@ private:
 		SecByteBlock derived_key(T::MAX_KEYLENGTH);
 		SecByteBlock iv(T::BLOCKSIZE);
 		pwbase.DeriveKey(derived_key, derived_key.size(), pwbase.UsesPurposeByte(),
-			&passphrase_[0], passphrase_.size(),
+			&enhanced_passphrase_[0], enhanced_passphrase_.size(),
 			salt, salt.size(),
 			derivation_iterations);
 		pwbase.DeriveKey(iv, iv.size(), pwbase.UsesPurposeByte(),
-			&passphrase_[0], passphrase_.size(),
+			&enhanced_passphrase_[0], enhanced_passphrase_.size(),
 			salt, salt.size(),
 			1000);
 
@@ -342,11 +343,11 @@ private:
 		SecByteBlock derived_key(T::MAX_KEYLENGTH);
 		SecByteBlock iv(T::BLOCKSIZE);
 		pwbase.DeriveKey(derived_key, derived_key.size(), pwbase.UsesPurposeByte(),
-			&passphrase_[0], passphrase_.size(),
+			&enhanced_passphrase_[0], enhanced_passphrase_.size(),
 			salt, salt.size(),
 			derivation_iterations);
 		pwbase.DeriveKey(iv, iv.size(), pwbase.UsesPurposeByte(),
-			&passphrase_[0], passphrase_.size(),
+			&enhanced_passphrase_[0], enhanced_passphrase_.size(),
 			salt, salt.size(),
 			1000);
 		
@@ -394,11 +395,11 @@ private:
 				SecByteBlock derived_key(T::MAX_KEYLENGTH);
 				SecByteBlock iv(T::BLOCKSIZE);
 				pwbase.DeriveKey(derived_key, derived_key.size(), pwbase.UsesPurposeByte(),
-					&passphrase_[0], passphrase_.size(),
+					&enhanced_passphrase_[0], enhanced_passphrase_.size(),
 					&recovered_salt[0], salt_length,
 					derivation_iterations);
 				pwbase.DeriveKey(iv, iv.size(), pwbase.UsesPurposeByte(),
-					&passphrase_[0], passphrase_.size(),
+					&enhanced_passphrase_[0], enhanced_passphrase_.size(),
 					&recovered_salt[0], salt_length,
 					1000);
 
