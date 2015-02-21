@@ -20,19 +20,30 @@
 #include <cryptopp\modes.h>
 
 #include <mutex>
+#include <memory>
+
+#include "Storage.h"
+#include "VirtualDisk_Impl.h"
+#include "Folder_Impl.h"
 
 class local_file
 {
 public:
+	enum storage_type
+	{
+		VHD,
+		FOLDER
+	};
+
 	local_file();
 	~local_file();
 
 	void create(const std::string& containername,
 		const std::string& passphrase,
 		path& p, std::vector<std::pair<std::string, size_t>> locations,
-		path& vhdpath);
+		path& vhdpath, storage_type stor_type);
 	void open(path& p, const std::string& passphrase,
-		path& vhdpath);
+		path& vhdpath, storage_type stor_type);
 
 	CryptoPP::SecByteBlock get_seed();
 
@@ -53,6 +64,7 @@ private:
 	Container container_;
 	CryptoPP::SecByteBlock random_num_;
 	std::string passphrase_;
+	std::shared_ptr<Storage> storage_;
 
 };
 

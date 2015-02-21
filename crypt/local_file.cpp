@@ -10,7 +10,7 @@ local_file::local_file() : random_num_(32)
 void local_file::create(const std::string& containername, 
 	const std::string& passphrase,
 	path& p, std::vector<std::pair<std::string, size_t>> locations,
-	path& vhdpath)
+	path& vhdpath, storage_type stor_type)
 {
 	using namespace CryptoPP;
 	passphrase_ = passphrase;
@@ -20,8 +20,22 @@ void local_file::create(const std::string& containername,
 	//check if file already exist, if true call open instead
 	if (FileSystem::file_exists(p.str()))
 	{
-		open(p, passphrase, vhdpath);
+		open(p, passphrase, vhdpath, stor_type);
 		return;
+	}
+
+	switch (stor_type)
+	{
+	case storage_type::VHD:
+	{
+		storage_ = std::make_shared<VirtualDisk_Impl>();
+	}
+		break;
+	case storage_type::FOLDER:
+	{
+		storage_ = std::make_shared<Folder_Impl>();
+	}
+		break;
 	}
 
 	auto containernode = file_.append_child("container");
@@ -74,18 +88,25 @@ void local_file::create(const std::string& containername,
 	}
 	file_.save_file("C:\\Users\\kaivm\\Desktop\\dumb.xml");
 	//create and open vhd
-	std::string vhd_name(containername + ".vhd");
-	vhdpath = vhdpath.append_filename(vhd_name);
-
-	uint64_t vhdsize{ 0 };
-	for (auto& e : locations)
+	if (stor_type == storage_type::VHD)
 	{
-		vhdsize += e.second;
+		std::string vhd_name(containername + ".vhd");
+		vhdpath = vhdpath.append_filename(vhd_name);
+		uint64_t vhdsize{ 0 };
+		for (auto& e : locations)
+		{
+			vhdsize += e.second;
+		}
+
+		if (!FileSystem::file_exists(vhdpath.str()))
+		{
+			//VirtualDisk_Impl::create(vhdpath.str(), vhdsize /1024/1024, vhd_);
+			storage_->create(vhdpath.str(), vhdsize / 1024 / 1024, vhd_);
+		}
 	}
-
-	if (!FileSystem::file_exists(vhdpath.str()))
+	else if (stor_type == storage_type::FOLDER)
 	{
-		VirtualDisk_Impl::create(vhdpath.str(), vhdsize /1024/1024, vhd_);
+		storage_->create(vhdpath.str(), 0, vhd_);
 	}
 
 	//create cloud db
@@ -136,10 +157,24 @@ void local_file::create(const std::string& containername,
 }
 
 void local_file::open(path& p, const std::string& passphrase,
-	path& vhdpath)
+	path& vhdpath, storage_type stor_type)
 {
 	location_ = p;
 	passphrase_ = passphrase;
+
+	switch (stor_type)
+	{
+	case storage_type::VHD:
+	{
+		storage_ = std::make_shared<VirtualDisk_Impl>();
+	}
+		break;
+	case storage_type::FOLDER:
+	{
+		storage_ = std::make_shared<Folder_Impl>();
+	}
+		break;
+	}
 
 	using namespace CryptoPP;
 	//decrypt local file
@@ -187,20 +222,29 @@ void local_file::open(path& p, const std::string& passphrase,
 	cl = cl.append_filename(containername + ".db");
 
 	//create and open vhd
-	std::string vhd_name(containername + ".vhd");
-	vhdpath = vhdpath.append_filename(vhd_name);
-
-	std::string si(locationnode.attribute("quota").value());
-	
-	uint64_t vhdsize = s_to_int64(si);
-
-	if (!FileSystem::file_exists(vhdpath.str()))
+	if (stor_type == storage_type::VHD)
 	{
-		VirtualDisk_Impl::create(vhdpath.str(), vhdsize / 1024 / 1024, vhd_);
+		std::string vhd_name(containername + ".vhd");
+		vhdpath = vhdpath.append_filename(vhd_name);
+
+		std::string si(locationnode.attribute("quota").value());
+
+		uint64_t vhdsize = s_to_int64(si);
+
+		if (!FileSystem::file_exists(vhdpath.str()))
+		{
+			//VirtualDisk_Impl::create(vhdpath.str(), vhdsize / 1024 / 1024, vhd_);
+			storage_->create(vhdpath.str(), vhdsize / 1024 / 1024, vhd_);
+		}
+		else
+		{
+			//VirtualDisk_Impl::mount_drive(vhdpath.str(), vhd_);
+			storage_->mount_drive(vhdpath.str(), vhd_);
+		}
 	}
-	else
+	else if (stor_type == storage_type::FOLDER)
 	{
-		VirtualDisk_Impl::mount_drive(vhdpath.str(), vhd_);
+		storage_->create(vhdpath.str(), 0, vhd_);
 	}
 
 	container_.set_seed(random_num_);
@@ -228,5 +272,6 @@ void local_file::close()
 local_file::~local_file()
 {
 	container_.close();
-	VirtualDisk_Impl::dismount_drive(vhd_);
+	storage_->dismount_drive(vhd_);
+	//VirtualDisk_Impl::dismount_drive(vhd_);
 }

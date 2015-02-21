@@ -98,6 +98,7 @@ int main()
 	local_file f;
 	
 	path vhdp("C:\\tmp\\local\\");
+	path folderp("C:\\tmp\\folder");
 	
 	while (true)
 	{
@@ -131,7 +132,7 @@ int main()
 			std::cout << "Initialization..." << std::endl;
 			try
 			{
-				f.create(containername, password, filepath, { std::pair<std::string, size_t>(/*"$Local\\tempestTests"*/ synclocation, 53687091200) }, vhdp);
+				f.create(containername, password, filepath, { std::pair<std::string, size_t>(/*"$Local\\tempestTests"*/ synclocation, 53687091200) }, vhdp, local_file::storage_type::VHD);
 			}
 			catch (std::invalid_argument e)
 			{

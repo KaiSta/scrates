@@ -19,7 +19,7 @@
 	static_cast<size_t>(!(sizeof(a) % sizeof(*(a)))))
 
 
-VirtualDisk_Impl::VirtualDisk_Impl()
+VirtualDisk_Impl::VirtualDisk_Impl() : Storage{}
 {
 }
 

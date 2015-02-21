@@ -60,6 +60,12 @@
     <ClInclude Include="uarng.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Folder_Impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Storage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Container.cpp">

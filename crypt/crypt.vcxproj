@@ -144,12 +144,14 @@
     <ClInclude Include="Container.h" />
     <ClInclude Include="Container_handle.h" />
     <ClInclude Include="FileSystem.h" />
+    <ClInclude Include="Folder_Impl.h" />
     <ClInclude Include="folder_watcher.h" />
     <ClInclude Include="helper_files.h" />
     <ClInclude Include="list_of_files.h" />
     <ClInclude Include="local_file.h" />
     <ClInclude Include="number_helper.h" />
     <ClInclude Include="Path.h" />
+    <ClInclude Include="Storage.h" />
     <ClInclude Include="string_helper.h" />
     <ClInclude Include="Synchronizer.h" />
     <ClInclude Include="uarng.h" />
