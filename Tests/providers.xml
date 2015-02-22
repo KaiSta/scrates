@@ -5,5 +5,5 @@
 	<provider placeholder="$GoogleDrive" location="F:\GoogleDrive" />
 	<provider placeholder="$OneDrive" location="C:\Users\Kai\SkyDrive" />
 	<provider placeholder="$BTVM" location="C:\Users\Kai\sharedvm" />
-  <provider placeholder="$tmp" location="C:\tmp" />
+    <provider placeholder="$tmp" location="C:\tmp" />
 </providers>
