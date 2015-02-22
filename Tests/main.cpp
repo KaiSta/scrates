@@ -132,7 +132,7 @@ int main()
 			std::cout << "Initialization..." << std::endl;
 			try
 			{
-				f.create(containername, password, filepath, { std::pair<std::string, size_t>(/*"$Local\\tempestTests"*/ synclocation, 53687091200) }, vhdp, local_file::storage_type::VHD);
+				f.create(containername, password, filepath, { std::pair<std::string, size_t>(/*"$Local\\tempestTests"*/ synclocation, 53687091200) }, folderp, local_file::storage_type::FOLDER);
 			}
 			catch (std::invalid_argument e)
 			{

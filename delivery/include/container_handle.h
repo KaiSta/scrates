@@ -20,6 +20,8 @@ public:
 
 	struct file_node
 	{
+		file_node() : filename(""), path(""), size(0), crc(""), rev(0)
+		{}
 		std::string filename;
 		path path;
 		int64_t size;
@@ -95,6 +97,8 @@ public:
 	void dump(const path& dest);
 
 	void delete_filenode(const path& relative_path);
+	std::vector<file_node> get_deleted_filenodes();
+	std::vector<file_node> get_all_filenodes();
 
 private:
 	pugi::xml_document container_file_;

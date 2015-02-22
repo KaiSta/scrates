@@ -4,6 +4,7 @@
 
 #include <sstream>
 #include <algorithm>
+#include <mtl/fromtorange.h>
 
 
 container_handle::container_handle(const std::string& content)
@@ -102,9 +103,13 @@ container_handle::file_node container_handle::get_filenode(const path& relative_
 				blocknode.filename = block.attribute("filename").value();
 				node.blocks.push_back(blocknode);
 			}
-			break;
+			if (node.size >= 0)
+				break;
+			else
+				node = file_node{};
 		}
 	}
+
 	return node;
 }
 std::string container_handle::get_filename(const path& relative_path)
@@ -450,7 +455,14 @@ void container_handle::dump(const path& dest)
 
 void container_handle::delete_filenode(const path& relative_path)
 {
-	{
+	auto node = get_filenode(relative_path);
+	auto locations = get_locations();
+	auto locationname = locations[0].name;
+	auto s = node.size;
+	update_file_size(-1, relative_path);
+	update_memusage_location(locationname, -s);
+
+	/*{
 		std::lock_guard<std::mutex> guard(mtx_);
 		std::string filename(relative_path.get_filename());
 		std::string folder(relative_path.get_folderpath_unsecure());
@@ -482,7 +494,7 @@ void container_handle::delete_filenode(const path& relative_path)
 				}
 			}
 		}
-	}
+	}*/
 	
 }
 
@@ -494,14 +506,90 @@ std::vector<container_handle::file_node> container_handle::get_filenodes()
 		std::lock_guard<std::mutex> guard(mtx_);
 		list_of_files = container_file_.select_nodes("/container/file");
 	}
-	std::vector<file_node> files(list_of_files.size());
+	//std::vector<file_node> files(list_of_files.size());
+	std::vector<file_node> files;
 
-	for (size_t idx = 0; idx < files.size(); ++idx)
+	for (auto idx : mtl::count_until(list_of_files.size()))
+	{
+		std::string filename = list_of_files[idx].node().attribute("filename").value();
+		path location(list_of_files[idx].node().child("path").child_value());
+		location = location.append_filename(filename);
+		auto node = get_filenode(location);
+		if (node.size > 0)
+			files.push_back(node);
+	}
+
+	/*for (size_t idx = 0; idx < files.size(); ++idx)
 	{
 		std::string filename = list_of_files[idx].node().attribute("filename").value();
 		path location(list_of_files[idx].node().child("path").child_value());
 		location = location.append_filename(filename);
 		files[idx] = get_filenode(location);
+	}*/
+	return files;
+}
+
+std::vector<container_handle::file_node> container_handle::get_deleted_filenodes()
+{
+	auto all_nodes = get_all_filenodes();
+	std::vector<file_node> files;
+	for (auto n : all_nodes)
+	{
+		if (n.size == -1)
+			files.push_back(n);
+	}
+	return files;
+}
+
+std::vector<container_handle::file_node> container_handle::get_all_filenodes()
+{
+	std::lock_guard<std::mutex> guard(mtx_);
+	pugi::xpath_node_set list_of_files;
+	list_of_files = container_file_.select_nodes("/container/file");
+	std::vector<file_node> files;
+
+	for (auto idx : mtl::count_until(list_of_files.size()))
+	{
+		std::string filename2 = list_of_files[idx].node().attribute("filename").value();
+		path location(list_of_files[idx].node().child("path").child_value());
+		location = location.append_filename(filename2);
+
+		std::string filename = location.get_filename();
+		path folder(location.get_folderpath_unsecure());
+
+		std::string xpath_query("/container/file[@filename = \"" + filename + "\"]");
+		pugi::xpath_node_set possible = container_file_.select_nodes(xpath_query.data());
+
+		file_node node;
+		node.size = 0;
+
+		for (auto& e : possible)
+		{
+			path p(e.node().child("path").child_value());
+			if (p == folder)
+			{
+
+				node.filename = e.node().attribute("filename").value();
+				node.size = s_to_int64(e.node().child("size").child_value());//std::stoi(e.node().child("size").child_value());
+				node.path = p;
+				node.crc = e.node().child("crc").child_value();
+				node.rev = s_to_int64(e.node().child("rev").child_value());
+
+				auto blocksnode = e.node().child("blocks");
+				for (pugi::xml_node block = blocksnode.child("block"); block;
+					block = block.next_sibling("block"))
+				{
+					block_node blocknode;
+					blocknode.id = std::stoi(block.attribute("id").value());
+					blocknode.location = block.attribute("location").value();
+					blocknode.crc = block.attribute("crc").value();
+					blocknode.filename = block.attribute("filename").value();
+					node.blocks.push_back(blocknode);
+				}
+				break;
+			}
+		}
+		files.push_back(node);
 	}
 	return files;
 }
