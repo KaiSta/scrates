@@ -252,17 +252,26 @@ void Container::manual_sync()
 		std::cout << "severe: synchronization with cloud incomplete!\n";
 		return;
 	}
-
-	std::vector<std::string> tmp;
-	std::vector<container_handle::file_node> fnodes;
 	
-		//std::lock_guard<std::mutex> guard(wr_mtx_);
-
-	std::string strpath((*volume_).drive_letter + handle_.get_containername());
-	path p(strpath);
-	tmp = FileSystem::list_files(p.str(), true);
-	fnodes = handle_.get_filenodes();
-	
+	auto booked_files = handle_.get_filenodes();
+	std::string dest((*volume_).drive_letter /*+ handle_.get_containername()*/);
+	for (auto& n : booked_files)
+	{
+		path p(dest + n.path.str());
+		p = p.append_filename(n.filename);
+		if (!FileSystem::file_exists(p.str()))
+		{
+			//file was deleted on vhd
+			path tmp;
+			handle_.where_to_store(0, tmp);
+			tmp = tmp.append_filename(n.blocks[0].filename);
+			if (FileSystem::delete_file(tmp.str()))
+			{
+				path t = n.path.append_filename(n.filename);
+				handle_.delete_filenode(t);
+			}
+		}
+	}
 
 /*	for (auto fnode : fnodes)
 	{
@@ -288,6 +297,16 @@ void Container::manual_sync()
 	}
 	
 >>>>>>> origin/master*/
+
+	std::vector<std::string> tmp;
+	std::vector<container_handle::file_node> fnodes;
+
+
+	std::string strpath((*volume_).drive_letter + handle_.get_containername());
+	path p(strpath);
+	tmp = FileSystem::list_files(p.str(), true);
+	fnodes = handle_.get_filenodes();
+
 	//#pragma omp parallel for
 	for (int i = 0; i < tmp.size(); ++i)
 	{
@@ -336,6 +355,21 @@ void Container::sync()
 	handle_.open(container_raw_);
 
 	auto oldnodes = oldhandle.get_filenodes();
+
+	//handle deletes done at the cloud
+	auto deleted_files_on_cloud = handle_.get_deleted_filenodes();
+	std::string dest((*volume_).drive_letter /*+ handle_.get_containername()*/);
+	for (auto& d : deleted_files_on_cloud)
+	{
+		path p(d.path);
+		p = p.append_filename(d.filename);
+		auto on = oldhandle.get_filenode(p);
+		if (on.size > 0) //file was deleted in the cloud, but still exists in the local version
+		{
+			path todelete(dest+p.str());
+			FileSystem::delete_file(todelete.str());
+		}
+	}
 
 	for (auto& node : oldnodes)
 	{

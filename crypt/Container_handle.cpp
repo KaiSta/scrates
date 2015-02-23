@@ -165,8 +165,19 @@ path container_handle::get_location_path(const std::string& location)
 
 void container_handle::add_file_node(const file_node& node)
 {
+	
 	std::lock_guard<std::mutex> guard(mtx_);
+
+	std::string xpath_q("/container/file[@filename = \"" + node.filename + "\" and path = \"" + node.path.raw_std_str() + "\" ]");
+	pugi::xpath_node_set nodes_found = container_file_.select_nodes(xpath_q.data());
+
 	auto root = container_file_.child("container");
+
+	if (nodes_found.size() > 0)
+	{
+		root.remove_child(nodes_found[0].node());
+	}
+
 	auto filenode = root.append_child("file");
 	std::stringstream ss;
 
@@ -192,7 +203,7 @@ void container_handle::add_file_node(const file_node& node)
 		blocknode.append_attribute("location") = e.location.data();
 		blocknode.append_attribute("crc") = e.crc.data();
 		blocknode.append_attribute("filename") = e.filename.data();
-	}
+	}		
 }
 void container_handle::add_block_node(block_node& blocknode, file_node& filenode)
 {
@@ -221,7 +232,7 @@ void container_handle::update_file_node(const file_node& node)
 		path p(e.node().child("path").child_value());
 		if (p == folder)
 		{
-			if (node.size != old_node.size)
+			if (node.size != old_node.size/* && old_node.size != 0 && old_node.size != -1*/)
 			{
 				ss << node.size;
 				e.node().remove_child("size");
@@ -504,7 +515,7 @@ std::vector<container_handle::file_node> container_handle::get_filenodes()
 	
 	{
 		std::lock_guard<std::mutex> guard(mtx_);
-		list_of_files = container_file_.select_nodes("/container/file");
+		list_of_files = container_file_.select_nodes("/container/file[size != -1]");
 	}
 	//std::vector<file_node> files(list_of_files.size());
 	std::vector<file_node> files;
