@@ -172,9 +172,15 @@ void container_handle::add_file_node(const file_node& node)
 	pugi::xpath_node_set nodes_found = container_file_.select_nodes(xpath_q.data());
 
 	auto root = container_file_.child("container");
+	std::string rev_to_add("0");
 
 	if (nodes_found.size() > 0)
 	{
+		std::string revstr(nodes_found[0].node().child("rev").child_value());
+		auto rev = s_to_int64(revstr) + 1;
+		std::stringstream ss;
+		ss << rev;
+		rev_to_add = ss.str();
 		root.remove_child(nodes_found[0].node());
 	}
 
@@ -191,7 +197,7 @@ void container_handle::add_file_node(const file_node& node)
 	filenode.append_child("crc").append_child(
 		pugi::node_pcdata).set_value(node.crc.data());
 	filenode.append_child("rev").append_child(
-		pugi::node_pcdata).set_value("0");
+		pugi::node_pcdata).set_value(rev_to_add.c_str());
 
 	auto blocksnode = filenode.append_child("blocks");
 	for (auto& e : node.blocks)
@@ -467,6 +473,21 @@ void container_handle::dump(const path& dest)
 void container_handle::delete_filenode(const path& relative_path)
 {
 	auto node = get_filenode(relative_path);
+	auto rev = node.rev + 1;
+
+	std::stringstream ssrev;
+	ssrev << rev;
+
+	std::string xpath_q("/container/file[@filename = \"" + node.filename + "\" and path = \"" + node.path.raw_std_str() + "\" ]");
+	pugi::xpath_node_set nodes_found = container_file_.select_nodes(xpath_q.data());
+
+	if (nodes_found.size() > 0)
+	{
+		nodes_found[0].node().remove_child("rev");
+		auto revnode = nodes_found[0].node().insert_child_after("rev", nodes_found[0].node().child("crc"));
+		revnode.append_child(pugi::node_pcdata).set_value(ssrev.str().c_str());
+	}
+
 	auto locations = get_locations();
 	auto locationname = locations[0].name;
 	auto s = node.size;
