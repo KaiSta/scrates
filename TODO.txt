@@ -1,1 +1,3 @@
 - facade fuer GUI einfuegen
+- conflict system einfuegen
+- externer seed

@@ -142,6 +142,7 @@
     <ClInclude Include="..\lib\pugixml\src\pugixml.hpp" />
     <ClInclude Include="CloudManager.h" />
     <ClInclude Include="Container.h" />
+    <ClInclude Include="ContainerController.h" />
     <ClInclude Include="Container_handle.h" />
     <ClInclude Include="FileSystem.h" />
     <ClInclude Include="Folder_Impl.h" />
@@ -161,6 +162,7 @@
     <ClCompile Include="..\lib\pugixml\src\pugixml.cpp" />
     <ClCompile Include="CloudManager.cpp" />
     <ClCompile Include="Container.cpp" />
+    <ClCompile Include="ContainerController.cpp" />
     <ClCompile Include="Container_handle.cpp" />
     <ClCompile Include="folder_watcher.cpp" />
     <ClCompile Include="local_file.cpp" />
