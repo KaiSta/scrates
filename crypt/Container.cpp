@@ -391,6 +391,7 @@ void Container::close()
 		return;
 	syncer.stop();
 	sync();
+	manual_sync();
 	save();
 	std::string p((*volume_).drive_letter);
 	p.append(handle_.get_containername());

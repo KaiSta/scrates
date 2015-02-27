@@ -266,7 +266,8 @@ void local_file::manual_sync()
 
 void local_file::close()
 {
-
+	container_.close();
+	storage_->dismount_drive(vhd_);
 }
 
 local_file::~local_file()

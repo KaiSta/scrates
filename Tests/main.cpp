@@ -108,6 +108,7 @@ int main()
 
 		if (cmd == "exit")
 		{
+			f.close();
 			break;
 		}
 		else if (cmd == "create")
