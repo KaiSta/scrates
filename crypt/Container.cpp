@@ -82,7 +82,7 @@ void Container::init(const path& location, const std::string& pw, encryption_alg
 {
 	using namespace CryptoPP;
 	StringSource(pw.data(), true, new HashFilter(SHA256(), new StringSink(pw_)));
-	//passphrase_.assign(pw.begin(), pw.end());
+	
 	if (enhanced_passphrase_.size())
 	{
 		std::vector<byte> tmp(std::begin(pw), std::end(pw));
@@ -204,8 +204,6 @@ void Container::open()
 
 void Container::save()
 {
-	//std::lock_guard<std::mutex> guard(wr_mtx_);
-
 	if (!container_open_)
 		return;
 	std::string oldcrc;
@@ -254,7 +252,8 @@ void Container::manual_sync()
 	}
 	
 	auto booked_files = handle_.get_filenodes();
-	std::string dest((*volume_).drive_letter /*+ handle_.get_containername()*/);
+	std::string dest((*volume_).drive_letter);
+
 	for (auto& n : booked_files)
 	{
 		path p(dest + n.path.str());
@@ -273,31 +272,6 @@ void Container::manual_sync()
 		}
 	}
 
-/*	for (auto fnode : fnodes)
-	{
-<<<<<<< HEAD
-		if (FileSystem::file_exists(f) && FileSystem::file_size(f) > 0)
-			add_file(f, handle_.get_containername());
-	}
-=======
-		path p(fnode.path);
-		p = p.append_filename(fnode.filename);
-		path containerpath((*volume_).drive_letter + handle_.get_containername());
-		std::string filepath(containerpath.str() + FileSystem::path_separator + p.str());
-		
-		if (!FileSystem::file_exists(filepath))
-		{
-			//quick fix container_handle needs a way to give store path for existing files!!!
-			path tmp;
-			handle_.where_to_store(0, tmp);
-			tmp = tmp.append_filename(fnode.blocks[0].filename);
-			if(FileSystem::delete_file(tmp.str()))
-				handle_.update_file_size(-1, p);
-		}
-	}
-	
->>>>>>> origin/master*/
-
 	std::vector<std::string> tmp;
 	std::vector<container_handle::file_node> fnodes;
 
@@ -313,8 +287,6 @@ void Container::manual_sync()
 		add_file(tmp[i], handle_.get_containername());
 	}
 
-	
-	//std::lock_guard<std::mutex> guard2(wr_mtx_);
 	update_containerCrC();
 #ifdef TDEBUG
 	handle_.dump(std::string("C:\\Users\\Kai\\Desktop\\new_test.xml"));
@@ -327,8 +299,6 @@ void Container::manual_sync()
 void Container::sync()
 { //needs merge of old and new handle
 	std::lock_guard<std::mutex> syncguard(sync_lock_);
-	
-	//std::lock_guard<std::mutex> guard(wr_mtx_);
 
 	//check if external sync is needed
 	std::string oldcrc = containercrc_;
@@ -358,7 +328,8 @@ void Container::sync()
 
 	//handle deletes done at the cloud
 	auto deleted_files_on_cloud = handle_.get_deleted_filenodes();
-	std::string dest((*volume_).drive_letter /*+ handle_.get_containername()*/);
+	std::string dest((*volume_).drive_letter);
+
 	for (auto& d : deleted_files_on_cloud)
 	{
 		path p(d.path);
@@ -470,8 +441,6 @@ void Container::add_file(const path& src, const std::string& rootfolder)
 			file.size = size;
 			file.path = relativepath.std_str();
 
-			
-			//FileSource(location.data(), true, new HashFilter(CRC32(), new HexEncoder(new StringSink(crc))));
 			file.crc = crc;
 
 			std::string key;
@@ -501,8 +470,6 @@ void Container::add_file(const path& src, const std::string& rootfolder)
 				return;
 			}
 
-			//file.key = key;
-			//file.iv = iv;
 			container_handle::block_node block_node;
 			block_node.id = 1;
 			block_node.location = location_name;
@@ -511,21 +478,12 @@ void Container::add_file(const path& src, const std::string& rootfolder)
 			file.blocks.push_back(block_node);
 			handle_.add_file_node(file);
 
-			/*list_of_files::item new_item;
-			new_item.name = hashname;
-			new_item.crc = crc;
-			new_item.size = size;
-			new_item.location = location_name;
-			new_item.relative_path = tmp;
-			lof_.add_file(new_item);*/
-
 			save();
 		}
 
 	}
 #ifdef TDEBUG
 	handle_.dump(std::string("C:\\Users\\Kai\\Desktop\\new_test.xml"));
-	//lof_.dump();
 #endif
 }
 void Container::open_file(const std::string& relative_path)
@@ -544,7 +502,7 @@ void Container::delete_file(const path& relative_path)
 	auto x = handle_.get_filenode(relative_path);
 	list_of_files::item remove_item;
 	remove_item.name = x.blocks[0].filename;
-	//lof_.delete_file(remove_item);
+	
 	handle_.delete_filenode(relative_path);
 	save();
 #ifdef TDEBUG
@@ -552,7 +510,7 @@ void Container::delete_file(const path& relative_path)
 #endif
 }
 
-void Container::extract_file(const path& relative_path/*, const path& dest*/)
+void Container::extract_file(const path& relative_path)
 {
 	if (file_exists(relative_path.str()))
 	{
@@ -585,8 +543,6 @@ void Container::extract_file(const path& relative_path/*, const path& dest*/)
 void Container::update_file(const std::string& filename, const path& relative_path, const path& src)
 {
 	{
-		//std::lock_guard<std::mutex> guard(wr_mtx_);
-
 		if (!validate())
 		{
 			//throw(std::logic_error("severe: synchronization with cloud incomplete!"));
@@ -616,8 +572,6 @@ void Container::update_file(const std::string& filename, const path& relative_pa
 			std::string hashname = block_node.filename;
 			std::string old_crc = block_node.crc;
 			
-			//std::string crc;
-			//FileSource(src.str().data(), true, new HashFilter(CRC32(), new HexEncoder(new StringSink(crc))));
 			if (old_crc == crc) { return; }
 
 			std::string location_name = block_node.location;
@@ -661,10 +615,6 @@ void Container::update_file(const std::string& filename, const path& relative_pa
 			handle_.update_file_crc(crc, location);
 			handle_.update_block_crc(crc, location, 1);
 			handle_.update_file_size(size, location);
-			/*auto file = lof_.get_file(hashname);
-			file.crc = crc;
-			file.size = size;
-			lof_.update_file(file);*/
 		}
 	}
 	save();
@@ -699,12 +649,6 @@ void Container::extract_all()
 	auto tmp = handle_.get_filenodes();
 	std::string dest((*volume_).drive_letter + handle_.get_containername());
 
-	/*for (auto& x : tmp)
-	{
-		path loc = x.path;
-		loc = loc.append_filename(x.filename);
-		extract_file(loc);
-	}*/
 #pragma omp parallel for
 	for (int i = 0; i < tmp.size(); ++i)
 	{

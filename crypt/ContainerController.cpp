@@ -35,11 +35,13 @@ container_event ContainerController::create(const std::string& container_name, c
 bool ContainerController::open(const std::string& container_location, const std::string& password, stor_t store_type)
 {
 	container_.open(path(container_location), password, path(vhd_path_), store_type);
+	return true;
 }
 
 bool ContainerController::sync_now()
 {
 	container_.manual_sync();
+	return true;
 }
 
 std::vector<unsigned char> ContainerController::get_pseudo_seed()
@@ -47,7 +49,7 @@ std::vector<unsigned char> ContainerController::get_pseudo_seed()
 	using namespace CryptoPP;
 	SecByteBlock b(32);
 	AutoSeededRandomPool prng;
-	prng.GenerateBlock(b, b.size);
+	prng.GenerateBlock(b, b.size());
 	return{ std::begin(b), std::end(b) };
 }
 

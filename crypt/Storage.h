@@ -12,13 +12,18 @@
 class Storage
 {
 public:
-
+	enum store_t
+	{
+		VHD,
+		FOLDER
+	};
 	struct volume_handle
 	{
 		HANDLE handle;
 		std::string path;
 		std::string drive_letter;
 		bool is_open;
+		store_t type;
 
 		void close()
 		{

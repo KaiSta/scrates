@@ -12,6 +12,7 @@
 #include "container_handle.h"
 #include "list_of_files.h"
 #include "VirtualDisk_Impl.h"
+#include "Storage.h"
 #include "Synchronizer.h"
 #include <atomic>
 
@@ -146,9 +147,9 @@ private:
 	
 	std::string container_raw_;
 	container_handle handle_;
-	//list_of_files lof_;
-	VirtualDisk_Impl::volume_handle* volume_;
-
+	
+	//VirtualDisk_Impl::volume_handle* volume_;
+	Storage::volume_handle* volume_;
 	CryptoPP::SecByteBlock seed_;
 	CryptoPP::RandomPool prng_;
 
