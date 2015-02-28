@@ -240,9 +240,12 @@ void Container::save()
 #endif
 }
 //vhd update
-void Container::manual_sync()
+void Container::manual_sync(bool ignore_container_state)
 {
 	std::lock_guard<std::mutex> syncguard(sync_lock_);
+
+	if (!container_open_ && !ignore_container_state)
+		return;
 
 	if (!validate())
 	{
@@ -296,9 +299,12 @@ void Container::manual_sync()
 	save();
 }
 //cloud update
-void Container::sync()
+void Container::sync(bool ignore_container_state)
 { //needs merge of old and new handle
 	std::lock_guard<std::mutex> syncguard(sync_lock_);
+
+	if (!container_open_ && !ignore_container_state)
+		return;
 
 	//check if external sync is needed
 	std::string oldcrc = containercrc_;
@@ -389,9 +395,10 @@ void Container::close()
 {
 	if (!container_open_)
 		return;
+	container_open_ = false;
 	syncer.stop();
-	sync();
-	manual_sync();
+	sync(true);
+	manual_sync(true);
 	save();
 	std::string p((*volume_).drive_letter);
 	p.append(handle_.get_containername());

@@ -73,14 +73,14 @@ public:
 	  Needed for updates that are made in cloud storage. The state of the cloud storage
 	  is used to update the container file.
 	*/
-	void sync();
+	void sync(bool ignore_container_state = false);
 
 	/**
 	  \brief updates the container file with the current state of local files.
 	  Needed for updates inside the Virtual Hard Drive. Updates the lof inside
 	  cloud storage.
 	*/
-	void manual_sync();
+	void manual_sync(bool ignore_container_state = false);
 
 	/**
 	  \brief Will sync the local files and the cloud files and closes the container.
