@@ -16,12 +16,9 @@ int main(int argc, char *argv[])
 
     QStringListModel model;
 
-
-
-
     QStringList list;
     list << "one" << "assd" << "asda";
-    model.setStringList(list);;
+    model.setStringList(list);
 
     engine.rootContext()->setContextProperty("containerModel", &model);
 

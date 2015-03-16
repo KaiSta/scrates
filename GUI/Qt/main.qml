@@ -4,13 +4,12 @@ import QtQuick.Window 2.2
 import QtQuick.Dialogs 1.2
 import QtQuick.Layouts 1.1
 
-
 ApplicationWindow {
     title: qsTr("tempest")
     width: 640
-    minimumWidth: 200
+    minimumWidth: 640
     height: 480
-    minimumHeight: 100
+    minimumHeight: 480
     visible: true
 
     FileDialog {
@@ -51,25 +50,23 @@ ApplicationWindow {
             anchors.fill: parent
 
             Button {
-                text: "Add"
+                text: qsTr("Add")
             }
             Button {
-                text: "Refresh"
+                text: qsTr("Refresh")
             }
             Button {
-                text: "Sync"
+                text: qsTr("Sync")
             }
             Button {
-                text: "Delete"
+                text: qsTr("Delete")
             }
             Item { Layout.fillWidth: true }
         }
     }
 
-
     SplitView {
         anchors.fill: parent
-
 
         TableView {
             model: containerModel
@@ -83,15 +80,12 @@ ApplicationWindow {
             }
         }
 
-
         MainForm {
             button1.onClicked: messageDialog.show(qsTr("Button 1 pressed"))
             button2.onClicked: messageDialog.show(qsTr("Button 2 pressed"))
-            button3.onClicked: _pwStrengthChecker.check(passwordInput.text);
-            //passwordInput.onTextChanged: console.log("asddas");
+            passwordInput.onTextChanged: _pwStrengthChecker.calcStrength(passwordInput.text)
         }
     }
-
 
     MessageDialog {
         id: messageDialog

@@ -1,8 +1,9 @@
 #include "passwordstrengthchecker.h"
 
-const std::string PasswordStrengthChecker::ALPHABETIC_LOWER = "abcdefghijklmnopqrstuvwxyz";
+//const std::string PasswordStrengthChecker::ALPHABETIC_LOWER = "abcdefghijklmnopqrstuvwxyz";
 
-PasswordStrengthChecker::PasswordStrengthChecker(QObject *parent) : QObject(parent)
+PasswordStrengthChecker::PasswordStrengthChecker(QObject *parent)
+    : QObject(parent), strength_(0.0), message_("Weak"), color_("red")
 {
 
 }
@@ -56,31 +57,71 @@ size_t PasswordStrengthChecker::calcPossibilities(const std::string &pw)
 
 size_t PasswordStrengthChecker::calcEntropy(const size_t possibilities, const size_t length)
 {
-    return ceil(log2(possibilities * length));
+    return ceil(log2(possibilities)) * length;
 }
 
-void PasswordStrengthChecker::check(const QString &str)
+void PasswordStrengthChecker::calcStrength(const QString &str)
 {
-    if (str.length())
+    // Notice: no (german) accents in utf8 (use std::wstring and utf16)
+    std::string pw = str.simplified().replace(" ", "").toUtf8().constData();
+
+    strength_ = 0.0;
+
+    if (pw.length())
     {
-        // ohne Umlaute, bitte beachten für spätere GUI eingabe (// mit umlaute std::wstring und utf16)
-        std::string pw = str.simplified().replace(" ", "").toUtf8().constData();
-
         auto possibilities = calcPossibilities(pw);
-        auto entropy = calcEntropy(possibilities, str.length());
+        auto entropy = calcEntropy(possibilities, pw.length());
+
+        // normalize
+        double max = 256.0;
+        double val = entropy / max;
+
+        strength_ = (val > 1.0) ? 1.0 : val;
     }
+
+
+    if (strength_ > 0.8)
+    {
+        message_ = "Recommended";
+        color_ = "green";
+    }
+    else if (strength_ > 0.6)
+    {
+        message_ = "Strong";
+        color_ = "yellowgreen";
+    }
+    else if (strength_ > 0.4)
+    {
+        message_ = "Medium";
+        color_ = "yellow";
+    }
+    else if (strength_ > 0.2)
+    {
+        message_ = "Normal";
+        color_ = "orange";
+    }
+    else
+    {
+        message_ = "Weak";
+        color_ = "red";
+    }
+
+    emit PasswordStrengthChecker::strengthChanged();
+    emit PasswordStrengthChecker::messageChanged();
+    emit PasswordStrengthChecker::colorChanged();
 }
 
-PasswordStrengthChecker::Strength PasswordStrengthChecker::calcStrength(const size_t entropy)
+double PasswordStrengthChecker::getStrength() const
 {
-    auto strength = PasswordStrengthChecker::Strength::VERYHIGH;
+    return strength_;
+}
 
-    if (entropy < 64)
-        strength = PasswordStrengthChecker::Strength::LOW;
-    else if (entropy < 128)
-        strength = PasswordStrengthChecker::Strength::MID;
-    else if (entropy < 192)
-        strength = PasswordStrengthChecker::Strength::HIGH;
+QString PasswordStrengthChecker::getMessage() const
+{
+    return message_;
+}
 
-    return strength;
+QColor PasswordStrengthChecker::getColor() const
+{
+    return color_;
 }

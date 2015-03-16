@@ -8,13 +8,10 @@
 class Container : public QObject
 {
     Q_OBJECT
-
-    //Q_PROPERTY(QString name MEMBER m_name READ name WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(QString name READ getName WRITE setName NOTIFY nameChanged)
 
 public:
     explicit Container(QObject *parent = 0);
-    //explicit Container(QString name, QObject *parent = 0);
     ~Container();
 
     QString getName() const;

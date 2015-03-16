@@ -9,7 +9,6 @@ Item {
     width: parent
     height: parent
 
-    property alias button3: button3
     property alias button2: button2
     property alias button1: button1
     property alias passwordInput: passwordInput
@@ -26,49 +25,36 @@ Item {
             id: button2
             text: qsTr("Press Me 2")
         }
-
-        Button {
-            id: button3
-            text: qsTr("Press Me 3")
-        }
     }
 
     RowLayout {
         TextField {
             id: passwordInput
             echoMode: TextInput.Password
-            placeholderText: "Password "
-            text: "Hello"
+            placeholderText: "Password"
         }
         ProgressBar {
+            id: pwProgressBar
             minimumValue: 0
-            maximumValue: 256
-            value: 100
+            maximumValue: 1
+            value: _pwStrengthChecker.strength
 
             style: ProgressBarStyle {
                     background: Rectangle {
-
-                        // radius: 2
                         color: "lightgray"
-                        //border.color: "gray"
-                        //border.width: 1
                         implicitWidth: 200
                         implicitHeight: 24
-
-
                     }
                     progress: Rectangle {
-                        color: "lightsteelblue"
-                        Text {
-                            text: "hello2"
-                        }
+                        color: _pwStrengthChecker.color
 
-                        //border.color: "steelblue"
+                        Text {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: _pwStrengthChecker.message
+                        }
                     }
                 }
-
-
-
         }
     }
 }

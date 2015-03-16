@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QColor>
 #include <QDebug>
 
 #include <ctype.h>
@@ -12,24 +13,27 @@
 class PasswordStrengthChecker : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(double strength READ getStrength NOTIFY strengthChanged)
+    Q_PROPERTY(QString message READ getMessage NOTIFY messageChanged)
+    Q_PROPERTY(QColor color READ getColor NOTIFY colorChanged)
+
 public:
     explicit PasswordStrengthChecker(QObject *parent = 0);
     PasswordStrengthChecker(const PasswordStrengthChecker& checker) = delete;
     PasswordStrengthChecker& operator= (const PasswordStrengthChecker& checker) = delete;
     ~PasswordStrengthChecker();
 
-    enum Strength : size_t
-    {
-        LOW,
-        MID,
-        HIGH,
-        VERYHIGH
-    };
+    double getStrength() const;
+    QString getMessage() const;
+    QColor getColor() const;
 
 signals:
+    void strengthChanged();
+    void messageChanged();
+    void colorChanged();
 
 public slots:
-    void check(const QString &str);
+    void calcStrength(const QString &str);
 
 private:
     // Calculates and returns the possibilities
@@ -38,11 +42,12 @@ private:
     // Calculates and returns the entropy
     size_t calcEntropy(const size_t possibilities, const size_t length);
 
-    Strength calcStrength(const size_t entropy);
+    // static const std::string ALPHABETIC_LOWER;
 
-    // double normalize(size_t entropy);
-
-    static const std::string ALPHABETIC_LOWER;
+    // Member variables
+    double strength_;
+    QString message_;
+    QColor color_;
 };
 
 #endif // PASSWORDSTRENGTHCHECKER_H
