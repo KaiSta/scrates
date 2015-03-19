@@ -13,8 +13,62 @@ Item {
     property alias button1: button1
     property alias passwordInput: passwordInput
 
-    RowLayout {
-        anchors.centerIn: parent
+    GridLayout {
+        columns: 2
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.margins: 10
+        rowSpacing: 10
+        columnSpacing: 10
+
+
+        Label {
+            text: qsTr("Name:")
+        }
+
+        TextField {
+            Layout.fillWidth: true
+        }
+
+        Label {
+            text: qsTr("Password:")
+        }
+
+        TextField {
+            id: passwordInput
+            echoMode: TextInput.Password
+            Layout.fillWidth: true
+        }
+
+        Label {
+            text: qsTr("Strength:")
+        }
+
+        ProgressBar {
+            id: pwProgressBar
+            minimumValue: 0
+            maximumValue: 1
+            Layout.fillWidth: true
+            value: _pwStrengthChecker.strength
+
+            style: ProgressBarStyle {
+                background: Rectangle {
+                    color: "lightgray"
+                    implicitWidth: 200
+                    implicitHeight: 24
+                }
+                progress: Rectangle {
+                    color: _pwStrengthChecker.color
+
+                    Text {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: _pwStrengthChecker.message
+                    }
+                }
+            }
+        }
 
         Button {
             id: button1
@@ -25,36 +79,13 @@ Item {
             id: button2
             text: qsTr("Press Me 2")
         }
+
     }
 
     RowLayout {
-        TextField {
-            id: passwordInput
-            echoMode: TextInput.Password
-            placeholderText: "Password"
-        }
-        ProgressBar {
-            id: pwProgressBar
-            minimumValue: 0
-            maximumValue: 1
-            value: _pwStrengthChecker.strength
+        anchors.centerIn: parent
 
-            style: ProgressBarStyle {
-                    background: Rectangle {
-                        color: "lightgray"
-                        implicitWidth: 200
-                        implicitHeight: 24
-                    }
-                    progress: Rectangle {
-                        color: _pwStrengthChecker.color
 
-                        Text {
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: _pwStrengthChecker.message
-                        }
-                    }
-                }
-        }
     }
+
 }

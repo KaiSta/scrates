@@ -76,13 +76,23 @@ ApplicationWindow {
 
             TableViewColumn {
                 title: qsTr("Container")
-                role: "containerName"
+                role: "name"
             }
         }
 
+        /*
+        ListView {
+            highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
+            focus: true
+            model: containerModel
+            delegate: Text { text: "Animal: " + type + ", " + size }
+        }
+        */
+
         MainForm {
             button1.onClicked: messageDialog.show(qsTr("Button 1 pressed"))
-            button2.onClicked: messageDialog.show(qsTr("Button 2 pressed"))
+            //button2.onClicked: messageDialog.show(qsTr("Button 2 pressed"))
+            button2.onClicked: containerModel.addContainer("muha", "hello")
             passwordInput.onTextChanged: _pwStrengthChecker.calcStrength(passwordInput.text)
         }
     }

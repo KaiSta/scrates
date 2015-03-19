@@ -44,7 +44,6 @@ private:
 
     // static const std::string ALPHABETIC_LOWER;
 
-    // Member variables
     double strength_;
     QString message_;
     QColor color_;
