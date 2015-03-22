@@ -15,8 +15,6 @@ ApplicationWindow {
 
     property alias containerList: containerTable
 
-
-
     FileDialog {
         id: fileDialog
         folder: "file:///Users"
@@ -58,17 +56,24 @@ ApplicationWindow {
                 text: qsTr("Add")
                 onClicked: viewLoader.source = "ContainerNew.qml"
             }
+
+            Button {
+                text: qsTr("Remove")
+                onClicked: removeContainerMsgDialog.open()
+                enabled: (containerList.currentRow > -1 & containerList.currentRow < containerList.rowCount ? true : false)
+                // Damn it! After removing the last row (of containerList) no item is selected.
+            }
+
             Button {
                 text: qsTr("Refresh")
             }
+
+            Item { Layout.fillWidth: true }
+
             Button {
                 text: qsTr("Sync")
 
             }
-            Button {
-                text: qsTr("Delete")
-            }
-            Item { Layout.fillWidth: true }
         }
     }
 
@@ -79,7 +84,7 @@ ApplicationWindow {
         // Displays the local stored container files
         TableView {
 
-        //property TableView containerTable: containerTable
+
 
 
 
@@ -116,14 +121,15 @@ ApplicationWindow {
         }
     }
 
+    // Message Dialog: Deleting Container
     MessageDialog {
-        id: messageDialog2
-        modality: Qt.WindowModal // Qt.NonModal
-        title: "asdadsad"
-        text: "customizeText.checked ? textField.text : "
-        standardButtons: StandardButton.Yes | StandardButton.No | StandardButton.Abort
+        id: removeContainerMsgDialog
+        modality: Qt.WindowModal
+        title: "Removing selected container"
+        text: "Removing " + "'" + _containerModel.get(containerList.currentRow, 2) + "'" + " container"
+        informativeText: "The selected container will be removed permanently from your hard drive. Are you sure?"
         icon: StandardIcon.Warning
-        onButtonClicked: console.log ("clicked button " + clickedButton)
-
+        standardButtons: StandardButton.Yes | StandardButton.Abort
+        onYes: _containerModel.removeContainer(containerList.currentRow)
     }
 }

@@ -48,7 +48,7 @@ public:
 
 public slots:
     void addContainer(const QString& name, const QString& path);
-    void deleteContainer(const int row);
+    void removeContainer(const int row);
     QVariant get(const int row, int role) const;
 
 protected:

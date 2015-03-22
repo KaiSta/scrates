@@ -2,13 +2,9 @@ import QtQuick 2.4
 import QtQuick.Controls 1.3
 import QtQuick.Layouts 1.1
 import QtQuick.Controls.Styles 1.2
+import QtQuick.Dialogs 1.2
 
 Item {
-    //width: 640
-    //height: 480
-    //width: parent
-    //height: parent
-
     GridLayout {
         columns: 2
         anchors.top: parent.top
@@ -31,10 +27,10 @@ Item {
         }
 
         TextField {
-            id: passwordInput
+            id: passwordText
             // echoMode: TextInput.Password
             Layout.fillWidth: true
-            onTextChanged: _pwStrengthChecker.calcStrength(passwordInput.text)
+            onTextChanged: _pwStrengthChecker.calcStrength(passwordText.text)
         }
 
         Label {
@@ -69,22 +65,36 @@ Item {
         }
 
         TextField {
+            id: randomSeedText
             Layout.fillWidth: true
         }
 
-        Button {
-            text: qsTr("Press Me 1")
-            onClicked: messageDialog.show(qsTr("Button 1 pressed"))
+        RowLayout {
+            Layout.columnSpan: 2
+            Layout.alignment: Qt.AlignRight
+
+            Button {
+                text: qsTr("Cancel")
+                onClicked: messageDialog.show(qsTr("Button 1 pressed"))
+            }
+
+            Button {
+                text: qsTr("Save")
+                onClicked: messageDialog.show(qsTr("Button 1 pressed"))
+            }
         }
 
+
+
+
         Button {
-            text: qsTr("Add Container to List")
-            onClicked: _containerModel.addContainer("muha", "hello")
+            text: qsTr("Add Container")
+            onClicked: _containerModel.addContainer("cococontainer", "hello")
         }
-        Button {
-            text: qsTr("Delete")
-            // onClicked: messageDialog2.open()
-            onClicked: _containerModel.deleteContainer(containerList.currentRow)
-        }
+
+
     }
+
 }
+
+

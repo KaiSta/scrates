@@ -53,7 +53,7 @@ void ContainerModel::addContainer(const QString& name, const QString& path)
 
 
 
-void ContainerModel::deleteContainer(const int row)
+void ContainerModel::removeContainer(const int row)
 {
     if (row < 0 || row >= containerList_.count())
        return;
@@ -67,6 +67,8 @@ void ContainerModel::deleteContainer(const int row)
    containerList_.removeAt(row);
    endRemoveRows();
    emit (countChanged(rowCount()));
+
+
 }
 
 
