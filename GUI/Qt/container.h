@@ -14,15 +14,20 @@ public:
 
     QString name() const;
     QString path() const;
+    bool isEncrypted() const;
 
 private:
     QString name_;
     QString path_;
+    bool isEncrypted_;
 };
 
 class ContainerModel : public QAbstractListModel
 {
     Q_OBJECT
+    Q_PROPERTY(int count READ rowCount
+                NOTIFY countChanged)
+
 public:
     enum ContainerRoles {
         NameRole = Qt::UserRole + 1,
@@ -38,14 +43,24 @@ public:
 
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
 
+
+
+
 public slots:
     void addContainer(const QString& name, const QString& path);
+    void deleteContainer(const int row);
+    QVariant get(const int row, int role) const;
 
 protected:
     QHash<int, QByteArray> roleNames() const;
+
 private:
     QList<Container> containerList_;
     QMap<QString, Container> containerMap_;
+
+signals :
+ void countChanged(int);
+
 };
 
 #endif // CONTAINER_H

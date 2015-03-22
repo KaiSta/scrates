@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     model.addContainer(Container("Porns", "paaath porns"));
     model.addContainer(Container("Geheim", "eieiei"));
     model.addContainer(Container("Boooobs", "blubberfoo"));
-    engine.rootContext()->setContextProperty("containerModel", &model);
+    engine.rootContext()->setContextProperty("_containerModel", &model);
 
     // Password Strength Checker
     PasswordStrengthChecker pwStrengthChecker;

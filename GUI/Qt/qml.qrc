@@ -2,5 +2,10 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>MainForm.ui.qml</file>
+        <file>ContainerList.qml</file>
+        <file>ContainerNew.qml</file>
+        <file>Welcome.qml</file>
+        <file>ContainerEncrypted.qml</file>
+        <file>ContainerDecrypted.qml</file>
     </qresource>
 </RCC>

@@ -5,12 +5,17 @@ import QtQuick.Dialogs 1.2
 import QtQuick.Layouts 1.1
 
 ApplicationWindow {
+    id: root
     title: qsTr("tempest")
     width: 640
     minimumWidth: 640
     height: 480
     minimumHeight: 480
     visible: true
+
+    property alias containerList: containerTable
+
+
 
     FileDialog {
         id: fileDialog
@@ -51,12 +56,14 @@ ApplicationWindow {
 
             Button {
                 text: qsTr("Add")
+                onClicked: viewLoader.source = "ContainerNew.qml"
             }
             Button {
                 text: qsTr("Refresh")
             }
             Button {
                 text: qsTr("Sync")
+
             }
             Button {
                 text: qsTr("Delete")
@@ -65,11 +72,20 @@ ApplicationWindow {
         }
     }
 
+    // Main Window
     SplitView {
         anchors.fill: parent
 
+        // Displays the local stored container files
         TableView {
-            model: containerModel
+
+        //property TableView containerTable: containerTable
+
+
+
+
+            id: containerTable
+            model: _containerModel
             frameVisible: false
             Layout.minimumWidth: 100
             Layout.maximumWidth: 300
@@ -78,22 +94,15 @@ ApplicationWindow {
                 title: qsTr("Container")
                 role: "name"
             }
+
+
+
+
         }
 
-        /*
-        ListView {
-            highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
-            focus: true
-            model: containerModel
-            delegate: Text { text: "Animal: " + type + ", " + size }
-        }
-        */
-
-        MainForm {
-            button1.onClicked: messageDialog.show(qsTr("Button 1 pressed"))
-            //button2.onClicked: messageDialog.show(qsTr("Button 2 pressed"))
-            button2.onClicked: containerModel.addContainer("muha", "hello")
-            passwordInput.onTextChanged: _pwStrengthChecker.calcStrength(passwordInput.text)
+        Loader {
+            id: viewLoader
+            source: "Welcome.qml"
         }
     }
 
@@ -105,5 +114,16 @@ ApplicationWindow {
             messageDialog.text = caption;
             messageDialog.open();
         }
+    }
+
+    MessageDialog {
+        id: messageDialog2
+        modality: Qt.WindowModal // Qt.NonModal
+        title: "asdadsad"
+        text: "customizeText.checked ? textField.text : "
+        standardButtons: StandardButton.Yes | StandardButton.No | StandardButton.Abort
+        icon: StandardIcon.Warning
+        onButtonClicked: console.log ("clicked button " + clickedButton)
+
     }
 }

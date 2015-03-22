@@ -20,6 +20,11 @@ QString Container::path() const
     return path_;
 }
 
+bool Container::isEncrypted() const
+{
+    return isEncrypted_;
+}
+
 
 
 
@@ -46,10 +51,31 @@ void ContainerModel::addContainer(const QString& name, const QString& path)
     addContainer(Container(name, path));
 }
 
+
+
+void ContainerModel::deleteContainer(const int row)
+{
+    if (row < 0 || row >= containerList_.count())
+       return;
+
+   beginRemoveRows(QModelIndex(), row, row);
+
+   //Models::ListItem *item = containerList_.takeAt(row);
+   //delete item;
+   //item = NULL;
+
+   containerList_.removeAt(row);
+   endRemoveRows();
+   emit (countChanged(rowCount()));
+}
+
+
 int ContainerModel::rowCount(const QModelIndex& parent) const
 {
     Q_UNUSED(parent);
     return containerList_.count();
+
+    // return containerList_.size();
 }
 
 QVariant ContainerModel::data(const QModelIndex& index, int role) const
@@ -64,6 +90,17 @@ QVariant ContainerModel::data(const QModelIndex& index, int role) const
         return container.path();
     return QVariant();
 }
+
+QVariant ContainerModel::get(const int row, int role) const
+{
+    if (row < 0 || row >= containerList_.count())
+        return QVariant();
+
+    const Container &container = containerList_[row];
+    return container.name();
+}
+
+
 
 QHash<int, QByteArray> ContainerModel::roleNames() const
 {
