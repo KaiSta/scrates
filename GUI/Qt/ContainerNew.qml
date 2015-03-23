@@ -20,6 +20,9 @@ Item {
 
         TextField {
             Layout.fillWidth: true
+            validator: RegExpValidator {
+                regExp: /[a-zA-Z0-9_-]*/ // TODO
+            }
         }
 
         Label {
@@ -33,7 +36,6 @@ Item {
 
             onTextChanged: _pwStrengthChecker.calcStrength(passwordText.text)
             validator: RegExpValidator {
-                // regExp: /[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!$%&/()=?+-_,.#<>]*/
                 regExp: /[a-zA-Z0-9!$%&/()=?+-_,.#<>]*/
             }
 

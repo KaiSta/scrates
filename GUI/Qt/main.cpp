@@ -1,7 +1,6 @@
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QtQml>
-#include <QStringListModel>
 
 #include "passwordstrengthchecker.h"
 #include "container.h"
@@ -15,11 +14,8 @@ int main(int argc, char *argv[])
 
 
     // Container ListModel
-    ContainerModel model;
-    model.addContainer(Container("Porns", "paaath porns"));
-    model.addContainer(Container("Geheim", "eieiei"));
-    model.addContainer(Container("Boooobs", "blubberfoo"));
-    engine.rootContext()->setContextProperty("_containerModel", &model);
+    ContainerModel containerModel;
+    engine.rootContext()->setContextProperty("_containerModel", &containerModel);
 
     // Password Strength Checker
     PasswordStrengthChecker pwStrengthChecker;

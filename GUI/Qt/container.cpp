@@ -1,9 +1,8 @@
 #include "container.h"
 
-Container::Container(const QString &name, const QString &path)
-    : name_(name), path_(path)
+Container::Container(const QString &name, const QString &path, bool isEncrypted, bool isSaved)
+    : name_(name), path_(path), isEncrypted_(isEncrypted), isSaved_(isSaved)
 {
-    // read dir
 }
 
 Container::~Container()
@@ -31,6 +30,9 @@ bool Container::isEncrypted() const
 ContainerModel::ContainerModel(QObject *parent)
     : QAbstractListModel(parent)
 {
+    addContainer("foo", "bar");
+    addContainer("sweet cat", "bar");
+    addContainer("hot dog (encrypted)", "bar", true);
 }
 
 ContainerModel::~ContainerModel()
@@ -42,13 +44,11 @@ void ContainerModel::addContainer(const Container &container)
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
     containerList_ << container;
     endInsertRows();
-
-    //containerMap_.insert(container.name(), container);
 }
 
-void ContainerModel::addContainer(const QString& name, const QString& path)
+void ContainerModel::addContainer(const QString& name, const QString& path, bool isEncrypted, bool isSaved)
 {
-    addContainer(Container(name, path));
+    addContainer(Container(name, path, isEncrypted, isSaved));
 }
 
 
@@ -67,8 +67,6 @@ void ContainerModel::removeContainer(const int row)
    containerList_.removeAt(row);
    endRemoveRows();
    emit (countChanged(rowCount()));
-
-
 }
 
 
@@ -76,8 +74,6 @@ int ContainerModel::rowCount(const QModelIndex& parent) const
 {
     Q_UNUSED(parent);
     return containerList_.count();
-
-    // return containerList_.size();
 }
 
 QVariant ContainerModel::data(const QModelIndex& index, int role) const

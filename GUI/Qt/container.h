@@ -8,7 +8,7 @@
 class Container
 {
 public:
-    Container(const QString &name, const QString &path);
+    Container(const QString &name, const QString &path, bool isEncrypted = false, bool isSaved = false);
     ~Container();
 
     QString name() const;
@@ -19,6 +19,7 @@ private:
     QString name_;
     QString path_;
     bool isEncrypted_;
+    bool isSaved_;
 };
 
 class ContainerModel : public QAbstractListModel
@@ -43,7 +44,7 @@ public:
 
 
 public slots:
-    void addContainer(const QString& name, const QString& path);
+    void addContainer(const QString& name, const QString& path, bool isEncrypted = false, bool isSaved = false);
     void removeContainer(const int row);
     QVariant get(const int row, int role) const;
 
@@ -52,6 +53,11 @@ protected:
 
 private:
     QList<Container> containerList_;
+
+    QObjectList qObjectList_;
+    QList<QObject*> qObjectList2_;
+    QList<Container*> qObjectList3_;
+
     QMap<QString, Container> containerMap_;
 
 signals :

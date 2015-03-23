@@ -54,7 +54,10 @@ ApplicationWindow {
 
             Button {
                 text: qsTr("Add")
-                onClicked: viewLoader.source = "ContainerNew.qml"
+                onClicked: {
+                    _containerModel.addContainer("asdsa", "asdas")
+                    viewLoader.source = "ContainerNew.qml"
+                }
             }
 
             Button {
@@ -92,14 +95,23 @@ ApplicationWindow {
 
             id: containerTable
             model: _containerModel
+
             frameVisible: false
             Layout.minimumWidth: 100
             Layout.maximumWidth: 300
+
+            onActivated: {
+                console.log("activated") // WTF
+                console.log(containerList.currentRow)
+                viewLoader.source = "ContainerEncrypted.qml"
+            }
 
             TableViewColumn {
                 title: qsTr("Container")
                 role: "name"
             }
+
+
 
 
 

@@ -1,7 +1,14 @@
 import QtQuick 2.0
 
-Rectangle {
-    width: 100
-    height: 62
+Item {
+
+
+Text {
+    text: _containerModel.get(containerList.currentRow, 2)
+    font.family: "Helvetica"
+    font.pointSize: 24
+    color: "red"
 }
 
+
+}

@@ -5,10 +5,10 @@ Item {
 
 
 Text {
-    text: _containerModel.get(containerList.currentRow, 2)
+    text: "Welcome, Sir!"
     font.family: "Helvetica"
     font.pointSize: 24
-    color: "red"
+
 }
 
 

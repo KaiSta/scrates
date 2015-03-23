@@ -7,7 +7,8 @@ CONFIG += c++11
 
 SOURCES += main.cpp \
     container.cpp \
-    passwordstrengthchecker.cpp
+    passwordstrengthchecker.cpp \
+    randomseedgenerator.cpp
 
 RESOURCES += qml.qrc
 
@@ -19,4 +20,5 @@ include(deployment.pri)
 
 HEADERS += \
     container.h \
-    passwordstrengthchecker.h
+    passwordstrengthchecker.h \
+    randomseedgenerator.h
