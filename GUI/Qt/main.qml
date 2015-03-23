@@ -66,13 +66,14 @@ ApplicationWindow {
 
             Button {
                 text: qsTr("Refresh")
+                // Todo
             }
 
             Item { Layout.fillWidth: true }
 
             Button {
                 text: qsTr("Sync")
-
+                // Todo
             }
         }
     }

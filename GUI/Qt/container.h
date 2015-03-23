@@ -2,7 +2,6 @@
 #define CONTAINER_H
 
 #include <QAbstractListModel>
-#include <QStringList>
 #include <QMap>
 #include <QDebug>
 
@@ -25,8 +24,7 @@ private:
 class ContainerModel : public QAbstractListModel
 {
     Q_OBJECT
-    Q_PROPERTY(int count READ rowCount
-                NOTIFY countChanged)
+    Q_PROPERTY(int count READ rowCount NOTIFY countChanged)
 
 public:
     enum ContainerRoles {
@@ -38,10 +36,8 @@ public:
     ~ContainerModel();
 
     void addContainer(const Container &container);
-
-    int rowCount(const QModelIndex& parent = QModelIndex()) const;
-
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
+    int rowCount(const QModelIndex& parent = QModelIndex()) const;
 
 
 
@@ -59,7 +55,7 @@ private:
     QMap<QString, Container> containerMap_;
 
 signals :
- void countChanged(int);
+    void countChanged(int);
 
 };
 

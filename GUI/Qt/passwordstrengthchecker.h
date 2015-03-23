@@ -13,7 +13,7 @@
 class PasswordStrengthChecker : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(double strength READ getStrength NOTIFY strengthChanged)
+    Q_PROPERTY(double strength READ strength NOTIFY strengthChanged)
     Q_PROPERTY(QString message READ getMessage NOTIFY messageChanged)
     Q_PROPERTY(QColor color READ getColor NOTIFY colorChanged)
 
@@ -23,7 +23,7 @@ public:
     PasswordStrengthChecker& operator= (const PasswordStrengthChecker& checker) = delete;
     ~PasswordStrengthChecker();
 
-    double getStrength() const;
+    double strength() const;
     QString getMessage() const;
     QColor getColor() const;
 

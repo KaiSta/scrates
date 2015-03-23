@@ -30,7 +30,13 @@ Item {
             id: passwordText
             // echoMode: TextInput.Password
             Layout.fillWidth: true
+
             onTextChanged: _pwStrengthChecker.calcStrength(passwordText.text)
+            validator: RegExpValidator {
+                // regExp: /[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!$%&/()=?+-_,.#<>]*/
+                regExp: /[a-zA-Z0-9!$%&/()=?+-_,.#<>]*/
+            }
+
         }
 
         Label {
@@ -68,6 +74,25 @@ Item {
             id: randomSeedText
             Layout.fillWidth: true
         }
+
+        Label {
+            text: qsTr("Container Path:")
+        }
+
+        RowLayout {
+            TextField {
+                id: containerPathText
+                Layout.fillWidth: true
+            }
+
+            Button {
+                text: qsTr("...")
+                onClicked: messageDialog.show(qsTr("Button 1 pressed"))
+            }
+
+        }
+
+
 
         RowLayout {
             Layout.columnSpan: 2

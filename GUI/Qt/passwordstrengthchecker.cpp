@@ -111,7 +111,7 @@ void PasswordStrengthChecker::calcStrength(const QString &str)
     emit PasswordStrengthChecker::colorChanged();
 }
 
-double PasswordStrengthChecker::getStrength() const
+double PasswordStrengthChecker::strength() const
 {
     return strength_;
 }
