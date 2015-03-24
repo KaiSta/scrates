@@ -38,7 +38,6 @@ Item {
             validator: RegExpValidator {
                 regExp: /[a-zA-Z0-9!$%&/()=?+-_,.#<>]*/
             }
-
         }
 
         Label {
@@ -91,10 +90,7 @@ Item {
                 text: qsTr("...")
                 onClicked: messageDialog.show(qsTr("Button 1 pressed"))
             }
-
         }
-
-
 
         RowLayout {
             Layout.columnSpan: 2
@@ -110,18 +106,5 @@ Item {
                 onClicked: messageDialog.show(qsTr("Button 1 pressed"))
             }
         }
-
-
-
-
-        Button {
-            text: qsTr("Add Container")
-            onClicked: _containerModel.addContainer("cococontainer", "hello")
-        }
-
-
     }
-
 }
-
-
