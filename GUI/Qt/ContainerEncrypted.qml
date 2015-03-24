@@ -1,13 +1,15 @@
 import QtQuick 2.0
+import QtQuick.Layouts 1.1
+import QtQuick.Controls 1.2
 
 Item {
 
 
-Text {
-    text: _containerModel.get(containerList.currentRow, 2)
-    font.family: "Helvetica"
-    font.pointSize: 24
-    color: "red"
+RowLayout {
+    TextField {
+        text:_containerModel.get(containerList.currentRow).name
+        onTextChanged: _containerModel.get(containerList.currentRow).name = text
+    }
 }
 
 

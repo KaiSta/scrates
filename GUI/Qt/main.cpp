@@ -12,7 +12,6 @@ int main(int argc, char *argv[])
 
     //qmlRegisterType<Container>("io.tempest.Container", 1, 0, "Container");
 
-
     // Container ListModel
     ContainerModel containerModel;
     engine.rootContext()->setContextProperty("_containerModel", &containerModel);

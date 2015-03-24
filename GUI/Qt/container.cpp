@@ -1,109 +1,133 @@
 #include "container.h"
 
-Container::Container(const QString &name, const QString &path, bool isEncrypted, bool isSaved)
-    : name_(name), path_(path), isEncrypted_(isEncrypted), isSaved_(isSaved)
-{
-}
+ContainerObject::ContainerObject(QObject* parent) : QObject(parent)
+{ }
 
-Container::~Container()
-{
-}
+ContainerObject::ContainerObject(const QString& name, const QString& path, bool encrypted, QObject* parent)
+    : QObject(parent), name_(name), path_(path), encrypted_(encrypted)
+{ }
 
-QString Container::name() const
+ContainerObject::~ContainerObject()
+{ }
+
+QString ContainerObject::name() const
 {
     return name_;
 }
 
-QString Container::path() const
+void ContainerObject::setName(const QString& name)
+{
+    if (name != name_)
+    {
+        name_ = name;
+        emit nameChanged();
+    }
+}
+
+QString ContainerObject::path() const
 {
     return path_;
 }
 
-bool Container::isEncrypted() const
+void ContainerObject::setPath(const QString& path)
 {
-    return isEncrypted_;
+    if (path != path_)
+    {
+        path_ = path;
+        emit pathChanged();
+    }
+}
+
+bool ContainerObject::isEncrypted() const
+{
+    return encrypted_;
+}
+
+void ContainerObject::setEncrypted(bool encrypted)
+{
+    if (encrypted != encrypted_)
+    {
+        encrypted_ = encrypted;
+        emit encryptedChanged();
+    }
 }
 
 
 
 
-ContainerModel::ContainerModel(QObject *parent)
+
+
+
+
+
+
+
+
+
+
+ContainerModel::ContainerModel(QObject* parent)
     : QAbstractListModel(parent)
 {
-    addContainer("foo", "bar");
-    addContainer("sweet cat", "bar");
-    addContainer("hot dog (encrypted)", "bar", true);
+    add(new ContainerObject("yeah, test container"));
 }
 
 ContainerModel::~ContainerModel()
-{
-}
-
-void ContainerModel::addContainer(const Container &container)
-{
-    beginInsertRows(QModelIndex(), rowCount(), rowCount());
-    containerList_ << container;
-    endInsertRows();
-}
-
-void ContainerModel::addContainer(const QString& name, const QString& path, bool isEncrypted, bool isSaved)
-{
-    addContainer(Container(name, path, isEncrypted, isSaved));
-}
-
-
-
-void ContainerModel::removeContainer(const int row)
-{
-    if (row < 0 || row >= containerList_.count())
-       return;
-
-   beginRemoveRows(QModelIndex(), row, row);
-
-   //Models::ListItem *item = containerList_.takeAt(row);
-   //delete item;
-   //item = NULL;
-
-   containerList_.removeAt(row);
-   endRemoveRows();
-   emit (countChanged(rowCount()));
-}
-
+{ }
 
 int ContainerModel::rowCount(const QModelIndex& parent) const
 {
     Q_UNUSED(parent);
-    return containerList_.count();
+    return containerList_.size();
 }
 
 QVariant ContainerModel::data(const QModelIndex& index, int role) const
 {
-    if (index.row() < 0 || index.row() >= containerList_.count())
+    if (index.row() < 0 || index.row() >= containerList_.size())
         return QVariant();
 
-    const Container &container = containerList_[index.row()];
-    if (role == NameRole)
-        return container.name();
-    else if (role == PathRole)
-        return container.path();
+    if (role == ObjectRole)
+        return QVariant::fromValue(containerList_.at(index.row()));
+
     return QVariant();
 }
-
-QVariant ContainerModel::get(const int row, int role) const
-{
-    if (row < 0 || row >= containerList_.count())
-        return QVariant();
-
-    const Container &container = containerList_[row];
-    return container.name();
-}
-
-
 
 QHash<int, QByteArray> ContainerModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
-    roles[NameRole] = "name";
-    roles[PathRole] = "path";
+    roles[ObjectRole] = "obj";
     return roles;
+}
+
+ContainerObject* ContainerModel::get(const int idx) const
+{
+    if (idx < 0 || idx >= containerList_.size())
+        return 0;
+
+    return containerList_.at(idx);
+}
+
+void ContainerModel::add(ContainerObject* container)
+{
+    beginInsertRows(QModelIndex(), rowCount(), rowCount());
+    containerList_.append(container);
+    endInsertRows();
+    emit countChanged();
+}
+
+void ContainerModel::add(const QString& name /*TODO*/)
+{
+    add(new ContainerObject(name));
+}
+
+void ContainerModel::remove(int idx)
+{
+    if (idx < 0 || idx >= containerList_.size())
+       return;
+
+    beginRemoveRows(QModelIndex(), idx, idx);
+    ContainerObject* container = containerList_.takeAt(idx);
+    delete container;
+    container = NULL;
+    endRemoveRows();
+    emit countChanged(/*rowCount()*/);
 }

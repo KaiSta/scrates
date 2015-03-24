@@ -56,7 +56,8 @@ ApplicationWindow {
                 text: qsTr("New")
                 tooltip: qsTr("Create a new container")
                 onClicked: {
-                    _containerModel.addContainer("asdsa", "asdas")
+                    //_containerModel.addContainer("asdsa", "asdas")
+                    _containerModel.add("new container")
                     viewLoader.source = "ContainerNew.qml"
                 }
             }
@@ -110,10 +111,7 @@ ApplicationWindow {
             Layout.maximumWidth: 300
 
             onActivated: {
-                console.log("activated") // WTF
-                console.log(containerList.currentRow)
                 viewLoader.source = "ContainerEncrypted.qml"
-                console.log(_containerModel.get(1, "name"))
             }
 
             TableViewColumn {
@@ -149,10 +147,11 @@ ApplicationWindow {
         id: removeContainerMsgDialog
         modality: Qt.WindowModal
         title: "Removing selected container"
-        text: "Removing " + "'" + _containerModel.get(containerList.currentRow, 2) + "'" + " container"
+        // text: "Removing " + "'" + _containerModel.get(containerList.currentRow, 2) + "'" + " container"
+        text: "Removing container"
         informativeText: "The selected container will be removed permanently from your hard drive. Are you sure?"
         icon: StandardIcon.Warning
         standardButtons: StandardButton.Yes | StandardButton.Abort
-        onYes: _containerModel.removeContainer(containerList.currentRow)
+        onYes: _containerModel.remove(containerList.currentRow)
     }
 }

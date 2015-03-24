@@ -2,67 +2,73 @@
 #define CONTAINER_H
 
 #include <QAbstractListModel>
-#include <QMap>
+#include <QObject>
 #include <QDebug>
 
-class Container
+class ContainerObject : public QObject
 {
+    Q_OBJECT
+    Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
+    Q_PROPERTY(QString path READ path WRITE setPath NOTIFY pathChanged)
+    Q_PROPERTY(bool encrypted READ isEncrypted WRITE setEncrypted NOTIFY encryptedChanged)
 public:
-    Container(const QString &name, const QString &path, bool isEncrypted = false, bool isSaved = false);
-    ~Container();
+    ContainerObject(QObject* parent = 0);
+    ContainerObject(const QString& name,
+                    const QString& path = QString(),
+                    bool encrypted = false,
+                    QObject* parent = 0);
+    ~ContainerObject();
 
     QString name() const;
+    void setName(const QString& name);
     QString path() const;
+    void setPath(const QString& path);
     bool isEncrypted() const;
-
+    void setEncrypted(bool encrypted);
+signals:
+    void nameChanged();
+    void pathChanged();
+    void encryptedChanged();
 private:
     QString name_;
     QString path_;
-    bool isEncrypted_;
-    bool isSaved_;
+    bool encrypted_;
 };
 
 class ContainerModel : public QAbstractListModel
 {
     Q_OBJECT
+    Q_DISABLE_COPY(ContainerModel)
     Q_PROPERTY(int count READ rowCount NOTIFY countChanged)
 
 public:
     enum ContainerRoles {
-        NameRole = Qt::UserRole + 1,
-        PathRole
+        ObjectRole = Qt::UserRole + 1
     };
 
-    ContainerModel(QObject *parent = 0);
+    ContainerModel(QObject* parent = 0);
     ~ContainerModel();
 
-    void addContainer(const Container &container);
-    QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
+    // Reimplemented methods
     int rowCount(const QModelIndex& parent = QModelIndex()) const;
+    QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
 
-
-
+    // Additional QML API
+    Q_INVOKABLE ContainerObject* get(int idx/*const QModelIndex& index*/) const;
+    Q_INVOKABLE void add(ContainerObject* container);
+    Q_INVOKABLE void add(const QString& name /*TODO*/);
+    Q_INVOKABLE void remove(int idx);
 
 public slots:
-    void addContainer(const QString& name, const QString& path, bool isEncrypted = false, bool isSaved = false);
-    void removeContainer(const int row);
-    QVariant get(const int row, int role) const;
 
 protected:
     QHash<int, QByteArray> roleNames() const;
 
 private:
-    QList<Container> containerList_;
-
-    QObjectList qObjectList_;
-    QList<QObject*> qObjectList2_;
-    QList<Container*> qObjectList3_;
-
-    QMap<QString, Container> containerMap_;
+    QList<ContainerObject*> containerList_;
 
 signals :
-    void countChanged(int);
-
+    void countChanged(/*int*/);
 };
 
 #endif // CONTAINER_H
