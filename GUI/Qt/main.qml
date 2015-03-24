@@ -53,7 +53,8 @@ ApplicationWindow {
             anchors.fill: parent
 
             Button {
-                text: qsTr("Add")
+                text: qsTr("New")
+                tooltip: qsTr("Create a new container")
                 onClicked: {
                     _containerModel.addContainer("asdsa", "asdas")
                     viewLoader.source = "ContainerNew.qml"
@@ -61,15 +62,23 @@ ApplicationWindow {
             }
 
             Button {
-                text: qsTr("Remove")
-                onClicked: removeContainerMsgDialog.open()
-                enabled: (containerList.currentRow > -1 & containerList.currentRow < containerList.rowCount ? true : false)
-                // Damn it! After removing the last row (of containerList) no item is selected.
+                text: qsTr("Import")
+                tooltip: qsTr("Import an existing container")
+                // TODO
             }
 
             Button {
                 text: qsTr("Refresh")
+                tooltip: qsTr("Refresh the container list")
                 // Todo
+            }
+
+            Button {
+                text: qsTr("Remove")
+                tooltip: qsTr("Remove the selected container")
+                onClicked: removeContainerMsgDialog.open()
+                enabled: (containerList.currentRow > -1 & containerList.currentRow < containerList.rowCount ? true : false)
+                // Damn it! After removing the last row (of containerList) no item is selected.
             }
 
             Item { Layout.fillWidth: true }
@@ -104,6 +113,7 @@ ApplicationWindow {
                 console.log("activated") // WTF
                 console.log(containerList.currentRow)
                 viewLoader.source = "ContainerEncrypted.qml"
+                console.log(_containerModel.get(1, "name"))
             }
 
             TableViewColumn {
