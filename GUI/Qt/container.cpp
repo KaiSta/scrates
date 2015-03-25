@@ -3,8 +3,8 @@
 ContainerObject::ContainerObject(QObject* parent) : QObject(parent)
 { }
 
-ContainerObject::ContainerObject(const QString& name, const QString& path, bool encrypted, QObject* parent)
-    : QObject(parent), name_(name), path_(path), encrypted_(encrypted)
+ContainerObject::ContainerObject(const QString& name, const QString& path, const QString& password, bool encrypted, QObject* parent)
+    : QObject(parent), name_(name), path_(path), password_(password), encrypted_(encrypted)
 { }
 
 ContainerObject::~ContainerObject()
@@ -35,6 +35,20 @@ void ContainerObject::setPath(const QString& path)
     {
         path_ = path;
         emit pathChanged();
+    }
+}
+
+QString ContainerObject::password() const
+{
+    return password_;
+}
+
+void ContainerObject::setPassword(const QString& password)
+{
+    if (password != password_)
+    {
+        password_ = password;
+        emit passwordChanged();
     }
 }
 
@@ -69,6 +83,7 @@ ContainerModel::ContainerModel(QObject* parent)
     : QAbstractListModel(parent)
 {
     add(new ContainerObject("yeah, test container"));
+    add(new ContainerObject("true one", "", "", true));
 }
 
 ContainerModel::~ContainerModel()

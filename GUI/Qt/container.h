@@ -10,11 +10,13 @@ class ContainerObject : public QObject
     Q_OBJECT
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(QString path READ path WRITE setPath NOTIFY pathChanged)
+    Q_PROPERTY(QString password READ password WRITE setPassword NOTIFY passwordChanged)
     Q_PROPERTY(bool encrypted READ isEncrypted WRITE setEncrypted NOTIFY encryptedChanged)
 public:
     ContainerObject(QObject* parent = 0);
     ContainerObject(const QString& name,
                     const QString& path = QString(),
+                    const QString& password = QString(),
                     bool encrypted = false,
                     QObject* parent = 0);
     ~ContainerObject();
@@ -25,13 +27,17 @@ public:
     void setPath(const QString& path);
     bool isEncrypted() const;
     void setEncrypted(bool encrypted);
+    QString password() const;
+    void setPassword(const QString& password);
 signals:
     void nameChanged();
     void pathChanged();
+    void passwordChanged();
     void encryptedChanged();
 private:
     QString name_;
     QString path_;
+    QString password_;
     bool encrypted_;
 };
 
@@ -66,6 +72,7 @@ protected:
 
 private:
     QList<ContainerObject*> containerList_;
+    ContainerObject* currentContainer_;
 
 signals :
     void countChanged(/*int*/);
