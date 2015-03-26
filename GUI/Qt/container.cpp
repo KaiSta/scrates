@@ -146,3 +146,17 @@ void ContainerModel::remove(int idx)
     endRemoveRows();
     emit countChanged(/*rowCount()*/);
 }
+
+
+void ContainerModel::setCurrentContainer(int idx)
+{
+    if (idx < 0 || idx >= containerList_.size())
+        currentContainer_ = NULL;
+    else
+        currentContainer_ = containerList_.at(idx);
+}
+
+ContainerObject* ContainerModel::currentContainer()
+{
+    return currentContainer_;
+}

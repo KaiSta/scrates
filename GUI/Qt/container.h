@@ -12,6 +12,7 @@ class ContainerObject : public QObject
     Q_PROPERTY(QString path READ path WRITE setPath NOTIFY pathChanged)
     Q_PROPERTY(QString password READ password WRITE setPassword NOTIFY passwordChanged)
     Q_PROPERTY(bool encrypted READ isEncrypted WRITE setEncrypted NOTIFY encryptedChanged)
+    // TODO: HistoryList (QStringList)
 public:
     ContainerObject(QObject* parent = 0);
     ContainerObject(const QString& name,
@@ -19,6 +20,13 @@ public:
                     const QString& password = QString(),
                     bool encrypted = false,
                     QObject* parent = 0);
+
+    bool operator==(const ContainerObject& container) const
+    {
+        return (name_ == container.name_);
+    }
+
+
     ~ContainerObject();
 
     QString name() const;
@@ -64,6 +72,9 @@ public:
     Q_INVOKABLE void add(ContainerObject* container);
     Q_INVOKABLE void add(const QString& name /*TODO*/);
     Q_INVOKABLE void remove(int idx);
+
+    Q_INVOKABLE ContainerObject* currentContainer();
+    Q_INVOKABLE void setCurrentContainer(int idx);
 
 public slots:
 
