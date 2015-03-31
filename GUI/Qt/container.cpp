@@ -66,14 +66,45 @@ void ContainerObject::setEncrypted(bool encrypted)
     }
 }
 
+QString ContainerObject::history() const
+{
+    return history_;
+}
+
+void ContainerObject::setHistory(const QString& entry)
+{
+    if (entry.length())
+        history_.append(entry + "\n\n");
+    else
+        history_ = QString();
+    emit historyChanged();
+}
+
+void ContainerObject::exportHistory(const QString &url)
+{
 
 
+}
 
 
+bool ContainerObject::encrypt(const QString& password)
+{
+    // TODO
+    // if password == password_
+    // setEncrypted(false)
+
+    return false;
+}
 
 
+void ContainerObject::openDirectory(const QString& url)
+{
+    if (url.length())
+        QDesktopServices::openUrl(QUrl(url, QUrl::TolerantMode));
+    else
+        QDesktopServices::openUrl(QUrl(path_, QUrl::TolerantMode));
 
-
+}
 
 
 
@@ -82,8 +113,12 @@ void ContainerObject::setEncrypted(bool encrypted)
 ContainerModel::ContainerModel(QObject* parent)
     : QAbstractListModel(parent)
 {
-    add(new ContainerObject("yeah, test container"));
-    add(new ContainerObject("true one", "", "", true));
+    add(new ContainerObject("Container0", "file:///Users/jochen/Desktop", "", false));
+    add(new ContainerObject("Container1", "file:///Users/jochen/Desktop", "", true));
+    add(new ContainerObject("Container2", "file:///Users/jochen/Desktop", "", true));
+    add(new ContainerObject("Container3", "file:///Users/jochen/Desktop", "", false));
+
+    // TODO: load container on startup
 }
 
 ContainerModel::~ContainerModel()
@@ -92,7 +127,7 @@ ContainerModel::~ContainerModel()
 int ContainerModel::rowCount(const QModelIndex& parent) const
 {
     Q_UNUSED(parent);
-    return containerList_.size();
+    return containerList_.size(); //.count()
 }
 
 QVariant ContainerModel::data(const QModelIndex& index, int role) const
@@ -121,17 +156,21 @@ ContainerObject* ContainerModel::get(const int idx) const
     return containerList_.at(idx);
 }
 
-void ContainerModel::add(ContainerObject* container)
+bool ContainerModel::add(ContainerObject* container)
 {
+    if (contains(container))
+        return false;
+
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
     containerList_.append(container);
     endInsertRows();
     emit countChanged();
+    return true;
 }
 
-void ContainerModel::add(const QString& name /*TODO*/)
+bool ContainerModel::add(const QString& name, const QString& path, const QString& password, bool encrypted)
 {
-    add(new ContainerObject(name));
+    return add(new ContainerObject(name, path, password, encrypted));
 }
 
 void ContainerModel::remove(int idx)
@@ -147,7 +186,6 @@ void ContainerModel::remove(int idx)
     emit countChanged(/*rowCount()*/);
 }
 
-
 void ContainerModel::setCurrentContainer(int idx)
 {
     if (idx < 0 || idx >= containerList_.size())
@@ -159,4 +197,15 @@ void ContainerModel::setCurrentContainer(int idx)
 ContainerObject* ContainerModel::currentContainer()
 {
     return currentContainer_;
+}
+
+bool ContainerModel::contains(ContainerObject *container)
+{
+    QListIterator<ContainerObject*> iter(containerList_);
+    while (iter.hasNext())
+    {
+        if (container->name() == iter.next()->name())
+            return true;
+    }
+    return false;
 }
