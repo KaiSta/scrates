@@ -6,9 +6,9 @@ QT += qml quick widgets
 CONFIG += c++11
 
 SOURCES += main.cpp \
-    container.cpp \
-    passwordstrengthchecker.cpp \
-    randomseedgenerator.cpp
+    Models/container.cpp \
+    Models/passwordstrengthchecker.cpp \
+    Models/randomseedgenerator.cpp
 
 RESOURCES += qml.qrc
 
@@ -19,6 +19,6 @@ QML_IMPORT_PATH =
 include(deployment.pri)
 
 HEADERS += \
-    container.h \
-    passwordstrengthchecker.h \
-    randomseedgenerator.h
+    Models/container.h \
+    Models/passwordstrengthchecker.h \
+    Models/randomseedgenerator.h

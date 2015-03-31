@@ -2,8 +2,8 @@
 #include <QQmlApplicationEngine>
 #include <QtQml>
 #include <QSettings>
-#include "passwordstrengthchecker.h"
-#include "container.h"
+#include "Models/container.h"
+#include "Models/passwordstrengthchecker.h"
 
 int main(int argc, char *argv[])
 {
@@ -28,15 +28,13 @@ int main(int argc, char *argv[])
     PasswordStrengthCheckerModel pwStrengthCheckerModel;
     engine.rootContext()->setContextProperty("_pwStrengthCheckerModel", &pwStrengthCheckerModel);
 
-    //qmlRegisterType<Container>("io.tempest.Container", 1, 0, "Container");
     qmlRegisterType<ContainerObject>("tempest.Container", 1, 0, "Container");
-
 
     //#ifdef Q_OS_OSX
     //#endif
     // #ifdef Q_OS_WIN
     // #ifdef Q_OS_LINUX
 
-    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+    engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
     return app.exec();
 }
