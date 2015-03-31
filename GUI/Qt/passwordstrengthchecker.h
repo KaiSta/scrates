@@ -1,52 +1,46 @@
-#ifndef PASSWORDSTRENGTHCHECKER_H
-#define PASSWORDSTRENGTHCHECKER_H
+#pragma once
 
 #include <QObject>
 #include <QString>
 #include <QColor>
-#include <QDebug>
-
 #include <ctype.h>
 #include <math.h>
 #include <algorithm>
 
-class PasswordStrengthChecker : public QObject
+class PasswordStrengthChecker
 {
-    Q_OBJECT
-    Q_PROPERTY(double strength READ strength NOTIFY strengthChanged)
-    Q_PROPERTY(QString message READ getMessage NOTIFY messageChanged)
-    Q_PROPERTY(QColor color READ getColor NOTIFY colorChanged)
-
 public:
-    explicit PasswordStrengthChecker(QObject *parent = 0);
+    PasswordStrengthChecker();
     PasswordStrengthChecker(const PasswordStrengthChecker& checker) = delete;
     PasswordStrengthChecker& operator= (const PasswordStrengthChecker& checker) = delete;
     ~PasswordStrengthChecker();
+    double calculateNormalizedStrength(const QString& str);
+private:
+    // static const std::string ALPHABETIC_LOWER;
+    size_t calculatePossibilities(const std::string& pw);
+    size_t calculateEntropy(size_t possibilities, size_t length);
+    double normalizeEntropy(double entropy, double maximum = 256.0);
+};
 
+class PasswordStrengthCheckerModel : public QObject
+{
+    Q_OBJECT
+    Q_PROPERTY(double strength READ strength NOTIFY strengthChanged)
+    Q_PROPERTY(QString message READ message NOTIFY messageChanged)
+    Q_PROPERTY(QColor color READ color NOTIFY colorChanged)
+public:
+    explicit PasswordStrengthCheckerModel(QObject *parent = 0);
+    ~PasswordStrengthCheckerModel();
+    Q_INVOKABLE void calcStrength(const QString &str);
     double strength() const;
-    QString getMessage() const;
-    QColor getColor() const;
-
+    QString message() const;
+    QColor color() const;
 signals:
     void strengthChanged();
     void messageChanged();
     void colorChanged();
-
-public slots:
-    void calcStrength(const QString &str);
-
 private:
-    // Calculates and returns the possibilities
-    size_t calcPossibilities(const std::string &pw);
-
-    // Calculates and returns the entropy
-    size_t calcEntropy(const size_t possibilities, const size_t length);
-
-    // static const std::string ALPHABETIC_LOWER;
-
     double strength_;
     QString message_;
     QColor color_;
 };
-
-#endif // PASSWORDSTRENGTHCHECKER_H
