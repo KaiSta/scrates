@@ -6,5 +6,7 @@
         <file>Welcome.qml</file>
         <file>ContainerEncrypted.qml</file>
         <file>ContainerDecrypted.qml</file>
+        <file>NewContainerDialog.qml</file>
+        <file>MessageBar.qml</file>
     </qresource>
 </RCC>

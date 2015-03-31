@@ -3,6 +3,7 @@ import QtQuick.Controls 1.3
 import QtQuick.Window 2.2
 import QtQuick.Dialogs 1.2
 import QtQuick.Layouts 1.1
+import Qt.labs.settings 1.0
 
 ApplicationWindow {
     id: root
@@ -13,13 +14,37 @@ ApplicationWindow {
     minimumHeight: 480
     visible: true
 
+    Settings {
+        // property alias x: root.x
+        // property alias y: root.y
+        property alias width: root.width
+        property alias height: root.height
+    }
+
     property alias containerList: containerTable
+
+    onClosing: {
+        // TODO:
+        // - save QDir List of all Container files
+    }
 
     FileDialog {
         id: fileDialog
+        title: "TODO"
+        modality: Qt.NonModal
         folder: "file:///Users"
         selectFolder: true
-        onAccepted: messageDialog.show(fileUrl);
+        onAccepted: console.log(fileUrl)
+    }
+
+    FileDialog {
+        id: importContainerFileDialog
+        title: "Import"
+        modality: Qt.NonModal
+        folder: "file:///Users"
+        nameFilters: [ "Image files (*.png *.jpg)", "All files (*)" ]
+        selectedNameFilter: "Image files (*.png *.jpg)"
+        onAccepted: console.log(fileUrl)
     }
 
     Action {
@@ -38,8 +63,20 @@ ApplicationWindow {
             }
             MenuItem {
                 text: qsTr("&New Container")
-                onTriggered: messageDialog.show(qsTr("Open action triggered"));
+                shortcut: "Ctrl+N"
+                // onTriggered: TODO
             }
+            MenuSeparator { }
+            MenuItem {
+                text: qsTr("&Import")
+                shortcut: "Ctrl+I"
+                onTriggered: importContainerFileDialog.open()
+            }
+            MenuItem {
+                text: qsTr("&Export")
+                shortcut: "Ctrl+E"
+            }
+            MenuSeparator { }
             MenuItem {
                 text: qsTr("E&xit")
                 onTriggered: Qt.quit();
@@ -52,12 +89,11 @@ ApplicationWindow {
             width: parent.width
             anchors.fill: parent
 
-            Button {
-                text: qsTr("New")
+            Button /*ToolButton*/ {
+                text: qsTr("+")
                 tooltip: qsTr("Create a new container")
                 onClicked: {
-                    //_containerModel.addContainer("asdsa", "asdas")
-                    _containerModel.add("new container")
+                    //test.open()
                     viewLoader.source = "ContainerNew.qml"
                 }
             }
@@ -65,7 +101,7 @@ ApplicationWindow {
             Button {
                 text: qsTr("Import")
                 tooltip: qsTr("Import an existing container")
-                // TODO
+                onClicked: messageDialog.open()
             }
 
             Button {
@@ -74,56 +110,63 @@ ApplicationWindow {
                 // Todo
             }
 
+            Item { Layout.fillWidth: true }
+
             Button {
                 text: qsTr("Remove")
                 tooltip: qsTr("Remove the selected container")
                 onClicked: removeContainerMsgDialog.open()
                 enabled: (containerList.currentRow > -1 & containerList.currentRow < containerList.rowCount ? true : false)
-                // Damn it! After removing the last row (of containerList) no item is selected.
+                // Damn it! After removing the last row (of containerList) no item is selected (visually)
             }
 
-            Item { Layout.fillWidth: true }
+            Button {
+                text: qsTr("Show")
+                tooltip: qsTr("Open container directory")
+                onClicked: _containerModel.currentContainer().openDirectory()
+                enabled: (containerList.currentRow > -1 & containerList.currentRow < containerList.rowCount ? true : false)
+            }
 
             Button {
                 text: qsTr("Sync")
-                // Todo
+                // TODO
             }
         }
+    }
+
+
+    // In progress. TODO.
+    MessageBar {
+
     }
 
     // Main Window
     SplitView {
         anchors.fill: parent
 
-        // Displays the local stored container files
         TableView {
-
-
-
-
-
-
             id: containerTable
             model: _containerModel
-
             frameVisible: false
-            Layout.minimumWidth: 100
+            Layout.minimumWidth: 180
             Layout.maximumWidth: 300
-
+            onModelChanged: {
+                if (_containerModel)
+                    _containerModel.setCurrentContainer(-1)
+            }
+            onClicked: {
+                _containerModel.setCurrentContainer(containerList.currentRow)
+                viewLoader.source = getMainView()
+            }
             onActivated: {
-                viewLoader.source = "ContainerEncrypted.qml"
+                _containerModel.setCurrentContainer(containerList.currentRow)
+                viewLoader.source = getMainView()
             }
 
             TableViewColumn {
-                title: qsTr("Container")
+                title: qsTr("Container (" + containerList.rowCount + ")")
                 role: "name"
             }
-
-
-
-
-
-
         }
 
         Loader {
@@ -146,12 +189,34 @@ ApplicationWindow {
     MessageDialog {
         id: removeContainerMsgDialog
         modality: Qt.WindowModal
-        title: "Removing selected container"
-        // text: "Removing " + "'" + _containerModel.get(containerList.currentRow, 2) + "'" + " container"
-        text: "Removing container"
+        title: qsTr("Removing selected container")
+        text: qsTr("Removing container")
         informativeText: "The selected container will be removed permanently from your hard drive. Are you sure?"
         icon: StandardIcon.Warning
-        standardButtons: StandardButton.Yes | StandardButton.Abort
-        onYes: _containerModel.remove(containerList.currentRow)
+        standardButtons: StandardButton.Yes | StandardButton.No
+        onYes: {
+            _containerModel.remove(containerList.currentRow)
+            viewLoader.source = "Welcome.qml"
+        }
+    }
+
+    NewContainerDialog {
+        id: test
+    }
+
+    function getMainView()
+    {
+        var qml = "Welcome.qml"
+        if (containerList.currentRow < 0)
+            return qml
+
+        var container = _containerModel.get(containerList.currentRow)
+
+        if (container.encrypted)
+            qml = "ContainerEncrypted.qml"
+        else
+            qml = "ContainerDecrypted.qml"
+
+        return qml
     }
 }

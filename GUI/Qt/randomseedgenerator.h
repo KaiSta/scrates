@@ -1,9 +1,8 @@
-#ifndef RANDOMSEEDGENERATOR_H
-#define RANDOMSEEDGENERATOR_H
+#pragma once
 
 #include <QObject>
 
-class RandomSeedGenerator : QObject
+class RandomSeedGenerator
 {
 
 public:
@@ -11,4 +10,17 @@ public:
     ~RandomSeedGenerator();
 };
 
-#endif // RANDOMSEEDGENERATOR_H
+/*
+class RandomSeedGeneratorModel : public QObject
+{
+    Q_OBJECT
+    //Q_PROPERTY(QString seed READ seed WRITE setSeed NOTIFY seedChanged)
+public:
+    RandomSeedGeneratorModel(QObject* parent = 0);
+    ~RandomSeedGeneratorModel();
+signals:
+    //void seedChanged();
+private:
+
+};
+*/
