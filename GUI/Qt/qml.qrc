@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml/ContainerDecrypted.qml</file>
+        <file>qml/ContainerEncrypted.qml</file>
+        <file>qml/ContainerNew.qml</file>
+        <file>qml/main.qml</file>
+        <file>qml/MessageBar.qml</file>
+        <file>qml/NewContainerDialog.qml</file>
+        <file>qml/Welcome.qml</file>
+    </qresource>
+</RCC>
