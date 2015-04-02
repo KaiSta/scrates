@@ -39,6 +39,8 @@
 lib/cryptopp
 lib/pugixml
 lib/wxwidget
+lib/poco
+delivery/includecopy
 
 *.opensdf
 crypt.v12.suo
