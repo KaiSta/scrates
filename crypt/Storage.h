@@ -19,12 +19,14 @@ public:
 	};
 	struct volume_handle
 	{
-		HANDLE handle;
+		
 		std::string path;
 		std::string drive_letter;
 		bool is_open;
 		store_t type;
 
+#ifdef _WIN32
+		HANDLE handle;
 		void close()
 		{
 			CloseHandle(handle);
@@ -34,6 +36,15 @@ public:
 			drive_letter(), is_open(false)
 		{
 		}
+#else
+		void close()
+		{
+
+		}
+		volume_handle() : path(), drive_letter(), is_open(false)
+		{
+		}
+#endif
 	};
 
 	virtual ~Storage(){}
