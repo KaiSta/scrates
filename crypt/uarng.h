@@ -2,8 +2,8 @@
 
 
 #include <stdint.h>
-#include <cryptopp\cryptlib.h>
-#include <cryptopp\secblock.h>
+#include <cryptopp/cryptlib.h>
+#include <cryptopp/secblock.h>
 /**
   \brief User-assisted random number generator.
 */

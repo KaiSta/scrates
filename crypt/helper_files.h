@@ -2,17 +2,17 @@
 
 #include <string>
 #include "FileSystem.h"
-#include <cryptopp\cryptlib.h>
-#include <cryptopp\files.h>
-#include <cryptopp\filters.h>
-#include <cryptopp\crc.h>
-#include <cryptopp\hex.h>
-#include <cryptopp\serpent.h>
-#include <cryptopp\twofish.h>
-#include <cryptopp\aes.h>
-#include <cryptopp\osrng.h>
-#include <cryptopp\zlib.h>
-#include <cryptopp\secblock.h>
+#include <cryptopp/cryptlib.h>
+#include <cryptopp/files.h>
+#include <cryptopp/filters.h>
+#include <cryptopp/crc.h>
+#include <cryptopp/hex.h>
+#include <cryptopp/serpent.h>
+#include <cryptopp/twofish.h>
+#include <cryptopp/aes.h>
+#include <cryptopp/osrng.h>
+#include <cryptopp/zlib.h>
+#include <cryptopp/secblock.h>
 
 static bool secure_crc(const std::string& path, std::string& crc)
 {

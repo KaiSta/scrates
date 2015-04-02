@@ -4,14 +4,14 @@
 #include <string>
 #include <vector>
 #include <chrono>
-#include <cryptopp\cryptlib.h>
-#include <cryptopp\sha.h>
-#include <cryptopp\files.h>
-#include <cryptopp\filters.h>
-#include <cryptopp\base64.h>
-#include <cryptopp\serpent.h>
-#include <cryptopp\aes.h>
-#include <cryptopp\twofish.h>
+#include <cryptopp/cryptlib.h>
+#include <cryptopp/sha.h>
+#include <cryptopp/files.h>
+#include <cryptopp/filters.h>
+#include <cryptopp/base64.h>
+#include <cryptopp/serpent.h>
+#include <cryptopp/aes.h>
+#include <cryptopp/twofish.h>
 #include <Windows.h>
 
 #include <istream>

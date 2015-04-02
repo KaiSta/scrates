@@ -7,10 +7,10 @@
 #include <fstream>
 #include "string_helper.h"
 
-#include <cryptopp\cryptlib.h>
-#include <cryptopp\files.h>
-#include <cryptopp\filters.h>
-#include <cryptopp\crc.h>
+#include <cryptopp/cryptlib.h>
+#include <cryptopp/files.h>
+#include <cryptopp/filters.h>
+#include <cryptopp/crc.h>
 
 #include <Poco/Path.h>
 #include <Poco/File.h>
