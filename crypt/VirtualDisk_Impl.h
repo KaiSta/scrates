@@ -36,6 +36,8 @@ private:
 		std::string tmp(path);
 #ifdef _WIN32
 		replaceAll(tmp, "/", std::string("\\"));
+#else
+		replaceAll(tmp, std::string("\\"), "/");
 #endif
 		return tmp;
 	}

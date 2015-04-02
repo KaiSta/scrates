@@ -183,7 +183,8 @@ void Synchronizer::update_at_cloud()
 			item.ev = REMOVED;
 			item.location = e.first;
 			update.push_back(item);
-			cloud_list_.unsafe_erase(e.first);
+			//cloud_list_.unsafe_erase(e.first);
+			cloud_list_.erase(e.first);
 		}
 	}
 
@@ -259,7 +260,8 @@ void Synchronizer::update_at_vhd()
 			item.ev = REMOVED;
 			item.location = e.first;
 			update.push_back(item);
-			vhd_list_.unsafe_erase(e.first);
+			//vhd_list_.unsafe_erase(e.first);
+			vhd_list_.erase(e.first);
 		}
 	}
 

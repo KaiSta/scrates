@@ -5,7 +5,8 @@
 #include <functional>
 #include <utility>
 #include <algorithm>
-#include <concurrent_unordered_map.h>
+//#include <concurrent_unordered_map.h>
+#include <unordered_map>
 #include <mutex>
 
 #include "folder_watcher.h"
@@ -55,7 +56,8 @@ private:
 	folder_watcher cloudwatch_;
 	folder_watcher vhdwatch_;
 
-	typedef concurrency::concurrent_unordered_map<std::string, std::string> map_type;
+	//typedef concurrency::concurrent_unordered_map<std::string, std::string> map_type;
+	typedef std::unordered_map<std::string, std::string> map_type;
 	map_type cloud_list_;
 	map_type vhd_list_;
 

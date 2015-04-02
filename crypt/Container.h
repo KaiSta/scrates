@@ -187,7 +187,7 @@ private:
 			&enhanced_passphrase_[0], enhanced_passphrase_.size(),
 			reinterpret_cast<const byte*>(recovered_salt.data()), salt_length,
 			1000);
-		CFB_Mode<T>::Decryption decrypt;
+		typename CFB_Mode<T>::Decryption decrypt;
 		decrypt.SetKeyWithIV(recovered_derived_key, recovered_derived_key.size(), recovered_iv);
 		
 		source.Detach(new CryptoPP::StreamTransformationFilter(decrypt,
@@ -234,7 +234,7 @@ private:
 			&enhanced_passphrase_[0], enhanced_passphrase_.size(),
 			salt, salt.size(),
 			1000);
-		CFB_Mode<T>::Encryption encrypt;
+		typename CFB_Mode<T>::Encryption encrypt;
 		encrypt.SetKeyWithIV(derived_key, derived_key.size(), iv);
 		//add teststring	
 		//StringSource(std::string("TRUE"), true, new StreamTransformationFilter(encrypt, strsink));
@@ -274,7 +274,7 @@ private:
 			&enhanced_passphrase_[0], enhanced_passphrase_.size(),
 			salt, salt.size(),
 			1000);
-		CFB_Mode<T>::Encryption encrypt;
+		typename CFB_Mode<T>::Encryption encrypt;
 		encrypt.SetKeyWithIV(recovered_derived_key, recovered_derived_key.size(), recovered_iv);
 		
 		//create File and add salt
@@ -318,7 +318,7 @@ private:
 		prng_.GenerateBlock(reinterpret_cast<byte*>(&tmp_hashname), 16);
 		StringSource(reinterpret_cast<const byte*>(&tmp_hashname), 16, true, new HexEncoder(new StringSink(hashname)));
 
-		CFB_Mode<T>::Encryption encrypt;
+		typename CFB_Mode<T>::Encryption encrypt;
 		encrypt.SetKeyWithIV(derived_key, T::MAX_KEYLENGTH, iv);
 		
 		path location(store_path.str() + FileSystem::path_separator + hashname);
@@ -358,7 +358,7 @@ private:
 		std::string hashname(handle_.get_block_filename(relative_path, 1));
 		path location(dest.str() + FileSystem::path_separator + hashname);
 
-		CFB_Mode<T>::Encryption encrypt;
+		typename CFB_Mode<T>::Encryption encrypt;
 		encrypt.SetKeyWithIV(derived_key, T::MAX_KEYLENGTH, iv);
 
 		FileSink* fsink = new FileSink(location.str().data());
@@ -404,7 +404,7 @@ private:
 					&recovered_salt[0], salt_length,
 					1000);
 
-				CFB_Mode<T>::Decryption decrypt;
+				typename CFB_Mode<T>::Decryption decrypt;
 				decrypt.SetKeyWithIV(derived_key, T::MAX_KEYLENGTH, iv);
 
 				bool ret = false;
