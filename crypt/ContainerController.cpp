@@ -1,7 +1,7 @@
 #include "ContainerController.h"
 #include "Path.h"
-#include <cryptopp\secblock.h>
-#include <cryptopp\osrng.h>
+#include <cryptopp/secblock.h>
+#include <cryptopp/osrng.h>
 
 ContainerController::ContainerController(callback_t event_callback, const std::string& vhd_path) : 
 event_callback_(event_callback), vhd_path_(vhd_path)
@@ -20,7 +20,8 @@ container_event ContainerController::create(const std::string& container_name, c
 	path filepath = path(container_location).append_filename(container_name + ".cco");
 	try
 	{
-		container_.create(container_name, password, filepath, { std::pair < std::string, size_t >(sync_location, store_size) }, path(vhd_path_), store_type);
+	        path v(vhd_path_);
+		container_.create(container_name, password, filepath, { std::pair < std::string, size_t >(sync_location, store_size) }, v, store_type);
 		ev.ev_type = event_type::INFORMATION;
 		ev.inf = information::SUCC;
 	}
@@ -34,7 +35,9 @@ container_event ContainerController::create(const std::string& container_name, c
 
 bool ContainerController::open(const std::string& container_location, const std::string& password, stor_t store_type)
 {
-	container_.open(path(container_location), password, path(vhd_path_), store_type);
+	path v(vhd_path_);
+	path cl(container_location);
+	container_.open(cl, password, v, store_type);
 	return true;
 }
 

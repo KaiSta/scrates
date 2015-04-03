@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <tchar.h>
-#endif
+
 
 #define WAIT_TIME 10000
 
@@ -205,3 +205,4 @@ DWORD folder_watcher::get_filter()
 {
 	return filter_;
 }
+#endif

@@ -1,5 +1,5 @@
 #pragma once
-
+#ifdef _WIN32
 
 #include <stdint.h>
 #include <cryptopp/cryptlib.h>
@@ -17,3 +17,4 @@ public:
 	~UARNG();
 };
 
+#endif

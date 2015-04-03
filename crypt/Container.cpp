@@ -9,7 +9,7 @@
 #include "FileSystem.h"
 #include <sstream>
 #include "CloudManager.h"
-#include <cryptopp\hex.h>
+#include <cryptopp/hex.h>
 #include "helper_files.h"
 #include <mtl/fromtorange.h>
 
@@ -27,7 +27,8 @@ Container::Container(const path& location, const std::string& pw, VirtualDisk_Im
 passphrase_(pw.begin(), pw.end()), seed_(32), is_syncing(false), container_open_(false)
 {
 	using namespace CryptoPP;
-	StringSource(pw.data(), true, new HashFilter(SHA256(), new StringSink(pw_)));
+	SHA256 shafunc;
+	StringSource(pw.data(), true, new HashFilter(shafunc, new StringSink(pw_)));
 	
 	container_name_ = location.get_filename();
 	container_name_.erase(container_name_.find_first_of('.'), container_name_.size());
@@ -81,7 +82,8 @@ Container::~Container()
 void Container::init(const path& location, const std::string& pw, encryption_algorithm algo)
 {
 	using namespace CryptoPP;
-	StringSource(pw.data(), true, new HashFilter(SHA256(), new StringSink(pw_)));
+	SHA256 shafunc;
+	StringSource(pw.data(), true, new HashFilter(shafunc, new StringSink(pw_)));
 	
 	if (enhanced_passphrase_.size())
 	{
@@ -207,10 +209,12 @@ void Container::save()
 	if (!container_open_)
 		return;
 	std::string oldcrc;
-	CryptoPP::StringSource(container_raw_, true, new CryptoPP::HashFilter(CryptoPP::CRC32(),
+	CryptoPP::CRC32 crcfunc;
+	CryptoPP::StringSource(container_raw_, true, new CryptoPP::HashFilter(crcfunc,
 		new CryptoPP::HexEncoder(new CryptoPP::StringSink(oldcrc))));
 	std::string ncrc;
-	CryptoPP::StringSource(handle_.str(), true, new CryptoPP::HashFilter(CryptoPP::CRC32(),
+	CryptoPP::CRC32 crcfunc2;
+	CryptoPP::StringSource(handle_.str(), true, new CryptoPP::HashFilter(crcfunc2,
 		new CryptoPP::HexEncoder(new CryptoPP::StringSink(ncrc))));
 
 	if (oldcrc == ncrc)
@@ -259,7 +263,7 @@ void Container::manual_sync(bool ignore_container_state)
 
 	for (auto& n : booked_files)
 	{
-		path p(dest + n.path.str());
+		path p(dest + n.p.str());
 		p = p.append_filename(n.filename);
 		if (!FileSystem::file_exists(p.str()))
 		{
@@ -269,7 +273,7 @@ void Container::manual_sync(bool ignore_container_state)
 			tmp = tmp.append_filename(n.blocks[0].filename);
 			if (FileSystem::delete_file(tmp.str()))
 			{
-				path t = n.path.append_filename(n.filename);
+				path t = n.p.append_filename(n.filename);
 				handle_.delete_filenode(t);
 			}
 		}
@@ -338,7 +342,7 @@ void Container::sync(bool ignore_container_state)
 
 	for (auto& d : deleted_files_on_cloud)
 	{
-		path p(d.path);
+		path p(d.p);
 		p = p.append_filename(d.filename);
 		auto on = oldhandle.get_filenode(p);
 		if (on.size > 0) //file was deleted in the cloud, but still exists in the local version
@@ -350,7 +354,7 @@ void Container::sync(bool ignore_container_state)
 
 	for (auto& node : oldnodes)
 	{
-		path tmp(node.path);
+		path tmp(node.p);
 		tmp = tmp.append_filename(node.filename);
 		auto xnode = handle_.get_filenode(tmp);
 
@@ -374,7 +378,7 @@ void Container::sync(bool ignore_container_state)
 
 	for (auto& node : newnodes)
 	{
-		path tmp(node.path);
+		path tmp(node.p);
 		tmp = tmp.append_filename(node.filename);
 
 		auto oldnode = oldhandle.get_filenode(tmp);
@@ -429,7 +433,7 @@ void Container::add_file(const path& src, const std::string& rootfolder)
 	path tmp = relativepath.append_filename(file_name);
 
 	container_handle::file_node fnode = handle_.get_filenode(tmp);
-	if (fnode.path == relativepath)
+	if (fnode.p == relativepath)
 	{
 		update_file(src.get_filename(), relativepath, src);
 		return;
@@ -447,7 +451,7 @@ void Container::add_file(const path& src, const std::string& rootfolder)
 			container_handle::file_node file;
 			file.filename = src.get_filename();
 			file.size = size;
-			file.path = relativepath.std_str();
+			file.p = relativepath.std_str();
 
 			file.crc = crc;
 
@@ -528,7 +532,7 @@ void Container::extract_file(const path& relative_path)
 
 		container_handle::file_node fnode = handle_.get_filenode(relative_path);
 
-		if (fnode.path == folder)
+		if (fnode.p == folder)
 		{
 			switch (algo_)
 			{
@@ -574,7 +578,7 @@ void Container::update_file(const std::string& filename, const path& relative_pa
 			return;
 		}
 
-		if (fnode.path == relative_path)
+		if (fnode.p == relative_path)
 		{
 			container_handle::block_node block_node = fnode.blocks[0];
 			std::string hashname = block_node.filename;
@@ -638,7 +642,7 @@ void Container::list_files(std::vector<path>& files)
 	files.resize(file_nodes.size());
 	for (size_t idx = 0; idx < files.size(); ++idx)
 	{
-		path tmp = file_nodes[idx].path;
+		path tmp = file_nodes[idx].p;
 		tmp = tmp.append_filename(file_nodes[idx].filename);
 		files[idx] = tmp;
 	}
@@ -649,7 +653,7 @@ bool Container::file_exists(const path& relative_path)
 	std::string folder = relative_path.get_folderpath_unsecure();
 	auto fnode = handle_.get_filenode(relative_path);
 
-	return fnode.path == folder;
+	return fnode.p == folder;
 }
 
 void Container::extract_all()
@@ -660,7 +664,7 @@ void Container::extract_all()
 #pragma omp parallel for
 	for (int i = 0; i < tmp.size(); ++i)
 	{
-		path loc = tmp[i].path;
+		path loc = tmp[i].p;
 		loc = loc.append_filename(tmp[i].filename);
 		extract_file(loc);
 	}

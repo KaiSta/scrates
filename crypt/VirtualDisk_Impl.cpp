@@ -1,5 +1,6 @@
 #include "VirtualDisk_Impl.h"
 
+#ifdef _WIN32
 #include <iostream>
 #include <Windows.h>
 #include <stdio.h>
@@ -380,3 +381,4 @@ bool VirtualDisk_Impl::exists(const std::string& p)
 		(file_attributes != FILE_ATTRIBUTE_DIRECTORY) &&
 		(GetLastError() != ERROR_FILE_NOT_FOUND);
 }
+#endif

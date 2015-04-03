@@ -11,6 +11,7 @@
 #include "Path.h"
 #include "container_handle.h"
 #include "list_of_files.h"
+#include "helper_files.h"
 #include "VirtualDisk_Impl.h"
 #include "Storage.h"
 #include "Synchronizer.h"
@@ -32,11 +33,11 @@ public:
 	//Container(const std::string& path, const std::string& pw, encryption_algorithm algo = SERPENT);
 
 	Container(encryption_algorithm algo = SERPENT);
-	Container(VirtualDisk_Impl::volume_handle*, encryption_algorithm algo = SERPENT);
-	Container(const path& location, const std::string& pw, VirtualDisk_Impl::volume_handle*, encryption_algorithm algo = SERPENT);
+	Container(Storage::volume_handle*, encryption_algorithm algo = SERPENT);
+	Container(const path& location, const std::string& pw, Storage::volume_handle*, encryption_algorithm algo = SERPENT);
 	~Container();
 
-	void set_vhd(VirtualDisk_Impl::volume_handle*);
+	void set_vhd(Storage::volume_handle*);
 	void set_seed(CryptoPP::SecByteBlock seed);
 	
 	/**
@@ -353,7 +354,7 @@ private:
 			1000);
 		
 
-		path relative_path(node.path);
+		path relative_path(node.p);
 		relative_path = relative_path.append_filename(node.filename);
 		std::string hashname(handle_.get_block_filename(relative_path, 1));
 		path location(dest.str() + FileSystem::path_separator + hashname);
@@ -381,7 +382,7 @@ private:
 				std::string hashname(node.blocks[0].filename);
 				std::string locationname(node.blocks[0].location);
 				std::string filename(node.filename);
-				path extract_to(dest + node.path.str());
+				path extract_to(dest + node.p.str());
 				FileSystem::make_folders(extract_to.str());
 				extract_to = extract_to.append_filename(filename);
 
@@ -426,7 +427,8 @@ private:
 			catch (std::exception e)
 			{
 				std::cout << e.what() << std::endl;
-				Sleep(200);
+				std::this_thread::sleep_for(std::chrono::milliseconds(200));
+				//Sleep(200);
 			}
 		}
 	}

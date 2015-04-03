@@ -9,7 +9,7 @@
 #include <unordered_map>
 #include <mutex>
 
-#include "folder_watcher.h"
+//#include "folder_watcher.h"
 
 class Synchronizer
 {
@@ -53,8 +53,8 @@ private:
 	std::string vhd_location_;
 	std::string cloud_location_;
 
-	folder_watcher cloudwatch_;
-	folder_watcher vhdwatch_;
+	//folder_watcher cloudwatch_;
+	//folder_watcher vhdwatch_;
 
 	//typedef concurrency::concurrent_unordered_map<std::string, std::string> map_type;
 	typedef std::unordered_map<std::string, std::string> map_type;

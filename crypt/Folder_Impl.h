@@ -29,7 +29,9 @@ public:
 			out.drive_letter = out.path = path;
 
 		out.is_open = true;
+#ifdef _WIN32
 		out.handle = nullptr;
+#endif
 		return true;
 	}
 	virtual void dismount_drive(volume_handle& in)

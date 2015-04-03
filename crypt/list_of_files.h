@@ -220,7 +220,7 @@ public:
 			}
 		}
 
-		return{ "", "", 0, "", "" };
+		return item_type{ "", "", 0, "", path{} };
 	}
 
 	void update_file(item_type file)

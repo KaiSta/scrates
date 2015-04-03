@@ -1,14 +1,14 @@
 #include "CloudManager.h"
-#include <cryptopp\cryptlib.h>
-#include <cryptopp\base64.h>
+#include <cryptopp/cryptlib.h>
+#include <cryptopp/base64.h>
 #include <iostream>
 #include <istream>
 #include <string>
-#include <cryptopp\cryptlib.h>
-#include <cryptopp\sha.h>
-#include <cryptopp\files.h>
-#include <cryptopp\filters.h>
-#include <cryptopp\base64.h>
+#include <cryptopp/cryptlib.h>
+#include <cryptopp/sha.h>
+#include <cryptopp/files.h>
+#include <cryptopp/filters.h>
+#include <cryptopp/base64.h>
 
 #include "string_helper.h"
 #include "FileSystem.h"

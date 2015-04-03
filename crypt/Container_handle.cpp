@@ -1,4 +1,4 @@
-#include "Container_handle.h"
+#include "container_handle.h"
 #include "FileSystem.h"
 #include "number_helper.h"
 
@@ -88,7 +88,7 @@ container_handle::file_node container_handle::get_filenode(const path& relative_
 			
 			node.filename = e.node().attribute("filename").value();
 			node.size = s_to_int64(e.node().child("size").child_value());//std::stoi(e.node().child("size").child_value());
-			node.path = p;
+			node.p = p;
 			node.crc = e.node().child("crc").child_value();
 			node.rev = s_to_int64(e.node().child("rev").child_value());
 
@@ -122,7 +122,7 @@ int64_t container_handle::get_size(const path& relative_path)
 }
 path container_handle::get_path(const path& relative_path)
 {
-	return get_filenode(relative_path).path;
+	return get_filenode(relative_path).p;
 }
 std::string container_handle::get_crc(const path& relative_path) 
 {
@@ -168,7 +168,7 @@ void container_handle::add_file_node(const file_node& node)
 	
 	std::lock_guard<std::mutex> guard(mtx_);
 
-	std::string xpath_q("/container/file[@filename = \"" + node.filename + "\" and path = \"" + node.path.raw_std_str() + "\" ]");
+	std::string xpath_q("/container/file[@filename = \"" + node.filename + "\" and path = \"" + node.p.raw_std_str() + "\" ]");
 	pugi::xpath_node_set nodes_found = container_file_.select_nodes(xpath_q.data());
 
 	auto root = container_file_.child("container");
@@ -193,7 +193,7 @@ void container_handle::add_file_node(const file_node& node)
 		pugi::node_pcdata).set_value(ss.str().data());
 	ss.str(std::string());
 	filenode.append_child("path").append_child(
-		pugi::node_pcdata).set_value(node.path.std_str().data());
+		pugi::node_pcdata).set_value(node.p.std_str().data());
 	filenode.append_child("crc").append_child(
 		pugi::node_pcdata).set_value(node.crc.data());
 	filenode.append_child("rev").append_child(
@@ -220,9 +220,9 @@ void container_handle::add_block_node(block_node& blocknode, file_node& filenode
 void container_handle::update_file_node(const file_node& node)
 {
 	std::string filename = node.filename;
-	path folder = node.path;
+	path folder = node.p;
 
-	path relative_path(node.path);
+	path relative_path(node.p);
 	relative_path = relative_path.append_filename(node.filename);
 	file_node old_node = get_filenode(relative_path);
 
@@ -297,7 +297,7 @@ void container_handle::update_file_size(int64_t size, const path& relative_path)
 void container_handle::update_file_path(const path& location, const path& relative_path)
 {
 	file_node node = get_filenode(relative_path);
-	node.path = location;
+	node.p = location;
 	update_file_node(node);
 }
 void container_handle::update_file_crc(const std::string& crc, const path& relative_path)
@@ -478,7 +478,7 @@ void container_handle::delete_filenode(const path& relative_path)
 	std::stringstream ssrev;
 	ssrev << rev;
 
-	std::string xpath_q("/container/file[@filename = \"" + node.filename + "\" and path = \"" + node.path.raw_std_str() + "\" ]");
+	std::string xpath_q("/container/file[@filename = \"" + node.filename + "\" and path = \"" + node.p.raw_std_str() + "\" ]");
 	pugi::xpath_node_set nodes_found = container_file_.select_nodes(xpath_q.data());
 
 	if (nodes_found.size() > 0)
@@ -603,7 +603,7 @@ std::vector<container_handle::file_node> container_handle::get_all_filenodes()
 
 				node.filename = e.node().attribute("filename").value();
 				node.size = s_to_int64(e.node().child("size").child_value());//std::stoi(e.node().child("size").child_value());
-				node.path = p;
+				node.p = p;
 				node.crc = e.node().child("crc").child_value();
 				node.rev = s_to_int64(e.node().child("rev").child_value());
 

@@ -1,12 +1,15 @@
 #include "uarng.h"
+#ifdef _WIN32
 #include <Windows.h>
-#include <cryptopp\cryptlib.h>
-#include <cryptopp\hex.h>
-#include <cryptopp\randpool.h>
-#include <string>
 #include <windowsx.h>
-#include <cryptopp\osrng.h>
+#endif
+#include <cryptopp/cryptlib.h>
+#include <cryptopp/hex.h>
+#include <cryptopp/randpool.h>
+#include <string>
 
+#include <cryptopp/osrng.h>
+#ifdef _WIN32
 
 UARNG::UARNG()
 {
@@ -177,3 +180,4 @@ bool UARNG::generate(CryptoPP::SecByteBlock& s)
 UARNG::~UARNG()
 {
 }
+#endif
