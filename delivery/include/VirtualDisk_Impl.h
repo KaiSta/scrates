@@ -23,19 +23,21 @@ public:
 private:
 	VirtualDisk_Impl(const VirtualDisk_Impl&);
 	VirtualDisk_Impl& operator=(const VirtualDisk_Impl&);
-
+#ifdef _WIN32
 	/*static*/ unsigned long create_disk(PCWSTR diskfilepath, HANDLE* handle, int64_t disk_size_mb);
 	/*static*/ unsigned long open_disk(PCWSTR diskfilepath, HANDLE* handle);
 	/*static*/ unsigned long attach_disk(PCWSTR diskfilepath, HANDLE* handle);
 	/*static*/ void format_disk(const std::string& letter);
 	/*static*/ void cleanup(volume_handle& in);
-
+#endif
 	bool exists(const std::string& p);
 	static std::string path_to_systemstandard_(const std::string& path)
 	{
 		std::string tmp(path);
 #ifdef _WIN32
 		replaceAll(tmp, "/", std::string("\\"));
+#else
+		replaceAll(tmp, std::string("\\"), "/");
 #endif
 		return tmp;
 	}

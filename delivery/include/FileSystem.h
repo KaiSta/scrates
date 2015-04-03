@@ -3,15 +3,14 @@
 #include <string>
 #include <vector>
 
-//#include <Windows.h>
 #include <stdint.h>
 #include <fstream>
 #include "string_helper.h"
 
-#include <cryptopp\cryptlib.h>
-#include <cryptopp\files.h>
-#include <cryptopp\filters.h>
-#include <cryptopp\crc.h>
+#include <cryptopp/cryptlib.h>
+#include <cryptopp/files.h>
+#include <cryptopp/filters.h>
+#include <cryptopp/crc.h>
 
 #include <Poco/Path.h>
 #include <Poco/File.h>
@@ -34,10 +33,6 @@ public:
 			std::cout << "what: " << e.what() << " where: file_exists" << std::endl;
 			return false;
 		}
-		//	auto file_attributes = GetFileAttributes(path_to_systemstandard(path).data());
-		//	return (file_attributes != INVALID_FILE_ATTRIBUTES) &&
-		//		(file_attributes != FILE_ATTRIBUTE_DIRECTORY) &&
-		//		(GetLastError() != ERROR_FILE_NOT_FOUND);
 	}
 	
 	/**
@@ -55,8 +50,6 @@ public:
 			std::cout << "what: " << e.what() << " where: is_directory" << std::endl;
 		}
 		return false;
-	/*	auto attributes = GetFileAttributes(path_to_systemstandard(path).c_str());
-		return (attributes == FILE_ATTRIBUTE_DIRECTORY);*/
 	}
 
 	/**
@@ -75,15 +68,6 @@ public:
 			std::cout << "what: " << e.what() << " where: file_size" << std::endl;
 		}
 		return -1;
-		/*WIN32_FILE_ATTRIBUTE_DATA fatt;
-		if (!GetFileAttributesEx(path_to_systemstandard(path).c_str(), GetFileExInfoStandard, &fatt))
-		{
-			return -1;
-		}
-		LARGE_INTEGER size;
-		size.HighPart = fatt.nFileSizeHigh;
-		size.LowPart = fatt.nFileSizeLow;
-		return size.QuadPart;*/
 	}
 
 
@@ -104,17 +88,6 @@ public:
 		{
 			std::cout << "what: " << e.what() << " where: create_directory" << std::endl;
 		}
-		//CreateDirectory(dest.data(), 0);
-		//if (!CreateDirectory(dest.data(), 0))
-		//{
-		//	DWORD err = GetLastError();
-		//	if (err == ERROR_ALREADY_EXISTS || err == ERROR_PATH_NOT_FOUND)
-		//	{
-		//		//std::cout << "error directory already exists\n";
-		//		return false;
-		//	}
-		//}
-		//return true;
 	}
 
 	/**
@@ -138,10 +111,6 @@ public:
 			std::cout << dest << std::endl;
 		}
 		return false;
-		/*if (is_directory(dest))
-			return RemoveDirectory(dest.data()) != 0;
-		else
-			return false;*/
 	}
 	
 	/**
@@ -165,11 +134,6 @@ public:
 			std::cout << "what: " << e.what() << " where: delete_file" << std::endl;
 		}
 		return false;
-		/*if (file_exists(dest))
-		{
-			return DeleteFile(dest.data()) != 0;
-		}
-		return false;*/
 	}
 
 	/**
@@ -209,6 +173,7 @@ public:
 		{
 			std::cout << "what: " << e.what() << " where: get_all_files_in_dir" << std::endl;
 		}
+		return true;
 	}
 
 	/**
@@ -228,17 +193,6 @@ public:
 		{
 			std::cout << "what: " << e.what() << " where: delete_all" << std::endl;
 		}
-
-		/*auto files = list_files(p, true);
-		for (auto& f : files)
-		{
-			delete_file(f);
-		}
-		auto folders = list_folders(p, true);
-		for (auto& d : folders)
-		{
-			delete_directory(d);
-		}*/
 	}
 
 	/**
@@ -281,6 +235,7 @@ public:
 		{
 			std::cout << "what: " << e.what() << " where: list_folders" << std::endl;
 		}
+		return{};
 	}
 
 	/**
@@ -387,30 +342,6 @@ public:
 		{
 			std::cout << "what: " << e.what() << " where: make_folder" << std::endl;
 		}
-//#ifdef _WIN32
-//		tmp.erase(0, 3);
-//		std::string current_path(path.begin(), path.begin()+3);	
-//std::string tmp(FileSystem::path_to_systemstandard(path));
-//		for (; tmp.size() > 0;)
-//		{
-//			auto n = tmp.find_first_of(FileSystem::path_separator);
-//			if (n != std::string::npos)
-//			{
-//				current_path.append(std::string(tmp.begin(), tmp.begin() + (n + 1)));
-//				tmp.erase(0, (n + 1));
-//				if (!is_directory(current_path))
-//					create_directory(current_path);
-//				//std::cout << current_path << std::endl;
-//			}
-//			else
-//			{
-//				current_path.append(tmp);
-//				if (!is_directory(current_path))
-//					create_directory(current_path);
-//				tmp.clear();
-//			}
-//		}
-//#endif
 	}
 
 	/**

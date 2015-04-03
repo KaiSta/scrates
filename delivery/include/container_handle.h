@@ -20,10 +20,10 @@ public:
 
 	struct file_node
 	{
-		file_node() : filename(""), path(""), size(0), crc(""), rev(0)
+		file_node() : filename(""), p(""), size(0), crc(""), rev(0)
 		{}
 		std::string filename;
-		path path;
+		path p;//ath;
 		int64_t size;
 		std::string crc;	
 		std::vector<block_node> blocks;
