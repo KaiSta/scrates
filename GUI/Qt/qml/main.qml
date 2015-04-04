@@ -5,6 +5,8 @@ import QtQuick.Dialogs 1.2
 import QtQuick.Layouts 1.1
 import Qt.labs.settings 1.0
 
+import "UIComponents"
+
 ApplicationWindow {
     id: root
     title: qsTr("tempest")
@@ -156,11 +158,11 @@ ApplicationWindow {
             }
             onClicked: {
                 _containerModel.setCurrentContainer(containerList.currentRow)
-                viewLoader.source = getMainView()
+                updateView();
             }
             onActivated: {
                 _containerModel.setCurrentContainer(containerList.currentRow)
-                viewLoader.source = getMainView()
+                updateView();
             }
 
             TableViewColumn {
@@ -200,23 +202,18 @@ ApplicationWindow {
         }
     }
 
-    NewContainerDialog {
-        id: test
-    }
-
-    function getMainView()
+    function updateView()
     {
-        var qml = "Welcome.qml"
+        viewLoader.source = "";
+
         if (containerList.currentRow < 0)
-            return qml
+            viewLoader.source = "Welcome.qml";
 
         var container = _containerModel.get(containerList.currentRow)
 
         if (container.encrypted)
-            qml = "ContainerEncrypted.qml"
+            viewLoader.source = "ContainerEncrypted.qml";
         else
-            qml = "ContainerDecrypted.qml"
-
-        return qml
+            viewLoader.source = "ContainerDecrypted.qml";
     }
 }
