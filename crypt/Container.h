@@ -1,16 +1,17 @@
 #pragma once
 #include <string>
 #include "../lib/pugixml/src/pugixml.hpp"
-#include <cryptopp\serpent.h>
-#include <cryptopp\twofish.h>
-#include <cryptopp\aes.h>
-#include <cryptopp\osrng.h>
-#include <cryptopp\zlib.h>
-#include <cryptopp\secblock.h>
+#include <cryptopp/serpent.h>
+#include <cryptopp/twofish.h>
+#include <cryptopp/aes.h>
+#include <cryptopp/osrng.h>
+#include <cryptopp/zlib.h>
+#include <cryptopp/secblock.h>
 #include <vector>
 #include "Path.h"
 #include "container_handle.h"
 #include "list_of_files.h"
+#include "helper_files.h"
 #include "VirtualDisk_Impl.h"
 #include "Storage.h"
 #include "Synchronizer.h"
@@ -32,11 +33,11 @@ public:
 	//Container(const std::string& path, const std::string& pw, encryption_algorithm algo = SERPENT);
 
 	Container(encryption_algorithm algo = SERPENT);
-	Container(VirtualDisk_Impl::volume_handle*, encryption_algorithm algo = SERPENT);
-	Container(const path& location, const std::string& pw, VirtualDisk_Impl::volume_handle*, encryption_algorithm algo = SERPENT);
+	Container(Storage::volume_handle*, encryption_algorithm algo = SERPENT);
+	Container(const path& location, const std::string& pw, Storage::volume_handle*, encryption_algorithm algo = SERPENT);
 	~Container();
 
-	void set_vhd(VirtualDisk_Impl::volume_handle*);
+	void set_vhd(Storage::volume_handle*);
 	void set_seed(CryptoPP::SecByteBlock seed);
 	
 	/**
@@ -187,7 +188,7 @@ private:
 			&enhanced_passphrase_[0], enhanced_passphrase_.size(),
 			reinterpret_cast<const byte*>(recovered_salt.data()), salt_length,
 			1000);
-		CFB_Mode<T>::Decryption decrypt;
+		typename CFB_Mode<T>::Decryption decrypt;
 		decrypt.SetKeyWithIV(recovered_derived_key, recovered_derived_key.size(), recovered_iv);
 		
 		source.Detach(new CryptoPP::StreamTransformationFilter(decrypt,
@@ -234,7 +235,7 @@ private:
 			&enhanced_passphrase_[0], enhanced_passphrase_.size(),
 			salt, salt.size(),
 			1000);
-		CFB_Mode<T>::Encryption encrypt;
+		typename CFB_Mode<T>::Encryption encrypt;
 		encrypt.SetKeyWithIV(derived_key, derived_key.size(), iv);
 		//add teststring	
 		//StringSource(std::string("TRUE"), true, new StreamTransformationFilter(encrypt, strsink));
@@ -274,7 +275,7 @@ private:
 			&enhanced_passphrase_[0], enhanced_passphrase_.size(),
 			salt, salt.size(),
 			1000);
-		CFB_Mode<T>::Encryption encrypt;
+		typename CFB_Mode<T>::Encryption encrypt;
 		encrypt.SetKeyWithIV(recovered_derived_key, recovered_derived_key.size(), recovered_iv);
 		
 		//create File and add salt
@@ -318,7 +319,7 @@ private:
 		prng_.GenerateBlock(reinterpret_cast<byte*>(&tmp_hashname), 16);
 		StringSource(reinterpret_cast<const byte*>(&tmp_hashname), 16, true, new HexEncoder(new StringSink(hashname)));
 
-		CFB_Mode<T>::Encryption encrypt;
+		typename CFB_Mode<T>::Encryption encrypt;
 		encrypt.SetKeyWithIV(derived_key, T::MAX_KEYLENGTH, iv);
 		
 		path location(store_path.str() + FileSystem::path_separator + hashname);
@@ -353,12 +354,12 @@ private:
 			1000);
 		
 
-		path relative_path(node.path);
+		path relative_path(node.p);
 		relative_path = relative_path.append_filename(node.filename);
 		std::string hashname(handle_.get_block_filename(relative_path, 1));
 		path location(dest.str() + FileSystem::path_separator + hashname);
 
-		CFB_Mode<T>::Encryption encrypt;
+		typename CFB_Mode<T>::Encryption encrypt;
 		encrypt.SetKeyWithIV(derived_key, T::MAX_KEYLENGTH, iv);
 
 		FileSink* fsink = new FileSink(location.str().data());
@@ -381,7 +382,7 @@ private:
 				std::string hashname(node.blocks[0].filename);
 				std::string locationname(node.blocks[0].location);
 				std::string filename(node.filename);
-				path extract_to(dest + node.path.str());
+				path extract_to(dest + node.p.str());
 				FileSystem::make_folders(extract_to.str());
 				extract_to = extract_to.append_filename(filename);
 
@@ -404,7 +405,7 @@ private:
 					&recovered_salt[0], salt_length,
 					1000);
 
-				CFB_Mode<T>::Decryption decrypt;
+				typename CFB_Mode<T>::Decryption decrypt;
 				decrypt.SetKeyWithIV(derived_key, T::MAX_KEYLENGTH, iv);
 
 				bool ret = false;
@@ -426,7 +427,8 @@ private:
 			catch (std::exception e)
 			{
 				std::cout << e.what() << std::endl;
-				Sleep(200);
+				std::this_thread::sleep_for(std::chrono::milliseconds(200));
+				//Sleep(200);
 			}
 		}
 	}

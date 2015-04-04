@@ -2,17 +2,18 @@
 
 #include <string>
 #include "FileSystem.h"
-#include <cryptopp\cryptlib.h>
-#include <cryptopp\files.h>
-#include <cryptopp\filters.h>
-#include <cryptopp\crc.h>
-#include <cryptopp\hex.h>
-#include <cryptopp\serpent.h>
-#include <cryptopp\twofish.h>
-#include <cryptopp\aes.h>
-#include <cryptopp\osrng.h>
-#include <cryptopp\zlib.h>
-#include <cryptopp\secblock.h>
+#include <cryptopp/cryptlib.h>
+#include <cryptopp/files.h>
+#include <cryptopp/filters.h>
+#include <cryptopp/crc.h>
+#include <cryptopp/hex.h>
+#include <cryptopp/serpent.h>
+#include <cryptopp/twofish.h>
+#include <cryptopp/aes.h>
+#include <cryptopp/osrng.h>
+#include <cryptopp/zlib.h>
+#include <cryptopp/secblock.h>
+#include <thread>
 
 static bool secure_crc(const std::string& path, std::string& crc)
 {
@@ -29,14 +30,16 @@ static bool secure_crc(const std::string& path, std::string& crc)
 	{
 		try
 		{
-			FileSource(path.data(), true, new HashFilter(CRC32(),
+		        CRC32 crcfunc;
+			FileSource(path.data(), true, new HashFilter(crcfunc,
 				new HexEncoder(new StringSink(crc))));
 			ret = true;
 		}
 		catch (CryptoPP::FileStore::OpenErr e)
 		{
 			crc = "";
-			Sleep(200);
+			std::this_thread::sleep_for(std::chrono::milliseconds(200));
+			//Sleep(200);
 		}
 		catch (Exception e)
 		{
@@ -75,7 +78,8 @@ static bool secure_encrypt(const std::string& src, bool compressed, CryptoPP::St
 		}
 		catch (CryptoPP::FileStore::OpenErr e)
 		{
-			Sleep(200);
+		    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+			//Sleep(200);
 		}
 		catch (Exception e)
 		{

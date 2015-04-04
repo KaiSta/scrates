@@ -2,32 +2,37 @@
 
 #include <string>
 #include <vector>
-#include <Windows.h>
+
 #include <stdint.h>
 #include <fstream>
 #include "string_helper.h"
 
-#include <cryptopp\cryptlib.h>
-#include <cryptopp\files.h>
-#include <cryptopp\filters.h>
-#include <cryptopp\crc.h>
+#include <cryptopp/cryptlib.h>
+#include <cryptopp/files.h>
+#include <cryptopp/filters.h>
+#include <cryptopp/crc.h>
 
+#include <Poco/Path.h>
+#include <Poco/File.h>
+#include <Poco/DirectoryIterator.h>
 
-#ifdef _WIN32
+//#ifdef _WIN32
 class FileSystem
 {
 public:
 
-	/**
-	  \brief Determines if file exists at the given path.
-	  \return true if file exists.
-	*/
 	static bool file_exists(const std::string& path)
 	{
-		auto file_attributes = GetFileAttributes(path_to_systemstandard(path).data());
-		return (file_attributes != INVALID_FILE_ATTRIBUTES) &&
-			(file_attributes != FILE_ATTRIBUTE_DIRECTORY) &&
-			(GetLastError() != ERROR_FILE_NOT_FOUND);
+		try
+		{
+			Poco::File f(path);
+			return f.exists() && !f.isDirectory();
+		}
+		catch (std::exception& e)
+		{
+			std::cout << "what: " << e.what() << " where: file_exists" << std::endl;
+			return false;
+		}
 	}
 	
 	/**
@@ -35,8 +40,16 @@ public:
 	*/
 	static bool is_directory(const std::string& path)
 	{
-		auto attributes = GetFileAttributes(path_to_systemstandard(path).c_str());
-		return (attributes == FILE_ATTRIBUTE_DIRECTORY);
+		try
+		{
+			Poco::File f(path);
+			return f.exists() && f.isDirectory();
+		}
+		catch (std::exception& e)
+		{
+			std::cout << "what: " << e.what() << " where: is_directory" << std::endl;
+		}
+		return false;
 	}
 
 	/**
@@ -44,15 +57,17 @@ public:
 	*/
 	static int64_t file_size(const std::string& path)
 	{
-		WIN32_FILE_ATTRIBUTE_DATA fatt;
-		if (!GetFileAttributesEx(path_to_systemstandard(path).c_str(), GetFileExInfoStandard, &fatt))
+		try
 		{
-			return -1;
+			Poco::File f(path);
+			if (f.exists())
+				return f.getSize();
 		}
-		LARGE_INTEGER size;
-		size.HighPart = fatt.nFileSizeHigh;
-		size.LowPart = fatt.nFileSizeLow;
-		return size.QuadPart;
+		catch (std::exception& e)
+		{
+			std::cout << "what: " << e.what() << " where: file_size" << std::endl;
+		}
+		return -1;
 	}
 
 
@@ -64,16 +79,15 @@ public:
 	*/
 	static bool create_directory(const std::string& dest)
 	{
-		if (!CreateDirectory(dest.data(), 0))
+		try
 		{
-			DWORD err = GetLastError();
-			if (err == ERROR_ALREADY_EXISTS || err == ERROR_PATH_NOT_FOUND)
-			{
-				//std::cout << "error directory already exists\n";
-				return false;
-			}
+		Poco::File f(dest);
+		return f.createDirectory();
 		}
-		return true;
+		catch (std::exception& e)
+		{
+			std::cout << "what: " << e.what() << " where: create_directory" << std::endl;
+		}
 	}
 
 	/**
@@ -82,21 +96,42 @@ public:
 	*/
 	static bool delete_directory(const std::string& dest)
 	{
-		if (is_directory(dest))
-			return RemoveDirectory(dest.data()) != 0;
-		else
-			return false;
+		try
+		{
+			Poco::File f(dest);
+			if (f.exists())
+			{
+				f.remove(true);
+				return true;
+			}
+		}
+		catch (std::exception& e)
+		{
+			std::cout << "what: " << e.what() << " where: delete_directory" << std::endl;
+			std::cout << dest << std::endl;
+		}
+		return false;
 	}
-
+	
 	/**
 	\brief deletes the file at the given path.
 	\return true if successfull.
 	*/
 	static bool delete_file(const std::string& dest)
 	{
-		if (file_exists(dest))
+		try
 		{
-			return DeleteFile(dest.data()) != 0;
+			Poco::File f(dest);
+			if (f.exists())
+			{
+				f.remove();
+				return true;
+			}
+			
+		}
+		catch (std::exception& e)
+		{
+			std::cout << "what: " << e.what() << " where: delete_file" << std::endl;
 		}
 		return false;
 	}
@@ -110,39 +145,34 @@ public:
 	*/
 	static bool get_all_files_in_dir(const std::string& dest, std::vector<std::string>& out)
 	{
-		using namespace std;
+		try
+		{
+			Poco::File f(dest);
+			if (!f.exists())
+				return false;
 
-		HANDLE dir;
-		WIN32_FIND_DATA file_data;
+			std::vector<std::string> files;
+			f.list(files);
 
-		if ((dir = FindFirstFile((dest + "/*").c_str(), &file_data)) == INVALID_HANDLE_VALUE)
-			return false; /* No files found */
-
-		do {
-			const string file_name = file_data.cFileName;
-			string full_file_name;
-			if (dest[dest.size() - 1] == path_separator)
+			for (auto it = files.begin(); it != files.end(); ++it)
 			{
-				full_file_name = dest + file_name;
+				Poco::File tmp(Poco::Path(dest, (*it)));
+				if (tmp.isDirectory())
+				{
+					it = files.erase(it);
+				}
 			}
-			else
+
+			for (auto& e : files)
 			{
-				full_file_name = dest + path_separator + file_name;
+				out.push_back(Poco::Path(dest, e).toString());
 			}
-			
-			const bool is_directory = (file_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
-
-			if (file_name[0] == '.')
-				continue;
-
-			if (is_directory)
-				continue;
-
-			out.push_back(full_file_name);
-		} while (FindNextFile(dir, &file_data));
-
-		FindClose(dir);
-		return true;
+			return true;
+		}
+		catch (std::exception& e)
+		{
+			std::cout << "what: " << e.what() << " where: get_all_files_in_dir" << std::endl;
+		}
 	}
 
 	/**
@@ -150,15 +180,17 @@ public:
 	*/
 	static void delete_all(const std::string& p)
 	{
-		auto files = list_files(p, true);
-		for (auto& f : files)
+		try
 		{
-			delete_file(f);
+			Poco::DirectoryIterator end;
+			for (Poco::DirectoryIterator it(p); it != end; ++it)
+			{
+				it->remove(true);
+			}
 		}
-		auto folders = list_folders(p, true);
-		for (auto& d : folders)
+		catch (std::exception& e)
 		{
-			delete_directory(d);
+			std::cout << "what: " << e.what() << " where: delete_all" << std::endl;
 		}
 	}
 
@@ -169,36 +201,39 @@ public:
 	*/
 	static std::vector<std::string> list_folders(const std::string& p, bool recursive)
 	{
-		
-		using namespace std;
-		std::vector<std::string> folders;
-		HANDLE dir;
-		WIN32_FIND_DATA file_data;
+		try
+		{
+			Poco::File f(p);
+			if (!f.exists())
+				return{};
 
-		if ((dir = FindFirstFile((p + "/*").c_str(), &file_data)) == INVALID_HANDLE_VALUE)
-			return folders; /* No files found */
+			std::vector<std::string> folders;
+			f.list(folders);
 
-		do {
-			const string file_name = file_data.cFileName;
-			const string full_file_name = p + FileSystem::path_separator + file_name;
-			const bool is_directory = (file_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
+			std::vector<std::string> found;
 
-			if (file_name[0] == '.')
-				continue;
-
-			if (is_directory)
+			for (auto it = folders.begin(); it != folders.end(); ++it)
 			{
-				if (recursive)
-				{
-					std::vector<std::string> tmp = list_folders(full_file_name, true);
-					folders.insert(folders.end(), tmp.begin(), tmp.end());
-				}			
-				folders.push_back(full_file_name);
-			}
-		} while (FindNextFile(dir, &file_data));
+				Poco::File tmp(Poco::Path(f.path(), (*it)));
 
-		FindClose(dir);
-		return folders;
+				if (tmp.isDirectory())
+				{
+					found.push_back(tmp.path());
+
+					if (recursive)
+					{
+						auto v = list_folders(tmp.path(), true);
+						found.insert(found.begin(), v.begin(), v.end());
+					}
+				}
+			}
+
+			return found;
+		}
+		catch (std::exception& e)
+		{
+			std::cout << "what: " << e.what() << " where: list_folders" << std::endl;
+		}
 	}
 
 	/**
@@ -208,82 +243,70 @@ public:
 	*/
 	static std::vector<std::string> list_files(const std::string& p, bool recursive)
 	{
-		std::string pa(p);
-
-		if (pa[pa.size() - 1] != path_separator)
+		try
 		{
-			pa.append(path_separator + "");
-		}
+			Poco::File f(p);
+			if (!f.exists())
+				return{};
 
-		if (!recursive)
-		{
-			std::vector<std::string> files;
-			get_all_files_in_dir(pa, files);
-			return std::vector<std::string>(files.begin(), files.end());
-		}
-		using namespace std;
-		std::vector<std::string> files;
-		HANDLE dir;
-		WIN32_FIND_DATA file_data;
+			std::vector<std::string> folders;
+			f.list(folders);
 
-		if ((dir = FindFirstFile((pa + "/*").c_str(), &file_data)) == INVALID_HANDLE_VALUE)
-			return files; /* No files found */
+			std::vector<std::string> found;
 
-		do {
-			const string file_name = file_data.cFileName;
-			const string full_file_name = pa + FileSystem::path_separator + file_name;
-			const bool is_directory = (file_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
-
-			if (file_name[0] == '.')
-				continue;
-
-			if (is_directory)
+			for (auto it = folders.begin(); it != folders.end(); ++it)
 			{
-				std::vector<std::string> tmp = list_files(full_file_name, true);
-				files.insert(files.end(), tmp.begin(), tmp.end());
-			}
-			else
-				files.push_back(full_file_name);
-		} while (FindNextFile(dir, &file_data));
+				Poco::File tmp(Poco::Path(f.path(), (*it)));
 
-		FindClose(dir);
-		return files;
+				if (tmp.isFile())
+				{
+					found.push_back(tmp.path());
+				}
+				else if (tmp.isDirectory() && recursive)
+				{
+					auto v = list_files(tmp.path(), true);
+					found.insert(found.begin(), v.begin(), v.end());
+				}
+			}
+
+			return found;
+		}
+		catch (std::exception& e)
+		{
+			std::cout << "what: " << e.what() << " where: list_files" << std::endl;
+		}
+		return{};
 	}
 
 	/**
 	  \brief Opens a file with 'open with' dialog.
 	  \param path file location.
 	*/
-	static void openas_file_external(const std::string& path)
-	{
-		CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
-		SHELLEXECUTEINFO sei = { sizeof(sei) };
-		sei.nShow = SW_SHOWNORMAL;
-		sei.lpVerb = "openas";
-		sei.lpFile = path.data();
-		sei.fMask = 12;
-		ShellExecuteEx(&sei);
-	}
+	//static void openas_file_external(const std::string& path)
+	//{
+	//	CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+	//	SHELLEXECUTEINFO sei = { sizeof(sei) };
+	//	sei.nShow = SW_SHOWNORMAL;
+	//	sei.lpVerb = "openas";
+	//	sei.lpFile = path.data();
+	//	sei.fMask = 12;
+	//	ShellExecuteEx(&sei);
+	//}
 
-	/**
-	  \brief Opens the file with the default program.
-	*/
-	static void open_file_default(const std::string& path)
-	{
-		ShellExecute(0, 0, path.data(), 0, 0, SW_SHOW);
-	}
+	///**
+	//  \brief Opens the file with the default program.
+	//*/
+	//static void open_file_default(const std::string& path)
+	//{
+	//	ShellExecute(0, 0, path.data(), 0, 0, SW_SHOW);
+	//}
 
 	/**
 	  \brief Returns the path to the temp directory.
 	*/
 	static std::string get_temp_path()
 	{
-		char path[MAX_PATH + 1];
-		if (GetTempPath(MAX_PATH + 1, path) != 0)
-		{
-			return std::string(path);
-		}
-		return std::string("");
+		return Poco::Path::temp();
 	}
 
 	/**
@@ -291,7 +314,16 @@ public:
 	*/
 	static void copy_file(const std::string& src, const std::string& dest)
 	{
-		CopyFile(src.data(), dest.data(), FALSE);
+		try
+		{
+			Poco::File s(src);
+			if (s.exists())
+				s.copyTo(dest);
+		}
+		catch (std::exception& e)
+		{
+			std::cout << "what: " << e.what() << " where: copy_file" << std::endl;
+		}
 	}
 
 	/**
@@ -299,31 +331,15 @@ public:
 	*/
 	static void make_folders(const std::string& path)
 	{
-		std::string tmp(FileSystem::path_to_systemstandard(path));
-#ifdef _WIN32
-		tmp.erase(0, 3);
-		std::string current_path(path.begin(), path.begin()+3);	
-
-		for (; tmp.size() > 0;)
+		try
 		{
-			auto n = tmp.find_first_of(FileSystem::path_separator);
-			if (n != std::string::npos)
-			{
-				current_path.append(std::string(tmp.begin(), tmp.begin() + (n + 1)));
-				tmp.erase(0, (n + 1));
-				if (!is_directory(current_path))
-					create_directory(current_path);
-				//std::cout << current_path << std::endl;
-			}
-			else
-			{
-				current_path.append(tmp);
-				if (!is_directory(current_path))
-					create_directory(current_path);
-				tmp.clear();
-			}
+			Poco::File f(path);
+			f.createDirectories();
 		}
-#endif
+		catch (std::exception& e)
+		{
+			std::cout << "what: " << e.what() << " where: make_folder" << std::endl;
+		}
 	}
 
 	/**
@@ -413,4 +429,4 @@ public:
 #endif
 	static const char standard_separator = '/';
 };
-#endif
+//#endif

@@ -2,11 +2,11 @@
 
 #include "helper_files.h"
 #include <stdexcept>
-#include <cryptopp\cryptlib.h>
-#include <cryptopp\files.h>
-#include <cryptopp\filters.h>
-#include <cryptopp\crc.h>
-#include <cryptopp\hex.h>
+#include <cryptopp/cryptlib.h>
+#include <cryptopp/files.h>
+#include <cryptopp/filters.h>
+#include <cryptopp/crc.h>
+#include <cryptopp/hex.h>
 #include <thread>
 #include <chrono>
 #include "FileSystem.h"
@@ -17,13 +17,13 @@ Synchronizer::Synchronizer()
 
 Synchronizer::Synchronizer(const std::string& vhd_location, const std::string& cloud_location) :
 	vhd_location_(vhd_location), cloud_location_(cloud_location),
-	vhdwatch_(vhd_location), cloudwatch_(cloud_location), stopped_(false)
+	/*vhdwatch_(vhd_location), cloudwatch_(cloud_location),*/ stopped_(false)
 {
-	vhdwatch_.set_filter(folder_watcher::filter::WRITES_ONLY);
+	/*vhdwatch_.set_filter(folder_watcher::filter::WRITES_ONLY);
 	vhdwatch_.set_callback(std::bind(&Synchronizer::update_at_vhd, this));
 
 	cloudwatch_.set_filter(folder_watcher::filter::WRITES_ONLY);
-	cloudwatch_.set_callback(std::bind(&Synchronizer::update_at_cloud, this));
+	cloudwatch_.set_callback(std::bind(&Synchronizer::update_at_cloud, this));*/
 }
 
 void Synchronizer::init()
@@ -31,66 +31,23 @@ void Synchronizer::init()
 	using namespace CryptoPP;
 	timer_sync();
 	return;
-
-	auto cloudfiles = FileSystem::list_files(cloud_location_, true);
-
-//#pragma omp parallel for
-	for (int i = 0; i < cloudfiles.size(); ++i)
-	{
-		std::pair<std::string, std::string> tmp;
-		tmp.first = cloudfiles[i];
-
-		std::string crc;
-		if (!secure_crc(cloudfiles[i], crc))
-		{
-			continue;
-		}
-
-		tmp.second = crc;
-
-		cloud_list_.insert(tmp);
-	}
-
-	auto vhdfiles = FileSystem::list_files(vhd_location_, true);
-
-//#pragma omp parallel for
-	for (int i = 0; i < vhdfiles.size(); ++i)
-	{
-		std::pair<std::string, std::string> tmp;
-		tmp.first = vhdfiles[i];
-
-		std::string crc;
-		if (!secure_crc(vhdfiles[i], crc))
-		{
-			continue;
-		}
-
-		tmp.second = crc;
-
-		vhd_list_.insert(tmp);
-	}
-
-	//vhdwatch_.run();
-	//cloudwatch_.run();
-
-	
 }
 
 void Synchronizer::set_vhdlocation(const std::string& location)
 {
 	vhd_location_ = location;
-	vhdwatch_.set_directory(vhd_location_);
+	/*vhdwatch_.set_directory(vhd_location_);
 	
 	vhdwatch_.set_filter(folder_watcher::filter::WRITES_ONLY);
-	vhdwatch_.set_callback(std::bind(&Synchronizer::update_at_vhd, this));
+	vhdwatch_.set_callback(std::bind(&Synchronizer::update_at_vhd, this));*/
 }
 
 void Synchronizer::set_cloudlocation(const std::string& location)
 {
 	cloud_location_ = location;
-	cloudwatch_.set_directory(cloud_location_);
+	/*cloudwatch_.set_directory(cloud_location_);
 	cloudwatch_.set_filter(folder_watcher::filter::WRITES_ONLY);
-	cloudwatch_.set_callback(std::bind(&Synchronizer::update_at_cloud, this));
+	cloudwatch_.set_callback(std::bind(&Synchronizer::update_at_cloud, this));*/
 }
 
 void Synchronizer::add_listener(func_t func, listen_to location)
@@ -115,7 +72,7 @@ Synchronizer::~Synchronizer()
 	cloudwatch_.stop();*/
 }
 
-void Synchronizer::update_at_cloud()
+/*void Synchronizer::update_at_cloud()
 {
 	using namespace CryptoPP;
 
@@ -183,7 +140,8 @@ void Synchronizer::update_at_cloud()
 			item.ev = REMOVED;
 			item.location = e.first;
 			update.push_back(item);
-			cloud_list_.unsafe_erase(e.first);
+			//cloud_list_.unsafe_erase(e.first);
+			cloud_list_.erase(e.first);
 		}
 	}
 
@@ -191,9 +149,9 @@ void Synchronizer::update_at_cloud()
 	{
 		e(update);
 	}
-}
+}*/
 
-void Synchronizer::update_at_vhd()
+/*void Synchronizer::update_at_vhd()
 {
 	using namespace CryptoPP;
 
@@ -259,7 +217,8 @@ void Synchronizer::update_at_vhd()
 			item.ev = REMOVED;
 			item.location = e.first;
 			update.push_back(item);
-			vhd_list_.unsafe_erase(e.first);
+			//vhd_list_.unsafe_erase(e.first);
+			vhd_list_.erase(e.first);
 		}
 	}
 
@@ -267,7 +226,7 @@ void Synchronizer::update_at_vhd()
 	{
 		e(update);
 	}
-}
+}*/
 
 void Synchronizer::timer_sync()
 {

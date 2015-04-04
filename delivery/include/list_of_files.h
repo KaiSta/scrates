@@ -6,16 +6,16 @@
 #include "FileSystem.h"
 #include "../lib/pugixml/src/pugixml.hpp"
 #include "Path.h"
-#include <cryptopp\cryptlib.h>
-#include <cryptopp\serpent.h>
-#include <cryptopp\aes.h>
-#include <cryptopp\osrng.h>
-#include <cryptopp\hex.h>
-#include <cryptopp\sha.h>
-#include <cryptopp\files.h>
-#include <cryptopp\filters.h>
-#include <cryptopp\pwdbased.h>
-#include <cryptopp\modes.h>
+#include <cryptopp/cryptlib.h>
+#include <cryptopp/serpent.h>
+#include <cryptopp/aes.h>
+#include <cryptopp/osrng.h>
+#include <cryptopp/hex.h>
+#include <cryptopp/sha.h>
+#include <cryptopp/files.h>
+#include <cryptopp/filters.h>
+#include <cryptopp/pwdbased.h>
+#include <cryptopp/modes.h>
 
 #include <mutex>
 
@@ -220,7 +220,7 @@ public:
 			}
 		}
 
-		return{ "", "", 0, "", "" };
+		return item_type{ "", "", 0, "", path{} };
 	}
 
 	void update_file(item_type file)

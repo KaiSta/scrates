@@ -1,5 +1,6 @@
 #include "VirtualDisk_Impl.h"
 
+#ifdef _WIN32
 #include <iostream>
 #include <Windows.h>
 #include <stdio.h>
@@ -11,6 +12,7 @@
 #include <string>
 #include <vector>
 #include <ShlObj.h>
+
 
 #define PHYS_PATH_LEN 1024+1
 
@@ -31,7 +33,7 @@ VirtualDisk_Impl::~VirtualDisk_Impl()
 bool VirtualDisk_Impl::mount_drive(const std::string& path, volume_handle& out)
 {
 	bool res = false;
-	if (FileSystem::file_exists(path))
+	if (exists(path))
 	{
 		TCHAR buffer[100];
 		GetLogicalDriveStrings(100, buffer);
@@ -146,6 +148,7 @@ bool VirtualDisk_Impl::create(const std::string& path, int64_t disk_size_mb, vol
 	WideCharToMultiByte(CP_UTF8, 0, phydiskpath.c_str(), -1, &buf[0], size,
 		0, NULL);
 	std::string phydiskpath_utf8(&buf[0]);
+
 	HANDLE vol_handle = CreateFile(
 		phydiskpath_utf8.c_str(),
 		GENERIC_READ | GENERIC_WRITE,
@@ -367,5 +370,15 @@ void VirtualDisk_Impl::dismount_drive(volume_handle& in)
 void VirtualDisk_Impl::cleanup(volume_handle& in)
 {
 	dismount_drive(in);
-	FileSystem::delete_file(in.path);
+	DeleteFile(in.path.c_str());
+	//FileSystem::delete_file(in.path);
 }
+
+bool VirtualDisk_Impl::exists(const std::string& p)
+{
+	auto file_attributes = GetFileAttributes(path_to_systemstandard_(p).data());
+	return (file_attributes != INVALID_FILE_ATTRIBUTES) &&
+		(file_attributes != FILE_ATTRIBUTE_DIRECTORY) &&
+		(GetLastError() != ERROR_FILE_NOT_FOUND);
+}
+#endif
