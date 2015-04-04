@@ -4,6 +4,7 @@
 #include <QSettings>
 #include "Models/container.h"
 #include "Models/passwordstrengthchecker.h"
+#include "Models/randomseedgenerator.h"
 
 int main(int argc, char *argv[])
 {
@@ -28,7 +29,12 @@ int main(int argc, char *argv[])
     PasswordStrengthCheckerModel pwStrengthCheckerModel;
     engine.rootContext()->setContextProperty("_pwStrengthCheckerModel", &pwStrengthCheckerModel);
 
+    // RandomSeedGeneratorModel randomSeedGeneratorModel;
+    // engine.rootContext()->setContextProperty("_randomSeedGeneratorModel", &randomSeedGeneratorModel);
+
     qmlRegisterType<ContainerObject>("tempest.Container", 1, 0, "Container");
+    qmlRegisterType<RandomSeedGeneratorModel>("tempest.RandomSeedGenerator", 1, 0, "RandomSeedGenerator");
+
 
     //#ifdef Q_OS_OSX
     //#endif

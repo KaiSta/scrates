@@ -19,7 +19,7 @@ Item {
                 text: _containerModel.currentContainer().history
                 wrapMode: Text.WrapAnywhere
                 textFormat: TextEdit.RichText
-                textMargin: 10
+                textMargin: 5
             }
 
             Rectangle {
@@ -53,7 +53,7 @@ Item {
                         text: "Export"
                         anchors.verticalCenter: parent.verticalCenter
                         enabled: (_containerModel.currentContainer().history.length ? true : false)
-                        //onClicked: _containerModel.currentContainer().exportHistory
+                        onClicked: _containerModel.currentContainer().exportHistory("/Users/jochen/Desktop/test")
                     }
                 }
             }

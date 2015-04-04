@@ -1,12 +1,31 @@
 #include "randomseedgenerator.h"
 
+
+
 RandomSeedGenerator::RandomSeedGenerator()
+{ }
+
+RandomSeedGenerator::~RandomSeedGenerator()
+{ }
+
+
+
+
+
+RandomSeedGeneratorModel::RandomSeedGeneratorModel(QObject *parent)
+    : QObject(parent)
+{ }
+
+RandomSeedGeneratorModel::~RandomSeedGeneratorModel()
+{ }
+
+void RandomSeedGeneratorModel::calcStrength(const QString &str)
 {
 
 }
 
-RandomSeedGenerator::~RandomSeedGenerator()
+QByteArray RandomSeedGeneratorModel::seed() const
 {
-
+    return strength_;
 }
 

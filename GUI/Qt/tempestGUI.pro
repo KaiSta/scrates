@@ -22,3 +22,7 @@ HEADERS += \
     Models/container.h \
     Models/passwordstrengthchecker.h \
     Models/randomseedgenerator.h
+
+INCLUDEPATH += /usr/local/include
+LIBS += -L"/usr/local/lib" -lPocoFoundationd -lPocoJSONd -lPocoNetd -lPocoUtild -lPocoXMLd
+LIBS += -L"/usr/local/lib" -lPocoFoundation -lPocoJSON -lPocoNet -lPocoUtil -lPocoXML
