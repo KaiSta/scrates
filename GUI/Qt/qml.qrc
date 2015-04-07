@@ -7,5 +7,6 @@
         <file>qml/NewContainerDialog.qml</file>
         <file>qml/Welcome.qml</file>
         <file>qml/UIComponents/MessageBar.qml</file>
+        <file>qml/Dialogs/SettingsDialog.qml</file>
     </qresource>
 </RCC>
