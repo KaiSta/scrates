@@ -11,7 +11,7 @@
 #include <vector>
 #include "Path.h"
 #include "container_handle.h"
-#include "list_of_files.h"
+
 #include "helper_files.h"
 #include "VirtualDisk_Impl.h"
 #include "Storage.h"

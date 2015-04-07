@@ -147,7 +147,6 @@
     <ClInclude Include="Folder_Impl.h" />
     <ClInclude Include="folder_watcher.h" />
     <ClInclude Include="helper_files.h" />
-    <ClInclude Include="list_of_files.h" />
     <ClInclude Include="local_file.h" />
     <ClInclude Include="MessageTypes.h" />
     <ClInclude Include="number_helper.h" />

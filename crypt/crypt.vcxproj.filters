@@ -36,9 +36,6 @@
     <ClInclude Include="VirtualDisk_Impl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="list_of_files.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="number_helper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
