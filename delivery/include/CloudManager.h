@@ -2,7 +2,8 @@
 
 #include <string>
 #include <unordered_map>
-#include "../lib/pugixml/src/pugixml.hpp"
+//#include "../lib/pugixml/src/pugixml.hpp"
+#include "pugixml.hpp"
 
 class CloudManager
 {

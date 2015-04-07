@@ -512,8 +512,6 @@ void Container::delete_file(const path& relative_path)
 		return;
 	}
 	auto x = handle_.get_filenode(relative_path);
-	list_of_files::item remove_item;
-	remove_item.name = x.blocks[0].filename;
 	
 	handle_.delete_filenode(relative_path);
 	save();

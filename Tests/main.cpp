@@ -12,7 +12,6 @@
 #include <cryptopp/serpent.h>
 #include <cryptopp/aes.h>
 #include <cryptopp/twofish.h>
-#include <Windows.h>
 
 #include <istream>
 #include <FileSystem.h>
@@ -244,7 +243,11 @@ int main()
 	local_file f;
 	
 	path vhdp("C:\\tmp\\local\\");
+#ifdef _WIN32
 	path folderp("C:\\tmp\\folder");
+#else
+	path folderp("/home/kai/Documents/folder");
+#endif
 	
 	while (true)
 	{

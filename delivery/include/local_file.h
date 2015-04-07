@@ -4,7 +4,8 @@
 #include <sstream>
 #include <vector>
 #include "FileSystem.h"
-#include "../lib/pugixml/src/pugixml.hpp"
+//#include "../lib/pugixml/src/pugixml.hpp"
+#include "pugixml.hpp"
 #include "Container.h"
 #include "Path.h"
 #include "VirtualDisk_Impl.h"

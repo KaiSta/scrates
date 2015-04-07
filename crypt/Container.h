@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
-#include "../lib/pugixml/src/pugixml.hpp"
+//#include "../lib/pugixml/src/pugixml.hpp"
+#include "pugixml.hpp"
 #include <cryptopp/serpent.h>
 #include <cryptopp/twofish.h>
 #include <cryptopp/aes.h>
@@ -10,7 +11,7 @@
 #include <vector>
 #include "Path.h"
 #include "container_handle.h"
-#include "list_of_files.h"
+
 #include "helper_files.h"
 #include "VirtualDisk_Impl.h"
 #include "Storage.h"

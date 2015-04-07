@@ -4,7 +4,8 @@
 #include <sstream>
 #include <vector>
 #include "FileSystem.h"
-#include "../lib/pugixml/src/pugixml.hpp"
+//#include "../lib/pugixml/src/pugixml.hpp"
+#include "pugixml.hpp"
 #include "Path.h"
 #include <cryptopp/cryptlib.h>
 #include <cryptopp/serpent.h>

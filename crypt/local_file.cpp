@@ -28,7 +28,9 @@ void local_file::create(const std::string& containername,
 	{
 	case storage_type::VHD:
 	{
+#ifdef _WIN32
 		storage_ = std::make_shared<VirtualDisk_Impl>();
+#endif
 	}
 		break;
 	case storage_type::FOLDER:
@@ -171,7 +173,9 @@ void local_file::open(path& p, const std::string& passphrase,
 	{
 	case storage_type::VHD:
 	{
+#ifdef _WIN32
 		storage_ = std::make_shared<VirtualDisk_Impl>();
+#endif
 	}
 		break;
 	case storage_type::FOLDER:
