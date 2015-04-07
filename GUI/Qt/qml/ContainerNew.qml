@@ -5,6 +5,7 @@ import QtQuick.Controls.Styles 1.2
 import QtQuick.Dialogs 1.2
 import Qt.labs.settings 1.0
 import tempest.Container 1.0
+import tempest.RandomSeedGenerator 1.0
 
 Item {
     Container {
@@ -14,17 +15,39 @@ Item {
         path: "testPATH"
     }
 
+    RandomSeedGenerator {
+        id: randomSeedGenerator
+    }
+
+    /*
+    Timer {
+        id: timer
+        interval: 1000
+        running: true
+        repeat: true
+        onTriggered: randomSeedGenerator.time()
+   }
+   */
+
     SystemPalette { id: palette }
     Settings {
         property alias text: pathText.text
     }
 
+    MouseArea {
+        anchors.fill: parent
+        onPositionChanged: randomSeedGenerator.randomSeed(mouseX, mouseY)
+        hoverEnabled: true
+    }
+
     GridLayout {
         columns: 2
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.margins: 10
+        anchors {
+            top: parent.top
+            left: parent.left
+            right: parent.right
+            margins: 10
+        }
         rowSpacing: 10
         columnSpacing: 10
 
@@ -85,6 +108,42 @@ Item {
         TextField {
             id: randomSeedText
             Layout.fillWidth: true
+            readOnly: true
+            text: randomSeedGenerator.seed
+        }
+
+        Label {
+            text: qsTr("Cloud Service:")
+        }
+        Row {
+            ExclusiveGroup {
+                id: cloudServicesGroup
+            }
+
+            // aus providers.xml rauslesen
+            Button {
+                text: qsTr("Dropbox")
+                checkable: true
+                exclusiveGroup: cloudServicesGroup
+            }
+
+            Button {
+                text: qsTr("OneDrive")
+                checkable: true
+                exclusiveGroup: cloudServicesGroup
+            }
+
+            Button {
+                text: qsTr("Google Drive")
+                checkable: true
+                exclusiveGroup: cloudServicesGroup
+            }
+
+            Button {
+                text: qsTr("User specific")
+                checkable: true
+                exclusiveGroup: cloudServicesGroup
+            }
         }
 
         Label {
@@ -99,6 +158,7 @@ Item {
             Button {
                 text: qsTr("Open...")
                 onClicked: containerPathFileDialog.open()
+                // TODO: open container path if exists
             }
         }
     }
@@ -113,19 +173,29 @@ Item {
         height: buttonRow.height * 1.2
         color: Qt.darker(palette.window, 1.1)
 
-        Row {
+        RowLayout {
             id: buttonRow
-            spacing: 6
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.left: parent.left
-            anchors.leftMargin: 12
-            width: parent.width
+            spacing: 5
+            anchors {
+                verticalCenter: parent.verticalCenter
+                left: parent.left
+                right: parent.right
+                leftMargin: 10
+                rightMargin: 5
+            }
+
+            CheckBox {
+                text: qsTr("Mount container after saving")
+                checked: true
+                // TODO: implementation
+            }
+
+            Item { Layout.fillWidth: true }
 
             Button {
                 text: "Save"
                 anchors.verticalCenter: parent.verticalCenter
                 onClicked: {
-                    // _containerModel.add(container)
                     if (_containerModel.add(nameText.text, pathText.text, passwordText.text))
                         viewLoader.source = "Welcome.qml"
                     else
@@ -137,6 +207,7 @@ Item {
                 text: "Cancel"
                 anchors.verticalCenter: parent.verticalCenter
                 onClicked: viewLoader.source = "Welcome.qml"
+
             }
         }
     }
@@ -155,8 +226,4 @@ Item {
         selectFolder: true
         onAccepted: pathText.text = fileUrl
     }
-
-
-
-
 }

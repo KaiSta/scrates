@@ -2,11 +2,8 @@
 
 #include <QObject>
 #include <QString>
-#include <QColor>
-#include <ctype.h>
-#include <math.h>
-#include <algorithm>
 #include <QByteArray>
+#include <QDebug>
 
 class RandomSeedGenerator
 {
@@ -16,23 +13,27 @@ public:
 
 private:
 
+
 };
 
 class RandomSeedGeneratorModel : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QByteArray seed READ seed NOTIFY seedChanged)
-
+    Q_PROPERTY(QString seed READ seed NOTIFY seedChanged)
 public:
     explicit RandomSeedGeneratorModel(QObject *parent = 0);
     ~RandomSeedGeneratorModel();
-    Q_INVOKABLE void calcStrength(const QString &str);
-    QByteArray seed() const;
+    Q_INVOKABLE void randomSeed(double x, double y);
+    //Q_INVOKABLE void mousePosition(double x, double y);
+    //Q_INVOKABLE void windowPosition(double x, double y);
+    Q_INVOKABLE void time();
+
+    QString seed() const;
 
 signals:
     void seedChanged();
 
 private:
-    QByteArray strength_;
-
+    QByteArray seed_;
+    size_t time_;
 };
