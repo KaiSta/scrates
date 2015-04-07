@@ -19,16 +19,9 @@ Item {
             onAccepted: console.log("TODO: decrypt container")
         }
 
-        Row {
-            Button {
-                text: qsTr("Decrypt Container")
-                onClicked: console.log("TODO: decrypt container")
-            }
-
-            Button {
-                text: qsTr("Decrypt and mount")
-                onClicked: console.log("TODO: decrypt & mount container")
-            }
+        Button {
+            text: qsTr("Decrypt and mount container")
+            onClicked: console.log("TODO: decrypt & mount container")
         }
     }
 

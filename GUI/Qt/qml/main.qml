@@ -6,6 +6,7 @@ import QtQuick.Layouts 1.1
 import Qt.labs.settings 1.0
 
 import "UIComponents"
+import "Dialogs"
 
 ApplicationWindow {
     id: root
@@ -17,17 +18,14 @@ ApplicationWindow {
     visible: true
 
     Settings {
-        // property alias x: root.x
-        // property alias y: root.y
         property alias width: root.width
         property alias height: root.height
     }
-
+    property variant settingsWindow;  // settings window reference
     property alias containerList: containerTable
 
     onClosing: {
-        // TODO:
-        // - save QDir List of all Container files
+        // TODO: forced sync for all encrypted/mounted containers
     }
 
     FileDialog {
@@ -49,6 +47,10 @@ ApplicationWindow {
         onAccepted: console.log(fileUrl)
     }
 
+    SettingsDialog {
+        id: settingsDialog
+    }
+
     Action {
         id: openAction
         text: "Open Container"
@@ -66,7 +68,7 @@ ApplicationWindow {
             MenuItem {
                 text: qsTr("&New Container")
                 shortcut: "Ctrl+N"
-                // onTriggered: TODO
+                onTriggered: viewLoader.source = "ContainerNew.qml"
             }
             MenuSeparator { }
             MenuItem {
@@ -84,6 +86,17 @@ ApplicationWindow {
                 onTriggered: Qt.quit();
             }
         }
+        Menu {
+            title: qsTr("&Tools")
+            MenuItem {
+                text: qsTr("&Preferences")
+                onTriggered: {
+                    var component = Qt.createComponent("Dialogs/SettingsDialog.qml");
+                    settingsWindow = component.createObject(root);
+                    settingsWindow.show();
+                }
+            }
+        }
     }
 
     toolBar: ToolBar {
@@ -95,47 +108,24 @@ ApplicationWindow {
                 text: qsTr("+")
                 tooltip: qsTr("Create a new container")
                 onClicked: {
-                    //test.open()
                     viewLoader.source = "ContainerNew.qml"
                 }
             }
-
             Button {
-                text: qsTr("Import")
-                tooltip: qsTr("Import an existing container")
-                onClicked: messageDialog.open()
-            }
-
-            Button {
-                text: qsTr("Refresh")
-                tooltip: qsTr("Refresh the container list")
-                // Todo
-            }
-
-            Item { Layout.fillWidth: true }
-
-            Button {
-                text: qsTr("Remove")
+                text: qsTr(" - ")
                 tooltip: qsTr("Remove the selected container")
                 onClicked: removeContainerMsgDialog.open()
                 enabled: (containerList.currentRow > -1 & containerList.currentRow < containerList.rowCount ? true : false)
                 // Damn it! After removing the last row (of containerList) no item is selected (visually)
             }
-
             Button {
-                text: qsTr("Show")
-                tooltip: qsTr("Open container directory")
-                onClicked: _containerModel.currentContainer().openDirectory()
-                enabled: (containerList.currentRow > -1 & containerList.currentRow < containerList.rowCount ? true : false)
+                text: qsTr("Import")
+                tooltip: qsTr("Import an existing container")
+                onClicked: messageDialog.open()
             }
-
-            Button {
-                text: qsTr("Sync")
-                // TODO
-            }
+            Item { Layout.fillWidth: true }
         }
     }
-
 
     // In progress. TODO.
     MessageBar {
@@ -146,6 +136,7 @@ ApplicationWindow {
     SplitView {
         anchors.fill: parent
 
+        // TODO: QFileSystemWatcher for local container directory
         TableView {
             id: containerTable
             model: _containerModel
