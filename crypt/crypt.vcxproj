@@ -139,7 +139,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\lib\pugixml\src\pugixml.hpp" />
     <ClInclude Include="CloudManager.h" />
     <ClInclude Include="Container.h" />
     <ClInclude Include="ContainerController.h" />
@@ -153,6 +152,8 @@
     <ClInclude Include="MessageTypes.h" />
     <ClInclude Include="number_helper.h" />
     <ClInclude Include="Path.h" />
+    <ClInclude Include="pugiconfig.hpp" />
+    <ClInclude Include="pugixml.hpp" />
     <ClInclude Include="Storage.h" />
     <ClInclude Include="string_helper.h" />
     <ClInclude Include="Synchronizer.h" />
@@ -160,13 +161,13 @@
     <ClInclude Include="VirtualDisk_Impl.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\lib\pugixml\src\pugixml.cpp" />
     <ClCompile Include="CloudManager.cpp" />
     <ClCompile Include="Container.cpp" />
     <ClCompile Include="ContainerController.cpp" />
     <ClCompile Include="Container_handle.cpp" />
     <ClCompile Include="folder_watcher.cpp" />
     <ClCompile Include="local_file.cpp" />
+    <ClCompile Include="pugixml.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="Synchronizer.cpp" />
     <ClCompile Include="uarng.cpp" />
