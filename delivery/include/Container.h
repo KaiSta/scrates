@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
-#include "../lib/pugixml/src/pugixml.hpp"
+//#include "../lib/pugixml/src/pugixml.hpp"
+#include "pugixml.hpp"
 #include <cryptopp/serpent.h>
 #include <cryptopp/twofish.h>
 #include <cryptopp/aes.h>

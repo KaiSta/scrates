@@ -2,8 +2,8 @@
 
 #include "FileSystem.h"
 #include "CloudManager.h"
-#include "../lib/pugixml/src/pugixml.hpp"
-
+//#include "../lib/pugixml/src/pugixml.hpp"
+#include "pugixml.hpp"
 #include <string>
 #include <vector>
 

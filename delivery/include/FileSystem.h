@@ -88,6 +88,7 @@ public:
 		{
 			std::cout << "what: " << e.what() << " where: create_directory" << std::endl;
 		}
+		return false;
 	}
 
 	/**
@@ -173,7 +174,7 @@ public:
 		{
 			std::cout << "what: " << e.what() << " where: get_all_files_in_dir" << std::endl;
 		}
-		return true;
+		return false;
 	}
 
 	/**
