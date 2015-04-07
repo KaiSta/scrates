@@ -5,11 +5,13 @@ import QtQuick.Controls 1.2
 Item {
     SystemPalette { id: palette }
     SplitView {
-
         anchors.fill: parent
         orientation: Qt.Horizontal
 
         ColumnLayout {
+            Layout.fillWidth: true
+            spacing: 0
+
             TextArea {
                 id: history
                 Layout.fillWidth: true
@@ -31,11 +33,9 @@ Item {
                 height: buttonRow.height * 1.2
                 color: Qt.darker(palette.window, 1.1)
 
-
-
                 Row {
                     id: buttonRow
-                    spacing: 6
+                    spacing: 5
                     anchors {
                         verticalCenter: parent.verticalCenter
                         left: parent.left
@@ -60,34 +60,33 @@ Item {
         }
 
         ColumnLayout {
-
-
-
             Button {
-                text: qsTr("Mount")
+                text: qsTr("Demount")
             }
 
             Button {
-                text: qsTr("test history")
-                onClicked: {appendHistory("hello", "red", "normal")
-                appendHistory("ich bin so cool", "blue", "bold")}
+                text: qsTr("Open")
+                tooltip: qsTr("Open container directory")
+                onClicked: _containerModel.currentContainer().openDirectory()
+                enabled: (containerList.currentRow > -1 & containerList.currentRow < containerList.rowCount ? true : false)
             }
 
-            TextField {
-                text: _containerModel.currentContainer().name
-                onTextChanged: _containerModel.get(containerList.currentRow).name = text
+            Button {
+                text: qsTr("Sync")
+                // TODO
             }
 
+            Button {
+                text: qsTr("Insert test string")
+                onClicked: {appendHistory("sweet", "red", "normal")
+                appendHistory("foo bar", "blue", "bold")}
+            }
         }
     }
 
-
+    // TODO
     function appendHistory(text, color, style) {
-
         _containerModel.currentContainer().history = "<span style='color: " + color + ";'>" + text +  "</span><br>";
-
-
-
     }
 
     function test() {
