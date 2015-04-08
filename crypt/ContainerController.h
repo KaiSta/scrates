@@ -27,6 +27,7 @@ public:
 	void delete_booked_node(container_event& e);
 	void refresh_providerlist();
 	void add_provider(std::string name_with_sign, std::string location);
+	std::vector<std::pair<std::string, std::string> > get_providers();
 
 private:
 	callback_t event_callback_;

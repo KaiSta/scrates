@@ -103,3 +103,9 @@ void ContainerController::add_provider(std::string name_with_sign, std::string l
 	auto& manager = CloudManager::instance();
 	manager.add_provider(name_with_sign, location);
 }
+
+std::vector<std::pair<std::string, std::string> > ContainerController::get_providers()
+{
+	auto& manager = CloudManager::instance();
+	return manager.get_providers();
+}
