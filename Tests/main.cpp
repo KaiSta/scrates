@@ -298,16 +298,16 @@ void callback_func(container_event e)
 		message = "adding file " + std::string(e._data_.data());
 		break;
 	case UPDATE_FILE:
-		message = "updating file" + std::string(e._data_.data());
+		message = "updating file " + std::string(e._data_.data());
 		break;
 	case DELETE_FILE:
-		message = "delete file" + std::string(e._data_.data());
+		message = "delete file " + std::string(e._data_.data());
 		break;
 	case EXTRACT_FILE:
-		message = "extract file" + std::string(e._data_.data());
+		message = "extract file " + std::string(e._data_.data());
 		break;
 	case EXTRACT_FILES:
-		message = "extract files";
+		message = "extract files ";
 		break;
 	case INIT_CONTAINER:
 		message = "initializing container";

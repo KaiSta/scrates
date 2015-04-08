@@ -4,7 +4,7 @@
 #include <vector>
 #include <stdint.h>
 #include <functional>
-
+#include <string>
 #include "MessageTypes.h"
 #include "local_file.h"
 
@@ -25,6 +25,8 @@ public:
 	void set_seed(std::vector<unsigned char>& seed);
 
 	void delete_booked_node(container_event& e);
+	void refresh_providerlist();
+	void add_provider(std::string name_with_sign, std::string location);
 
 private:
 	callback_t event_callback_;

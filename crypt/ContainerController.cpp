@@ -3,6 +3,7 @@
 #include <cryptopp/secblock.h>
 #include <cryptopp/osrng.h>
 #include <string>
+#include "CloudManager.h"
 
 ContainerController::ContainerController(callback_t event_callback, const std::string& vhd_path) : 
 event_callback_(event_callback), vhd_path_(vhd_path)
@@ -89,4 +90,16 @@ void ContainerController::send_callback(event_type t, event_message m, std::stri
 	ev._data_.insert(ev._data_.begin(), data.begin(), data.end());
 	std::thread th(event_callback_, ev);
 	th.detach();
+}
+
+void ContainerController::refresh_providerlist()
+{
+	auto& manager = CloudManager::instance();
+	manager.create_providerlist();
+}
+
+void ContainerController::add_provider(std::string name_with_sign, std::string location)
+{
+	auto& manager = CloudManager::instance();
+	manager.add_provider(name_with_sign, location);
 }

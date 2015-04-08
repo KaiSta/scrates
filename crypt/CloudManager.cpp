@@ -63,10 +63,11 @@ std::string CloudManager::get_location_name(const std::string& path)
 
 void CloudManager::autodetect()
 {
+	providerlist_.reset(new pugi::xml_document());
 	if (FileSystem::file_exists("providers.xml"))
 	{
-		providerlist_.load_file("providers.xml");
-		pugi::xpath_node_set provider = providerlist_.select_nodes("//provider");
+		providerlist_->load_file("providers.xml");
+		pugi::xpath_node_set provider = providerlist_->select_nodes("//provider");
 		for (auto it = provider.begin(); it != provider.end(); ++it)
 		{
 			pugi::xpath_node node = *it;
@@ -83,16 +84,27 @@ void CloudManager::autodetect()
 		detect_googledrive();
 		detect_local();
 		
-		pugi::xml_node providers = providerlist_.append_child("providers");
+		pugi::xml_node providers = providerlist_->append_child("providers");
 		for (auto& x : provider_locations_)
 		{
 			pugi::xml_node current = providers.append_child("provider");
 			current.append_attribute("placeholder") = x.first.data();
 			current.append_attribute("location") = x.second.data();
 		}
-		providerlist_.save_file("providers.xml");
+		providerlist_->save_file("providers.xml");
 	}
 	
+}
+
+void CloudManager::create_providerlist()
+{
+	if (FileSystem::file_exists("providers.xml"))
+	{
+		FileSystem::delete_file("providers.xml");
+	}
+	auto& manager = instance();
+	manager.provider_locations_.clear();
+	manager.autodetect();
 }
 
 void CloudManager::detect_dropbox()
@@ -213,4 +225,24 @@ void CloudManager::detect_local()
 		provider_locations_["$Local"] = std::string(x);
 	}
 #endif
+}
+
+std::vector<std::pair<std::string, std::string> > CloudManager::get_providers()
+{
+	std::vector<std::pair<std::string, std::string> > tmp;
+	for (auto& e : provider_locations_)
+	{
+		tmp.push_back({ e.first, e.second });
+	}
+	return tmp;
+}
+
+void CloudManager::add_provider(std::string name_with_sign, std::string location)
+{
+	provider_locations_[name_with_sign] = location;
+	pugi::xml_node providers = providerlist_->child("providers");
+	pugi::xml_node current = providers.append_child("provider");
+	current.append_attribute("placeholder") = name_with_sign.c_str();
+	current.append_attribute("location") = location.c_str();
+	providerlist_->save_file("providers.xml");
 }
