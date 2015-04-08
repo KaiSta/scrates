@@ -17,12 +17,14 @@
 #include "Storage.h"
 #include "Synchronizer.h"
 #include <atomic>
-
+#include "MessageTypes.h"
 #include <mutex>
 
 class Container
 {
 public:
+	typedef std::function<void(container_event)> callback_t;
+
 	enum encryption_algorithm
 	{
 		AES = 0,
@@ -40,6 +42,7 @@ public:
 
 	void set_vhd(Storage::volume_handle*);
 	void set_seed(CryptoPP::SecByteBlock seed);
+	void set_callback(callback_t c);
 	
 	/**
 	  \brief First step after creating a container instance.
@@ -162,6 +165,10 @@ private:
 	std::mutex sync_lock_;
 	bool container_open_;
 	std::string containercrc_;
+
+	callback_t event_callback_;
+	bool has_callback_;
+	void send_callback(event_type t, event_message m, std::string data = "");
 
 	bool file_exists(const path& relative_path);
 

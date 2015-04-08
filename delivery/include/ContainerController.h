@@ -11,7 +11,7 @@
 class ContainerController
 {
 public:
-	typedef std::function<void(container_event&)> callback_t;
+	typedef std::function<void(container_event)> callback_t;
 	typedef local_file::storage_type stor_t;
 
 	ContainerController(callback_t event_callback, const std::string& vhd_path);
@@ -30,5 +30,7 @@ private:
 	callback_t event_callback_;
 	local_file container_;
 	std::string vhd_path_;
+
+	void send_callback(event_type t, event_message m, std::string data="");
 };
 

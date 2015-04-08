@@ -13,18 +13,19 @@
 #include "helper_files.h"
 #include <mtl/fromtorange.h>
 
-Container::Container(encryption_algorithm algo) : algo_(algo), volume_(nullptr), seed_(32), is_syncing(false), container_open_(false)
+Container::Container(encryption_algorithm algo) : algo_(algo), volume_(nullptr), seed_(32), is_syncing(false),
+container_open_(false), has_callback_(false)
 {
 
 }
 
 Container::Container(VirtualDisk_Impl::volume_handle* volume, encryption_algorithm algo) : algo_(algo),
-volume_(volume), seed_(32), is_syncing(false), container_open_(false)
+volume_(volume), seed_(32), is_syncing(false), container_open_(false), has_callback_(false)
 {
 }
 
 Container::Container(const path& location, const std::string& pw, VirtualDisk_Impl::volume_handle* volume, encryption_algorithm algo) : volume_(volume), 
-passphrase_(pw.begin(), pw.end()), seed_(32), is_syncing(false), container_open_(false)
+passphrase_(pw.begin(), pw.end()), seed_(32), is_syncing(false), container_open_(false), has_callback_(false)
 {
 	using namespace CryptoPP;
 	SHA256 shafunc;
@@ -74,6 +75,26 @@ void Container::set_seed(CryptoPP::SecByteBlock seed)
 	}
 }
 
+void Container::set_callback(callback_t c)
+{
+	event_callback_ = c;
+	has_callback_ = true;
+}
+
+void Container::send_callback(event_type t, event_message m, std::string data)
+{
+	if (has_callback_)
+	{
+		container_event ev;
+		ev.type = t;
+		ev.message = m;
+		ev._data_.insert(ev._data_.begin(), data.begin(), data.end());
+		ev._data_.push_back('\0');
+		std::thread th(event_callback_, ev);
+		th.detach();
+	}
+}
+
 Container::~Container()
 {
 	close();
@@ -82,6 +103,7 @@ Container::~Container()
 void Container::init(const path& location, const std::string& pw, encryption_algorithm algo)
 {
 	using namespace CryptoPP;
+	send_callback(VERBOSE, INIT_CONTAINER, location.std_str());
 	SHA256 shafunc;
 	StringSource(pw.data(), true, new HashFilter(shafunc, new StringSink(pw_)));
 	
@@ -177,7 +199,10 @@ void Container::open()
 	handle_.open(container_raw_);
 	if (!validate())
 	{
-		throw(std::logic_error("severe: synchronization with cloud incomplete!"));
+		if (has_callback_)
+			send_callback(CONFLICT, MISSING_ENC_FILES);
+		else
+			throw(std::logic_error("severe: synchronization with cloud incomplete!"));
 	}
 	auto tmp = handle_.get_locations();
 	path p(tmp[0].location);
@@ -253,8 +278,10 @@ void Container::manual_sync(bool ignore_container_state)
 
 	if (!validate())
 	{
-		//throw(std::logic_error("severe: synchronization with cloud incomplete!"));
-		std::cout << "severe: synchronization with cloud incomplete!\n";
+		if (has_callback_)
+			send_callback(CONFLICT, MISSING_ENC_FILES);
+		else
+			throw(std::logic_error("severe: synchronization with cloud incomplete!"));
 		return;
 	}
 	
@@ -298,15 +325,15 @@ void Container::manual_sync(bool ignore_container_state)
 #ifdef TDEBUG
 	handle_.dump(std::string("C:\\Users\\Kai\\Desktop\\new_test.xml"));
 #endif
-	
 	//}
 	save();
+	send_callback(INFORMATION, FINISHED_SYNCHRONIZING);
 }
 //cloud update
 void Container::sync(bool ignore_container_state)
 { //needs merge of old and new handle
 	std::lock_guard<std::mutex> syncguard(sync_lock_);
-
+	send_callback(INFORMATION, SYNCHRONIZING);
 	if (!container_open_ && !ignore_container_state)
 		return;
 
@@ -397,6 +424,7 @@ void Container::sync(bool ignore_container_state)
 }
 void Container::close()
 {
+	send_callback(INFORMATION, CLOSING);
 	if (!container_open_)
 		return;
 	container_open_ = false;
@@ -407,14 +435,17 @@ void Container::close()
 	std::string p((*volume_).drive_letter);
 	p.append(handle_.get_containername());
 	FileSystem::delete_all(p);
+	send_callback(INFORMATION, SUCC);
 }
 
 void Container::add_file(const path& src, const std::string& rootfolder)
 {
 	if (!validate())
 	{
-		//throw(std::logic_error("severe: synchronization with cloud incomplete!"));
-		std::cout << "severe: synchronization with cloud incomplete!\n";
+		if (has_callback_)
+			send_callback(CONFLICT, MISSING_ENC_FILES);
+		else
+			throw(std::logic_error("severe: synchronization with cloud incomplete!"));
 		return;
 	}
 	std::string location = src.str();
@@ -440,7 +471,8 @@ void Container::add_file(const path& src, const std::string& rootfolder)
 	}
 
 	if (FileSystem::file_exists(location))
-	{		
+	{	
+		send_callback(INFORMATION, ADD_FILE, src.std_str());
 		auto size = FileSystem::file_size(location);
 		if (size >= 0)
 		{
@@ -505,10 +537,13 @@ void Container::open_file(const std::string& relative_path)
 
 void Container::delete_file(const path& relative_path)
 {
+	send_callback(INFORMATION, DELETE_FILE, relative_path.raw_std_str());
 	if (!validate())
 	{
-		//throw(std::logic_error("severe: synchronization with cloud incomplete!"));
-		std::cout << "severe: synchronization with cloud incomplete!\n";
+		if (has_callback_)
+			send_callback(CONFLICT, MISSING_ENC_FILES);
+		else
+			throw(std::logic_error("severe: synchronization with cloud incomplete!"));
 		return;
 	}
 	auto x = handle_.get_filenode(relative_path);
@@ -522,6 +557,7 @@ void Container::delete_file(const path& relative_path)
 
 void Container::extract_file(const path& relative_path)
 {
+	send_callback(INFORMATION, EXTRACT_FILE, relative_path.raw_std_str());
 	if (file_exists(relative_path.str()))
 	{
 		std::string location(relative_path.str());
@@ -552,11 +588,14 @@ void Container::extract_file(const path& relative_path)
 
 void Container::update_file(const std::string& filename, const path& relative_path, const path& src)
 {
+	
 	{
 		if (!validate())
 		{
-			//throw(std::logic_error("severe: synchronization with cloud incomplete!"));
-			std::cout << "severe: synchronization with cloud incomplete!\n";
+			if (has_callback_)
+				send_callback(CONFLICT, MISSING_ENC_FILES);
+			else
+				throw(std::logic_error("severe: synchronization with cloud incomplete!"));
 			return;
 		}
 
@@ -583,7 +622,7 @@ void Container::update_file(const std::string& filename, const path& relative_pa
 			std::string old_crc = block_node.crc;
 			
 			if (old_crc == crc) { return; }
-
+			send_callback(INFORMATION, UPDATE_FILE, filename);
 			std::string location_name = block_node.location;
 
 			int64_t size = FileSystem::file_size(src.str());
@@ -656,6 +695,7 @@ bool Container::file_exists(const path& relative_path)
 
 void Container::extract_all()
 {
+	send_callback(VERBOSE, EXTRACT_FILES);
 	auto tmp = handle_.get_filenodes();
 	std::string dest((*volume_).drive_letter + handle_.get_containername());
 

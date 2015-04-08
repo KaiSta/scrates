@@ -10,7 +10,7 @@ local_file::local_file() : random_num_(32)
 void local_file::create(const std::string& containername, 
 	const std::string& passphrase,
 	path& p, std::vector<std::pair<std::string, size_t>> locations,
-	path& vhdpath, storage_type stor_type)
+	path& vhdpath, storage_type stor_type, callback_t c)
 {
 	using namespace CryptoPP;
 	passphrase_ = passphrase;
@@ -20,7 +20,7 @@ void local_file::create(const std::string& containername,
 	//check if file already exist, if true call open instead
 	if (FileSystem::file_exists(p.str()))
 	{
-		open(p, passphrase, vhdpath, stor_type);
+		open(p, passphrase, vhdpath, stor_type, c);
 		return;
 	}
 
@@ -119,6 +119,7 @@ void local_file::create(const std::string& containername,
 	//create cloud db
 	container_.set_vhd(&vhd_);
 	container_.set_seed(random_num_);
+	container_.set_callback(c);
 	path cloudfile_location(locations[0].first);
 	cloudfile_location = cloudfile_location.append_filename(containername + ".db");
 
@@ -164,7 +165,7 @@ void local_file::create(const std::string& containername,
 }
 
 void local_file::open(path& p, const std::string& passphrase,
-	path& vhdpath, storage_type stor_type)
+	path& vhdpath, storage_type stor_type, callback_t c)
 {
 	location_ = p;
 	passphrase_ = passphrase;
@@ -174,7 +175,9 @@ void local_file::open(path& p, const std::string& passphrase,
 	case storage_type::VHD:
 	{
 #ifdef _WIN32
-		storage_ = std::make_shared<VirtualDisk_Impl>();
+		storage_ = std::make_shared<VirtualDisk_Impl>();	
+#else
+		throw std::domain_error("not supported for this operating system\n");
 #endif
 	}
 		break;
@@ -258,6 +261,7 @@ void local_file::open(path& p, const std::string& passphrase,
 
 	container_.set_seed(random_num_);
 	container_.set_vhd(&vhd_);
+	container_.set_callback(c);
 	container_.init(cl.str(), passphrase);
 	container_.open();
 }

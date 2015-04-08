@@ -32,6 +32,10 @@
 #include <local_file.h>
 #include <uarng.h>
 
+#include <MessageTypes.h>
+#include <mutex>
+#include <fstream>
+
 void sometest()
 {
 	using namespace CryptoPP;
@@ -231,6 +235,86 @@ void filesys_replace()
 
 }
 
+static std::ofstream logfile("log.txt");
+static std::mutex m;
+
+void callback_func(container_event e)
+{
+	std::lock_guard<std::mutex> guard(m);
+	std::string type;
+	std::string message;
+	switch (e.type)
+	{
+	case INFORMATION:
+		type = "information";
+		break;
+	case CONFLICT:
+		type = "error";
+		break;
+	case WARNING:
+		type = "warning";
+		break;
+	case VERBOSE:
+		type = "verbose";
+		break;
+	}
+	
+	switch (e.message)
+	{
+	case NONE:
+		message = "none";
+		break;
+	case CTR_FILE_NOT_FOUND:
+		message = "container file not found";
+		break;
+	case WRONG_PASSWORD:
+		message = "wrong password";
+		break;
+	case MISSING_ENC_FILES:
+		message = "missing encrypted file in cloud";
+		break;
+	case DECRYPTION_ERROR:
+		message = "decryption error";
+		break;
+	case WRONG_ARGUMENTS:
+		message = "wrong arguments";
+		break;
+	case SUCC:
+		message = "succ";
+		break;
+	case SYNCHRONIZING:
+		message = "sync";
+		break;
+	case FINISHED_SYNCHRONIZING:
+		message = "finished sync";
+		break;
+	case NO_WARNING:
+		message = "no warning";
+		break;
+	case CLOSING:
+		message = "closing container";
+		break;
+	case ADD_FILE:
+		message = "adding file " + std::string(e._data_.data());
+		break;
+	case UPDATE_FILE:
+		message = "updating file" + std::string(e._data_.data());
+		break;
+	case DELETE_FILE:
+		message = "delete file" + std::string(e._data_.data());
+		break;
+	case EXTRACT_FILE:
+		message = "extract file" + std::string(e._data_.data());
+		break;
+	case EXTRACT_FILES:
+		message = "extract files";
+		break;
+	case INIT_CONTAINER:
+		message = "initializing container";
+		break;
+	}
+	logfile << type << " - " << message << std::endl;
+}
 
 int main()
 {
@@ -282,7 +366,9 @@ int main()
 			std::cout << "Initialization..." << std::endl;
 			try
 			{
-				f.create(containername, password, filepath, { std::pair<std::string, size_t>(/*"$Local\\tempestTests"*/ synclocation, 53687091200) }, folderp, local_file::storage_type::FOLDER);
+				f.create(containername, password, filepath, 
+				{ std::pair<std::string, size_t>(/*"$Local\\tempestTests"*/ synclocation, 53687091200) }, 
+				folderp, local_file::storage_type::FOLDER, callback_func);
 			}
 			catch (std::invalid_argument e)
 			{
