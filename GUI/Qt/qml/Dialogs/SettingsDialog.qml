@@ -5,22 +5,29 @@ import QtQuick.Controls.Styles 1.2
 import QtQuick.Dialogs 1.2
 import QtQuick.Window 2.0
 
-/*Window*/
-/*MessageDialog*/
 Window {
-    title: "Preferences"
+    id: settingsDialog
+    title: qsTr("Preferences")
     width: 480
-    height: 320
+    minimumWidth: 480
+    height: 400
+    minimumHeight: 400
     modality: Qt.ApplicationModal
 
     TabView {
-        anchors.fill: parent
-        anchors.margins: 8
+        anchors {
+            fill: parent
+            margins: 5
+        }
         Tab {
-            id: controlPage
-            title: "General"
-            // TODO
+            id: generalPage
+            title: qsTr("General")
+            GeneralSettingsPage {}
+        }
+        Tab {
+            id: providersPage
+            title: qsTr("Providers")
+            ProvidersSettingsPage {}
         }
     }
 }
-

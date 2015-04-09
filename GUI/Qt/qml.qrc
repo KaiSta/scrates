@@ -8,5 +8,7 @@
         <file>qml/Welcome.qml</file>
         <file>qml/UIComponents/MessageBar.qml</file>
         <file>qml/Dialogs/SettingsDialog.qml</file>
+        <file>qml/Dialogs/ProvidersSettingsPage.qml</file>
+        <file>qml/Dialogs/GeneralSettingsPage.qml</file>
     </qresource>
 </RCC>
