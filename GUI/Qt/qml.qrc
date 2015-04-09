@@ -4,8 +4,11 @@
         <file>qml/ContainerEncrypted.qml</file>
         <file>qml/ContainerNew.qml</file>
         <file>qml/main.qml</file>
-        <file>qml/MessageBar.qml</file>
         <file>qml/NewContainerDialog.qml</file>
         <file>qml/Welcome.qml</file>
+        <file>qml/UIComponents/MessageBar.qml</file>
+        <file>qml/Dialogs/SettingsDialog.qml</file>
+        <file>qml/Dialogs/ProvidersSettingsPage.qml</file>
+        <file>qml/Dialogs/GeneralSettingsPage.qml</file>
     </qresource>
 </RCC>

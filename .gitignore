@@ -35,6 +35,11 @@
 *.ilk
 *.idb
 
+# Qt
+*.user
+GUI/Qt/include
+GUI/Qt/lib
+
 # Folders
 lib/cryptopp
 lib/pugixml

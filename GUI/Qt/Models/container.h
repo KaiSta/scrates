@@ -6,6 +6,10 @@
 #include <QUrl>
 #include <QFileDialog>
 #include <QtGui>
+#include <QFile>
+#include <QTextStream>
+
+#include "Poco/Path.h"
 
 class ContainerObject : public QObject
 {
@@ -15,7 +19,6 @@ class ContainerObject : public QObject
     Q_PROPERTY(QString password READ password WRITE setPassword NOTIFY passwordChanged)
     Q_PROPERTY(bool encrypted READ isEncrypted WRITE setEncrypted NOTIFY encryptedChanged)
     Q_PROPERTY(QString history READ history WRITE setHistory NOTIFY historyChanged)
-    //Q_PROPERTY(QStringList strings READ strings WRITE setStrings NOTIFY stringsChanged)
 public:
     ContainerObject(QObject* parent = 0);
     ContainerObject(const QString& name,
@@ -36,11 +39,9 @@ public:
     QString history() const;
     void setHistory(const QString& entry = QString());
 
-    Q_INVOKABLE void exportHistory(const QString& url);
+    Q_INVOKABLE bool exportHistory(const QString& url = QString());
     Q_INVOKABLE bool encrypt(const QString& password);
     Q_INVOKABLE void openDirectory(const QString& url = QString());
-
-    //Q_INVOKABLE QStringList& strings() { return historyList_; }
 signals:
     void nameChanged();
     void pathChanged();
@@ -53,7 +54,6 @@ private:
     QString password_;
     bool encrypted_;
     QString history_;
-    //QStringList historyList_;
 };
 
 class ContainerModel : public QAbstractListModel

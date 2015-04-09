@@ -80,12 +80,24 @@ void ContainerObject::setHistory(const QString& entry)
     emit historyChanged();
 }
 
-void ContainerObject::exportHistory(const QString &url)
+bool ContainerObject::exportHistory(const QString& url)
 {
+    // Move to backend, using poco++
+    if (url.isEmpty())
+        return false;
+
+    QFile file(url);
+    // file.open(QIODevice::WriteOnly | QIODevice::Text);
+    if (!file.open(QFile::WriteOnly | QFile::Truncate))
+        return false;
+
+    QTextStream out(&file);
+    out << "data";
+    file.close();
 
 
+    return true;
 }
-
 
 bool ContainerObject::encrypt(const QString& password)
 {
@@ -95,7 +107,6 @@ bool ContainerObject::encrypt(const QString& password)
 
     return false;
 }
-
 
 void ContainerObject::openDirectory(const QString& url)
 {

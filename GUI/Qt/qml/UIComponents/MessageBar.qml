@@ -2,14 +2,20 @@ import QtQuick 2.0
 import QtQuick.Layouts 1.1
 import QtQuick.Controls 1.3
 
+/*
+ * TODO:
+ * - Hide automatically after n seconds
+ * - Styling
+ */
+
 Rectangle {
     id: informationMessage
     z: 100
+    visible: false
     height: closeMessage.height + 10
-    //preferedhight
     Layout.fillWidth: true
     color: "lightblue"
-    opacity: 0.9
+    opacity: 1
     anchors {
         top: parent.top
         left: parent.left
@@ -21,7 +27,6 @@ Rectangle {
         spacing: 5
         Label {
             id: informationText
-
             text: "error message or something like thatttt"
             anchors.leftMargin: 10
         }

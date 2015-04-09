@@ -1,26 +1,39 @@
 #pragma once
 
 #include <QObject>
+#include <QString>
+#include <QByteArray>
+#include <QDebug>
 
 class RandomSeedGenerator
 {
-
 public:
     RandomSeedGenerator();
     ~RandomSeedGenerator();
+
+private:
+
+
 };
 
-/*
 class RandomSeedGeneratorModel : public QObject
 {
     Q_OBJECT
-    //Q_PROPERTY(QString seed READ seed WRITE setSeed NOTIFY seedChanged)
+    Q_PROPERTY(QString seed READ seed NOTIFY seedChanged)
 public:
-    RandomSeedGeneratorModel(QObject* parent = 0);
+    explicit RandomSeedGeneratorModel(QObject *parent = 0);
     ~RandomSeedGeneratorModel();
-signals:
-    //void seedChanged();
-private:
+    Q_INVOKABLE void randomSeed(double x, double y);
+    //Q_INVOKABLE void mousePosition(double x, double y);
+    //Q_INVOKABLE void windowPosition(double x, double y);
+    Q_INVOKABLE void time();
 
+    QString seed() const;
+
+signals:
+    void seedChanged();
+
+private:
+    QByteArray seed_;
+    size_t time_;
 };
-*/

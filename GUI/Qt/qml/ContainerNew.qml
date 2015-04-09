@@ -3,10 +3,15 @@ import QtQuick.Controls 1.3
 import QtQuick.Layouts 1.1
 import QtQuick.Controls.Styles 1.2
 import QtQuick.Dialogs 1.2
+
 import Qt.labs.settings 1.0
 import tempest.Container 1.0
+import tempest.RandomSeedGenerator 1.0
 
 Item {
+
+
+
     Container {
         id: container
         name: "testHELLO"
@@ -14,17 +19,39 @@ Item {
         path: "testPATH"
     }
 
+    RandomSeedGenerator {
+        id: randomSeedGenerator
+    }
+
+    /*
+    Timer {
+        id: timer
+        interval: 1000
+        running: true
+        repeat: true
+        onTriggered: randomSeedGenerator.time()
+   }
+   */
+
     SystemPalette { id: palette }
     Settings {
-        property alias text: pathText.text
+        //property alias text: pathText.text
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        onPositionChanged: randomSeedGenerator.randomSeed(mouseX, mouseY)
+        hoverEnabled: true
     }
 
     GridLayout {
         columns: 2
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.margins: 10
+        anchors {
+            top: parent.top
+            left: parent.left
+            right: parent.right
+            margins: 10
+        }
         rowSpacing: 10
         columnSpacing: 10
 
@@ -85,6 +112,20 @@ Item {
         TextField {
             id: randomSeedText
             Layout.fillWidth: true
+            readOnly: true
+            text: randomSeedGenerator.seed
+        }
+
+        Label {
+            text: qsTr("Cloud Service:")
+        }
+
+        ComboBox{
+            currentIndex: 0
+            model: providersModel
+            textRole: "placeholderName"
+            // onCurrentIndexChanged: console.debug(providersModel.get(currentIndex).placeholder + ", " + providersModel.get(currentIndex).location)
+            onCurrentIndexChanged: pathText.text = providersModel.get(currentIndex).location
         }
 
         Label {
@@ -94,11 +135,13 @@ Item {
             TextField {
                 id: pathText
                 Layout.fillWidth: true
+                text: providersModel.get(0).location
             }
 
             Button {
                 text: qsTr("Open...")
                 onClicked: containerPathFileDialog.open()
+                // TODO: open container path if exists
             }
         }
     }
@@ -113,19 +156,29 @@ Item {
         height: buttonRow.height * 1.2
         color: Qt.darker(palette.window, 1.1)
 
-        Row {
+        RowLayout {
             id: buttonRow
-            spacing: 6
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.left: parent.left
-            anchors.leftMargin: 12
-            width: parent.width
+            spacing: 5
+            anchors {
+                verticalCenter: parent.verticalCenter
+                left: parent.left
+                right: parent.right
+                leftMargin: 10
+                rightMargin: 5
+            }
+
+            CheckBox {
+                text: qsTr("Mount container after saving")
+                checked: true
+                // TODO: implementation
+            }
+
+            Item { Layout.fillWidth: true }
 
             Button {
                 text: "Save"
                 anchors.verticalCenter: parent.verticalCenter
                 onClicked: {
-                    // _containerModel.add(container)
                     if (_containerModel.add(nameText.text, pathText.text, passwordText.text))
                         viewLoader.source = "Welcome.qml"
                     else
@@ -151,12 +204,8 @@ Item {
         id: containerPathFileDialog
         title: "Choose container directory"
         modality: Qt.NonModal
-        folder: "file:///Users" // TODO: Cloud Service Path (e.g. Dropbox)
+        folder: pathText.text // BUG
         selectFolder: true
         onAccepted: pathText.text = fileUrl
     }
-
-
-
-
 }
