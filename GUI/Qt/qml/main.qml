@@ -3,6 +3,7 @@ import QtQuick.Controls 1.3
 import QtQuick.Window 2.2
 import QtQuick.Dialogs 1.2
 import QtQuick.Layouts 1.1
+import QtQuick.XmlListModel 2.0
 import Qt.labs.settings 1.0
 
 import "UIComponents"
@@ -26,6 +27,15 @@ ApplicationWindow {
 
     onClosing: {
         // TODO: forced sync for all encrypted/mounted containers
+    }
+
+    XmlListModel {
+        id: providersModel
+        source: "file://" + _applicationDirPath + "/providers.xml"
+        query: "/providers/provider"
+        XmlRole {name: "placeholder"; query: "@placeholder/string()"}
+        XmlRole {name: "placeholderName"; query: "substring-after(@placeholder/string(), '$')"}
+        XmlRole {name: "location"; query: "@location/string()"}
     }
 
     FileDialog {
@@ -192,6 +202,8 @@ ApplicationWindow {
             viewLoader.source = "Welcome.qml"
         }
     }
+
+
 
     function updateView()
     {

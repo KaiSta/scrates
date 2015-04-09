@@ -3,11 +3,15 @@ import QtQuick.Controls 1.3
 import QtQuick.Layouts 1.1
 import QtQuick.Controls.Styles 1.2
 import QtQuick.Dialogs 1.2
+
 import Qt.labs.settings 1.0
 import tempest.Container 1.0
 import tempest.RandomSeedGenerator 1.0
 
 Item {
+
+
+
     Container {
         id: container
         name: "testHELLO"
@@ -31,7 +35,7 @@ Item {
 
     SystemPalette { id: palette }
     Settings {
-        property alias text: pathText.text
+        //property alias text: pathText.text
     }
 
     MouseArea {
@@ -115,35 +119,13 @@ Item {
         Label {
             text: qsTr("Cloud Service:")
         }
-        Row {
-            ExclusiveGroup {
-                id: cloudServicesGroup
-            }
 
-            // aus providers.xml rauslesen
-            Button {
-                text: qsTr("Dropbox")
-                checkable: true
-                exclusiveGroup: cloudServicesGroup
-            }
-
-            Button {
-                text: qsTr("OneDrive")
-                checkable: true
-                exclusiveGroup: cloudServicesGroup
-            }
-
-            Button {
-                text: qsTr("Google Drive")
-                checkable: true
-                exclusiveGroup: cloudServicesGroup
-            }
-
-            Button {
-                text: qsTr("User specific")
-                checkable: true
-                exclusiveGroup: cloudServicesGroup
-            }
+        ComboBox{
+            currentIndex: 0
+            model: providersModel
+            textRole: "placeholderName"
+            // onCurrentIndexChanged: console.debug(providersModel.get(currentIndex).placeholder + ", " + providersModel.get(currentIndex).location)
+            onCurrentIndexChanged: pathText.text = providersModel.get(currentIndex).location
         }
 
         Label {
@@ -153,6 +135,7 @@ Item {
             TextField {
                 id: pathText
                 Layout.fillWidth: true
+                text: providersModel.get(0).location
             }
 
             Button {
@@ -207,7 +190,6 @@ Item {
                 text: "Cancel"
                 anchors.verticalCenter: parent.verticalCenter
                 onClicked: viewLoader.source = "Welcome.qml"
-
             }
         }
     }
@@ -222,7 +204,7 @@ Item {
         id: containerPathFileDialog
         title: "Choose container directory"
         modality: Qt.NonModal
-        folder: "file:///Users" // TODO: Cloud Service Path (e.g. Dropbox)
+        folder: pathText.text // BUG
         selectFolder: true
         onAccepted: pathText.text = fileUrl
     }
