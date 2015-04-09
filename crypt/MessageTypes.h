@@ -5,33 +5,35 @@ enum event_type
 {
 	INFORMATION,
 	CONFLICT,
-	WARNING
+	WARNING,
+	VERBOSE
 };
-enum conflict
+
+enum event_message
 {
 	NONE,
 	CTR_FILE_NOT_FOUND,
 	WRONG_PASSWORD,
+	MISSING_ENC_FILES,
 	DECRYPTION_ERROR,
-	WRONG_ARGUMENTS
-};
-enum information
-{
+	WRONG_ARGUMENTS,
 	SUCC,
 	SYNCHRONIZING,
-	FINISHED_SYNCHRONIZING
-};
-enum warning
-{
-	NO_WARNING
+	FINISHED_SYNCHRONIZING,
+	NO_WARNING,
+	CLOSING,
+	ADD_FILE,
+	UPDATE_FILE,
+	DELETE_FILE,
+	EXTRACT_FILE,
+	EXTRACT_FILES,
+	INIT_CONTAINER
 };
 
 struct container_event
 {
-	event_type ev_type;
-	information inf;
-	conflict c;
-	warning w;
+	event_type type;
+	event_message message;
 
 	std::vector<char> _data_;
 };

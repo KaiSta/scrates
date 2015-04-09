@@ -29,6 +29,7 @@
 
 class local_file
 {
+	typedef std::function<void(container_event)> callback_t;
 public:
 	enum storage_type
 	{
@@ -42,9 +43,9 @@ public:
 	void create(const std::string& containername,
 		const std::string& passphrase,
 		path& p, std::vector<std::pair<std::string, size_t>> locations,
-		path& vhdpath, storage_type stor_type);
+		path& vhdpath, storage_type stor_type, callback_t c);
 	void open(path& p, const std::string& passphrase,
-		path& vhdpath, storage_type stor_type);
+		path& vhdpath, storage_type stor_type, callback_t c);
 
 	CryptoPP::SecByteBlock get_seed();
 

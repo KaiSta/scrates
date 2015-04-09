@@ -5,6 +5,8 @@
 //#include "../lib/pugixml/src/pugixml.hpp"
 #include "pugixml.hpp"
 
+#include <memory>
+
 class CloudManager
 {
 public:
@@ -25,11 +27,15 @@ public:
 	  \reutrn location name.
 	*/
 	std::string get_location_name(const std::string& path);
+
+	void create_providerlist();
+	std::vector<std::pair<std::string,std::string> > get_providers();
+	void add_provider(std::string name_with_sign, std::string location);
 private:
 	CloudManager();
 	CloudManager(const CloudManager&);
 	std::unordered_map<std::string, std::string> provider_locations_;
-	pugi::xml_document providerlist_;
+	std::unique_ptr<pugi::xml_document> providerlist_;
 
 	void autodetect();
 	void detect_dropbox();
