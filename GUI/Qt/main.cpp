@@ -6,6 +6,8 @@
 #include "Models/passwordstrengthchecker.h"
 #include "Models/randomseedgenerator.h"
 
+#include "stdlib.h"
+
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
@@ -18,6 +20,9 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationName("tempest");
     QCoreApplication::setOrganizationDomain("tempest.com");
     QCoreApplication::setApplicationName("tempest GUI");
+
+    engine.rootContext()->setContextProperty("_applicationDirPath", QApplication::applicationDirPath());
+    engine.rootContext()->setContextProperty("_homeDirPath", getenv("HOME"));
 
     // Model example: http://www.vladest.org/qttipsandtricks/qsettings-and-qml.html
     QSettings settings;
