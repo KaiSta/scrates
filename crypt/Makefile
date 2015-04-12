@@ -5,7 +5,7 @@ LDFLAGS = -L../lib/cryptopp -L../lib/poco/lib -lpthread -lcryptopp -lPocoFoundat
 
 crypt: $(obj)
 	$(CXX) -c $^ $(LDFLAGS) -std=c++14 -O2
-	ar rcs libcrypt.a *.o
+	ar rcs ../delivery/libcrypt.a *.o
 
 .PHONY: clean
 clean:

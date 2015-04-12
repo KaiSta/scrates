@@ -1,16 +1,6 @@
 #pragma once
-#include <string>
-//#include "../lib/pugixml/src/pugixml.hpp"
-#include "pugixml.hpp"
-#include <cryptopp/serpent.h>
-#include <cryptopp/twofish.h>
-#include <cryptopp/aes.h>
-#include <cryptopp/osrng.h>
-#include <cryptopp/zlib.h>
-#include <cryptopp/secblock.h>
-#include <cryptopp/pwdbased.h>
-#include <cryptopp/modes.h>
-#include <vector>
+#include "tempest.h"
+
 #include "Path.h"
 #include "container_handle.h"
 
@@ -18,9 +8,7 @@
 #include "VirtualDisk_Impl.h"
 #include "Storage.h"
 #include "Synchronizer.h"
-#include <atomic>
 #include "MessageTypes.h"
-#include <mutex>
 
 class Container
 {
