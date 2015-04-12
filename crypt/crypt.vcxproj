@@ -156,6 +156,7 @@
     <ClInclude Include="Storage.h" />
     <ClInclude Include="string_helper.h" />
     <ClInclude Include="Synchronizer.h" />
+    <ClInclude Include="tempest.h" />
     <ClInclude Include="uarng.h" />
     <ClInclude Include="VirtualDisk_Impl.h" />
   </ItemGroup>

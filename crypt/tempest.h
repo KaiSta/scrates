@@ -10,6 +10,7 @@
 #include <utility>
 #include <algorithm>
 #include <memory>
+#include <sstream>
 
 //cryptopp
 #include <cryptopp/cryptlib.h>
@@ -21,6 +22,10 @@
 #include <cryptopp/secblock.h>
 #include <cryptopp/pwdbased.h>
 #include <cryptopp/modes.h>
+#include <cryptopp/hex.h>
+#include <cryptopp/sha.h>
+#include <cryptopp/files.h>
+#include <cryptopp/filters.h>
 
 //miscellaneous
 #include "pugixml.hpp"
