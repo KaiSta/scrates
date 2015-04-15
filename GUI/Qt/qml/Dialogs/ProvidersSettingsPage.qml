@@ -21,6 +21,11 @@ Item {
         Label {
             text: qsTr("Providers:")
         }
+        Label {
+            text: qsTr("(Info) Your encrypted containers will be stored under the selected provider location.")
+            font.italic: true
+            font.pixelSize: 10
+        }
 
         TableView {
             id: providersTable
@@ -54,6 +59,7 @@ Item {
             validator: RegExpValidator {
                 regExp: /[$]?[a-zA-Z]+[0-9]*/
             }
+            maximumLength: 32
             onTextChanged: validate()
             function validate() {
                 if (this.text.length === 1 && this.text[0] !== "$")

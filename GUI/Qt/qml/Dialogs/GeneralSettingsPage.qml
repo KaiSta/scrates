@@ -28,7 +28,10 @@ Item {
                 Layout.fillWidth: true
             }
             Button {
-                text: qsTr("Choose...")
+                text: qsTr("...")
+            }
+            Button {
+                text: qsTr("Default")
             }
         }
 
