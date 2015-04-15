@@ -10,6 +10,8 @@
 #include <QTextStream>
 
 #include "Poco/Path.h"
+#include "ContainerController.h"
+
 
 class ContainerObject : public QObject
 {
@@ -51,9 +53,11 @@ signals:
 private:
     QString name_;
     QString path_;
-    QString password_;
+    QString password_; // possibly unnecessary
     bool encrypted_;
     QString history_;
+    void myfunc(container_event e);
+    ContainerController* controller_;
 };
 
 class ContainerModel : public QAbstractListModel
@@ -78,8 +82,8 @@ public:
                          const QString& password = QString(),
                          bool encrypted = true);
     Q_INVOKABLE void remove(int idx);
-    // Q_INVOKABLE void import(const QString& path);
-    // Q_INVOKABLE void import(const QDir& dir);
+    Q_INVOKABLE void read();
+    // Q_INVOKABLE void import(const QString& path /*const QDir& dir*/);
     Q_INVOKABLE ContainerObject* currentContainer();
     Q_INVOKABLE void setCurrentContainer(int idx);
 protected:
@@ -87,7 +91,6 @@ protected:
 private:
     QList<ContainerObject*> containerList_;
     ContainerObject* currentContainer_;
-    QStringList containerDirectories_; // TODO: Implementation
     bool contains(ContainerObject* container);
 signals :
     void countChanged(/*int*/);

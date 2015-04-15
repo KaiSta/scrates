@@ -5,7 +5,11 @@ ContainerObject::ContainerObject(QObject* parent) : QObject(parent)
 
 ContainerObject::ContainerObject(const QString& name, const QString& path, const QString& password, bool encrypted, QObject* parent)
     : QObject(parent), name_(name), path_(path), password_(password), encrypted_(encrypted)
-{ }
+{
+    // TODO: encrypted: wenn ja, dann demount ausführen
+    controller_ = new ContainerController::ContainerController([this](container_event e) { myfunc(e); }, "/Users/jochen/Desktop/tempest/temp");
+    controller_->create(name.toStdString(), "/Users/jochen/Desktop/tempest/local", password.toStdString(), "/Users/jochen/Desktop/tempest/cloud", local_file::storage_type::FOLDER, 0);
+}
 
 ContainerObject::~ContainerObject()
 { }
@@ -117,19 +121,22 @@ void ContainerObject::openDirectory(const QString& url)
 
 }
 
-
+void ContainerObject::myfunc(container_event e)
+{
+    // TODO
+}
 
 
 
 ContainerModel::ContainerModel(QObject* parent)
     : QAbstractListModel(parent)
 {
-    add(new ContainerObject("Container0", "file:///Users/jochen/Desktop", "", false));
-    add(new ContainerObject("Container1", "file:///Users/jochen/Desktop", "", true));
-    add(new ContainerObject("Container2", "file:///Users/jochen/Desktop", "", true));
-    add(new ContainerObject("Container3", "file:///Users/jochen/Desktop", "", false));
+    //add(new ContainerObject("Container0", "file:///Users/jochen/Desktop", "", false));
+    //add(new ContainerObject("Container1", "file:///Users/jochen/Desktop", "", true));
+    //add(new ContainerObject("Container2", "file:///Users/jochen/Desktop", "", true));
+    //add(new ContainerObject("Container3", "file:///Users/jochen/Desktop", "", false));
 
-    // TODO: load container on startup
+    // TODO: load container on startup (see: read())
 }
 
 ContainerModel::~ContainerModel()
@@ -196,6 +203,12 @@ void ContainerModel::remove(int idx)
     endRemoveRows();
     emit countChanged(/*rowCount()*/);
 }
+
+void ContainerModel::read()
+{
+
+}
+
 
 void ContainerModel::setCurrentContainer(int idx)
 {

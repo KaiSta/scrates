@@ -5,7 +5,7 @@
 #include "Models/container.h"
 #include "Models/passwordstrengthchecker.h"
 #include "Models/randomseedgenerator.h"
-
+#include "Models/settings.h"
 #include "stdlib.h"
 
 int main(int argc, char *argv[])
@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("_homeDirPath", getenv("HOME"));
 
     // Model example: http://www.vladest.org/qttipsandtricks/qsettings-and-qml.html
-    QSettings settings;
+    Settings settings(QSettings::IniFormat, QSettings::UserScope, QCoreApplication::organizationName());
     engine.rootContext()->setContextProperty("_settings", &settings);
 
     ContainerModel containerModel;

@@ -4,6 +4,10 @@
 #include <QString>
 #include <QByteArray>
 #include <QDebug>
+#include <vector>
+#include <Container.h>
+#include "ContainerController.h"
+
 
 class RandomSeedGenerator
 {
@@ -12,8 +16,6 @@ public:
     ~RandomSeedGenerator();
 
 private:
-
-
 };
 
 class RandomSeedGeneratorModel : public QObject
@@ -34,6 +36,8 @@ signals:
     void seedChanged();
 
 private:
-    QByteArray seed_;
+    std::vector<unsigned char> seed_;
     size_t time_;
+    void myfunc(container_event e);
+    ContainerController* controller_;
 };

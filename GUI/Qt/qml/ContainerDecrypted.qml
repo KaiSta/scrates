@@ -61,7 +61,7 @@ Item {
 
         ColumnLayout {
             Button {
-                text: qsTr("Demount")
+                text: qsTr("Unmount")
             }
 
             Button {

@@ -9,7 +9,8 @@ SOURCES += main.cpp \
     Models/container.cpp \
     Models/passwordstrengthchecker.cpp \
     Models/randomseedgenerator.cpp \
-    include/pugixml.cpp # only if needed for the GUI
+    include/pugixml.cpp \ # only if needed for the GUI
+    Models/settings.cpp
 
 RESOURCES += qml.qrc
 
@@ -24,7 +25,8 @@ HEADERS += \
     Models/passwordstrengthchecker.h \
     Models/randomseedgenerator.h \
     include/pugixml.hpp \
-    include/pugiconfig.hpp
+    include/pugiconfig.hpp \
+    Models/settings.h
 
 # Poco C++
 INCLUDEPATH += /usr/local/include
@@ -36,7 +38,7 @@ INCLUDEPATH += /usr/include
 unix: LIBS += /usr/lib/libcryptopp.a
 
 # tempest
-INCLUDEPATH += $$PWD/../crypt
-unix: LIBS += $$PWD/lib/libcrypt.a
+INCLUDEPATH += $$PWD/../../delivery/include
+unix: LIBS += $$PWD/../../delivery/libcrypt.a
 
 #TOOD: TARGET, e.g. for OS X 10.10, 10.9, 10.8...

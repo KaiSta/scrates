@@ -15,8 +15,8 @@ RandomSeedGenerator::~RandomSeedGenerator()
 RandomSeedGeneratorModel::RandomSeedGeneratorModel(QObject *parent)
     : QObject(parent)
 {
-    // TODO: receive data from backend
-    seed_ = QByteArray("hello", 32);
+    controller_ = new ContainerController::ContainerController([this](container_event e) { myfunc(e); }, "/home/jochen");
+    seed_ = controller_->get_pseudo_seed();
 }
 
 RandomSeedGeneratorModel::~RandomSeedGeneratorModel()
@@ -54,6 +54,14 @@ void RandomSeedGeneratorModel::time()
 
 QString RandomSeedGeneratorModel::seed() const
 {
-    return QString(seed_.toBase64());
+    QByteArray bytes;
+    for (int i = 0; i < seed_.size(); ++i)
+       bytes.append(seed_[i]);
+
+    return QString(bytes.toBase64());
 }
 
+void RandomSeedGeneratorModel::myfunc(container_event e)
+{
+    // TODO
+}

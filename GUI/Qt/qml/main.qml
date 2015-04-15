@@ -4,29 +4,26 @@ import QtQuick.Window 2.2
 import QtQuick.Dialogs 1.2
 import QtQuick.Layouts 1.1
 import QtQuick.XmlListModel 2.0
-import Qt.labs.settings 1.0
 
 import "UIComponents"
 import "Dialogs"
 
 ApplicationWindow {
     id: root
-    title: qsTr("tempest")
-    width: 640
+    title: "tempest"
+    width: _settings.value("ApplicationWindow/width", 640)
     minimumWidth: 640
-    height: 480
+    height: _settings.value("ApplicationWindow/height", 480)
     minimumHeight: 480
     visible: true
 
-    Settings {
-        property alias width: root.width
-        property alias height: root.height
-    }
     property variant settingsWindow;  // settings window reference
     property alias containerList: containerTable
 
     onClosing: {
         // TODO: forced sync for all encrypted/mounted containers
+        _settings.setValue("ApplicationWindow/width", width)
+        _settings.setValue("ApplicationWindow/height", height)
     }
 
     XmlListModel {

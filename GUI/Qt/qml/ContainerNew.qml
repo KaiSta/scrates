@@ -9,9 +9,6 @@ import tempest.Container 1.0
 import tempest.RandomSeedGenerator 1.0
 
 Item {
-
-
-
     Container {
         id: container
         name: "testHELLO"
@@ -168,9 +165,9 @@ Item {
             }
 
             CheckBox {
+                id: isDecrypted
                 text: qsTr("Mount container after saving")
                 checked: true
-                // TODO: implementation
             }
 
             Item { Layout.fillWidth: true }
@@ -179,7 +176,7 @@ Item {
                 text: "Save"
                 anchors.verticalCenter: parent.verticalCenter
                 onClicked: {
-                    if (_containerModel.add(nameText.text, pathText.text, passwordText.text))
+                    if (_containerModel.add(nameText.text, pathText.text, passwordText.text, !isDecrypted.checked))
                         viewLoader.source = "Welcome.qml"
                     else
                         messageDialog.show("TODO: Fehler")
