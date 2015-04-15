@@ -1,13 +1,6 @@
 #pragma once
 
-#include <string>
-#include <vector>
-#include <functional>
-#include <utility>
-#include <algorithm>
-//#include <concurrent_unordered_map.h>
-#include <unordered_map>
-#include <mutex>
+#include "tempest.h"
 
 //#include "folder_watcher.h"
 

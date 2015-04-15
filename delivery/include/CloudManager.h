@@ -1,11 +1,5 @@
 #pragma once
-
-#include <string>
-#include <unordered_map>
-//#include "../lib/pugixml/src/pugixml.hpp"
-#include "pugixml.hpp"
-
-#include <memory>
+#include "tempest.h"
 
 class CloudManager
 {
