@@ -1,11 +1,6 @@
 #pragma once
 
-#include <string>
-#include <vector>
-#include <stdint.h>
-#include <mutex>
-//#include "../lib/pugixml/src/pugixml.hpp"
-#include "pugixml.hpp"
+#include "tempest.h"
 #include "Path.h"
 
 class container_handle

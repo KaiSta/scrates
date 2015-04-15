@@ -1,14 +1,6 @@
 #pragma once
-#include <string>
-//#include "../lib/pugixml/src/pugixml.hpp"
-#include "pugixml.hpp"
-#include <cryptopp/serpent.h>
-#include <cryptopp/twofish.h>
-#include <cryptopp/aes.h>
-#include <cryptopp/osrng.h>
-#include <cryptopp/zlib.h>
-#include <cryptopp/secblock.h>
-#include <vector>
+#include "tempest.h"
+
 #include "Path.h"
 #include "container_handle.h"
 
@@ -16,9 +8,7 @@
 #include "VirtualDisk_Impl.h"
 #include "Storage.h"
 #include "Synchronizer.h"
-#include <atomic>
 #include "MessageTypes.h"
-#include <mutex>
 
 class Container
 {
@@ -196,7 +186,7 @@ private:
 			&enhanced_passphrase_[0], enhanced_passphrase_.size(),
 			reinterpret_cast<const byte*>(recovered_salt.data()), salt_length,
 			1000);
-		typename CFB_Mode<T>::Decryption decrypt;
+		typename CryptoPP::CFB_Mode<T>::Decryption decrypt;
 		decrypt.SetKeyWithIV(recovered_derived_key, recovered_derived_key.size(), recovered_iv);
 		
 		source.Detach(new CryptoPP::StreamTransformationFilter(decrypt,
@@ -327,7 +317,7 @@ private:
 		prng_.GenerateBlock(reinterpret_cast<byte*>(&tmp_hashname), 16);
 		StringSource(reinterpret_cast<const byte*>(&tmp_hashname), 16, true, new HexEncoder(new StringSink(hashname)));
 
-		typename CFB_Mode<T>::Encryption encrypt;
+		typename CryptoPP::CFB_Mode<T>::Encryption encrypt;
 		encrypt.SetKeyWithIV(derived_key, T::MAX_KEYLENGTH, iv);
 		
 		path location(store_path.str() + FileSystem::path_separator + hashname);

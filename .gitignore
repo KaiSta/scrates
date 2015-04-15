@@ -45,6 +45,7 @@ lib/cryptopp
 lib/pugixml
 lib/wxwidget
 lib/poco
+delivery/include
 delivery/includecopy
 
 *.opensdf
