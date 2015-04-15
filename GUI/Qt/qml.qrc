@@ -10,5 +10,7 @@
         <file>qml/Dialogs/SettingsDialog.qml</file>
         <file>qml/Dialogs/ProvidersSettingsPage.qml</file>
         <file>qml/Dialogs/GeneralSettingsPage.qml</file>
+        <file>qml/UIComponents/BottomBar.qml</file>
+        <file>qml/UIComponents/ButtonBar.qml</file>
     </qresource>
 </RCC>
