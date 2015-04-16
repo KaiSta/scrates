@@ -8,7 +8,7 @@ ContainerObject::ContainerObject(const QString& name, const QString& path, const
 {
     // TODO: encrypted: wenn ja, dann demount ausführen
     controller_ = new ContainerController::ContainerController([this](container_event e) { myfunc(e); }, "/Users/jochen/Desktop/tempest/temp/");
-    controller_->create(name.toStdString(), "/Users/jochen/Desktop/tempest/local/", password.toStdString(), "/Users/jochen/Desktop/tempest/cloud/", local_file::storage_type::FOLDER, 53687091200);
+    controller_->create(name.toStdString(), "/Users/jochen/Desktop/tempest/local/", password.toStdString(), "/Users/jochen/Desktop/tempest/cloud/", local_file::storage_type::FOLDER, 0);
 }
 
 ContainerObject::~ContainerObject()
@@ -97,7 +97,7 @@ bool ContainerObject::mount(const QString& password)
 
 void ContainerObject::unmount()
 {
-    // TODO
+    controller_->close();
 }
 
 bool ContainerObject::sync()

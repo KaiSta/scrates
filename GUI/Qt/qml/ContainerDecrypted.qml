@@ -62,6 +62,7 @@ Item {
         ColumnLayout {
             Button {
                 text: qsTr("Unmount")
+                onClicked: _containerModel.currentContainer().unmount()
             }
 
             Button {
