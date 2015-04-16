@@ -14,6 +14,7 @@ event_callback_(event_callback), vhd_path_(vhd_path)
 
 ContainerController::~ContainerController()
 {
+  container_.close();
 }
 
 container_event ContainerController::create(const std::string& container_name, const std::string& container_location,
@@ -113,4 +114,9 @@ std::vector<std::pair<std::string, std::string> > ContainerController::get_provi
 {
 	auto& manager = CloudManager::instance();
 	return manager.get_providers();
+}
+
+void ContainerController::close()
+{
+  container_.close();
 }
