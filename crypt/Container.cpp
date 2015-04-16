@@ -435,6 +435,7 @@ void Container::close()
 	std::string p((*volume_).drive_letter);
 	p.append(handle_.get_containername());
 	FileSystem::delete_all(p);
+	FileSystem::delete_directory(p);
 	send_callback(INFORMATION, SUCC);
 }
 

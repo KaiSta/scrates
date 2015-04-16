@@ -1,7 +1,7 @@
 verbose - initializing container
 verbose - extract files 
-information - extract file container/README.md
 information - extract file container/setup.py
+information - extract file container/README.md
 information - extract file container/TODO.txt
 information - extract file container/README.txt
 information - succ

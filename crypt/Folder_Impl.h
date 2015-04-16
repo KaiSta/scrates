@@ -36,7 +36,7 @@ public:
 	}
 	virtual void dismount_drive(volume_handle& in)
 	{
-		FileSystem::delete_directory(in.path);
+		//FileSystem::delete_directory(in.path);
 	}
 private:
 };
