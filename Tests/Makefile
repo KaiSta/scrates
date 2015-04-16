@@ -8,5 +8,5 @@ test: $(obj)
 
 .PHONY: clean
 clean:
-	rm -f $(obj) test
+	rm -f test
 	rm *.o

@@ -3,6 +3,7 @@
 #include <cryptopp/secblock.h>
 #include <cryptopp/osrng.h>
 #include <string>
+#include <limits>
 #include "CloudManager.h"
 
 ContainerController::ContainerController(callback_t event_callback, const std::string& vhd_path) : 
@@ -13,6 +14,7 @@ event_callback_(event_callback), vhd_path_(vhd_path)
 
 ContainerController::~ContainerController()
 {
+  container_.close();
 }
 
 container_event ContainerController::create(const std::string& container_name, const std::string& container_location,
@@ -20,6 +22,10 @@ container_event ContainerController::create(const std::string& container_name, c
 {
 	container_event ev;
 	path filepath = path(container_location).append_filename(container_name + ".cco");
+	
+	if(store_size == 0)
+	  store_size = std::numeric_limits< int >::max();
+	
 	try
 	{
 	    path v(vhd_path_);
@@ -108,4 +114,9 @@ std::vector<std::pair<std::string, std::string> > ContainerController::get_provi
 {
 	auto& manager = CloudManager::instance();
 	return manager.get_providers();
+}
+
+void ContainerController::close()
+{
+  container_.close();
 }

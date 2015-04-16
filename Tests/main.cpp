@@ -36,6 +36,8 @@
 #include <mutex>
 #include <fstream>
 
+#include <ContainerController.h>
+
 void sometest()
 {
 	using namespace CryptoPP;
@@ -330,8 +332,10 @@ int main()
 #ifdef _WIN32
 	path folderp("C:\\tmp\\folder");
 #else
-	path folderp("/home/kai/Documents/folder");
+	path folderp("/home/kai/Documents/tempest/folder");
 #endif
+	
+	ContainerController controller(callback_func, folderp.str());
 	
 	while (true)
 	{
@@ -361,14 +365,17 @@ int main()
 
 			path filepath(location);
 			filepath = filepath.append_filename(containername + ".cco");
+			path container_location(location);
 			//path filepath("C:\\Users\\Kai\\Desktop\\test\\" + containername +".cco");
 
 			std::cout << "Initialization..." << std::endl;
 			try
 			{
-				f.create(containername, password, filepath, 
-				{ std::pair<std::string, size_t>(/*"$Local\\tempestTests"*/ synclocation, 53687091200) }, 
-				folderp, local_file::storage_type::FOLDER, callback_func);
+				//f.create(containername, password, filepath, 
+				//{ std::pair<std::string, size_t>(/*"$Local\\tempestTests"*/ synclocation, 53687091200) }, 
+				//folderp, local_file::storage_type::FOLDER, callback_func);
+				controller.create(containername, location,
+				  password, synclocation, local_file::storage_type::FOLDER, 0);
 			}
 			catch (std::invalid_argument e)
 			{
