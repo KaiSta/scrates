@@ -51,5 +51,7 @@ private:
 	std::string passphrase_;
 	std::shared_ptr<Storage> storage_;
 
+	bool is_open;
+
 };
 
