@@ -24,9 +24,13 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("_applicationDirPath", QApplication::applicationDirPath());
     engine.rootContext()->setContextProperty("_homeDirPath", getenv("HOME"));
 
-    // Model example: http://www.vladest.org/qttipsandtricks/qsettings-and-qml.html
     Settings settings(QSettings::IniFormat, QSettings::UserScope, QCoreApplication::organizationName());
+    settings.beginGroup("Container");
+    settings.setValue("containerLocation", "/Users/jochen/Desktop/tempest/local/");
+    settings.setValue("vhdLocation", "/Users/jochen/Desktop/tempest/temp/");
+    settings.endGroup();
     engine.rootContext()->setContextProperty("_settings", &settings);
+
 
     ContainerModel containerModel;
     engine.rootContext()->setContextProperty("_containerModel", &containerModel);
