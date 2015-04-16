@@ -78,6 +78,7 @@ public:
 	std::vector<std::pair<std::string, std::string> > get_providers();
   
   void close();
+  bool is_open();
 
 private:
 	callback_t event_callback_;
