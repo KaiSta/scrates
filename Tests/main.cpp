@@ -375,7 +375,7 @@ int main()
 				//{ std::pair<std::string, size_t>(/*"$Local\\tempestTests"*/ synclocation, 53687091200) }, 
 				//folderp, local_file::storage_type::FOLDER, callback_func);
 				controller.create(containername, location,
-				  password, synclocation, local_file::storage_type::FOLDER, 53687091200);
+				  password, synclocation, local_file::storage_type::FOLDER, 0);
 			}
 			catch (std::invalid_argument e)
 			{
