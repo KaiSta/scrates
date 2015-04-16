@@ -120,3 +120,8 @@ void ContainerController::close()
 {
   container_.close();
 }
+
+bool ContainerController::is_open()
+{
+	return container_.is_open();
+}

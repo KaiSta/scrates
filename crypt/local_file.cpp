@@ -3,7 +3,7 @@
 #include "number_helper.h"
 #include "uarng.h"
 
-local_file::local_file() : random_num_(32), is_open(false)
+local_file::local_file() : random_num_(32), is_open_(false)
 {
 }
 
@@ -163,7 +163,7 @@ void local_file::create(const std::string& containername,
 		encrypt, new StringSink(file)/*strsink*/));
 	StringSource(file, true, new FileSink(p.str().data()));
 	
-	is_open = true;
+	is_open_ = true;
 }
 
 void local_file::open(path& p, const std::string& passphrase,
@@ -267,7 +267,7 @@ void local_file::open(path& p, const std::string& passphrase,
 	container_.init(cl.str(), passphrase);
 	container_.open();
 
-	is_open = true;
+	is_open_ = true;
 }
 
 CryptoPP::SecByteBlock local_file::get_seed()
@@ -283,19 +283,21 @@ void local_file::manual_sync()
 
 void local_file::close()
 {
-	if (is_open)
+	if (is_open_)
 	{
 		container_.close();
 		storage_->dismount_drive(vhd_);
+		is_open_ = false;
 	}
 }
 
 local_file::~local_file()
 {
-	if (is_open)
+	if (is_open_)
 	{
 		container_.close();
 		storage_->dismount_drive(vhd_);
+		is_open_ = false;
 	}
 	//VirtualDisk_Impl::dismount_drive(vhd_);
 }

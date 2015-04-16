@@ -38,6 +38,11 @@ public:
 
 	void close();
 
+	bool is_open()
+	{
+		return is_open_;
+	}
+
 private:
 	pugi::xml_document file_;
 	path location_;
@@ -51,7 +56,7 @@ private:
 	std::string passphrase_;
 	std::shared_ptr<Storage> storage_;
 
-	bool is_open;
+	bool is_open_;
 
 };
 
