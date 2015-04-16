@@ -3,6 +3,7 @@
 #include <cryptopp/secblock.h>
 #include <cryptopp/osrng.h>
 #include <string>
+#include <limits>
 #include "CloudManager.h"
 
 ContainerController::ContainerController(callback_t event_callback, const std::string& vhd_path) : 
@@ -20,6 +21,10 @@ container_event ContainerController::create(const std::string& container_name, c
 {
 	container_event ev;
 	path filepath = path(container_location).append_filename(container_name + ".cco");
+	
+	if(store_size == 0)
+	  store_size = std::numeric_limits< int >::max();
+	
 	try
 	{
 	    path v(vhd_path_);
