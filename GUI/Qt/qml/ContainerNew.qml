@@ -4,18 +4,9 @@ import QtQuick.Layouts 1.1
 import QtQuick.Controls.Styles 1.2
 import QtQuick.Dialogs 1.2
 
-import Qt.labs.settings 1.0
-import tempest.Container 1.0
 import tempest.RandomSeedGenerator 1.0
 
 Item {
-    Container {
-        id: container
-        name: "testHELLO"
-        password: "testPASSWORD"
-        path: "testPATH"
-    }
-
     RandomSeedGenerator {
         id: randomSeedGenerator
     }
@@ -31,10 +22,6 @@ Item {
    */
 
     SystemPalette { id: palette }
-    Settings {
-        //property alias text: pathText.text
-    }
-
     MouseArea {
         anchors.fill: parent
         onPositionChanged: randomSeedGenerator.randomSeed(mouseX, mouseY)

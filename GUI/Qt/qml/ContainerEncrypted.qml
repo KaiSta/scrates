@@ -12,16 +12,18 @@ Item {
         }
 
         TextField {
+            id: passwordText
             anchors.left: parent.left
             anchors.right: parent.right
             placeholderText: qsTr("Password")
             echoMode: TextInput.Password
-            onAccepted: console.log("TODO: decrypt container")
+            //onAccepted: console.log("TODO: decrypt container")
         }
 
         Button {
             text: qsTr("Decrypt and mount container")
-            onClicked: console.log("TODO: decrypt & mount container")
+            enabled: (passwordText.length ? true : false)
+            onClicked: _containerModel.currentContainer().mount(passwordText)
         }
     }
 

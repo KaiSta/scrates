@@ -73,7 +73,7 @@ Item {
 
             Button {
                 text: qsTr("Sync")
-                // TODO
+                onClicked: _containerModel.currentContainer().sync()
             }
 
             Button {

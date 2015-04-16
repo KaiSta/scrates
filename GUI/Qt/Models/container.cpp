@@ -4,11 +4,11 @@ ContainerObject::ContainerObject(QObject* parent) : QObject(parent)
 { }
 
 ContainerObject::ContainerObject(const QString& name, const QString& path, const QString& password, bool encrypted, QObject* parent)
-    : QObject(parent), name_(name), path_(path), password_(password), encrypted_(encrypted)
+    : QObject(parent), name_(name), path_(path), /*password_(password), */encrypted_(encrypted)
 {
     // TODO: encrypted: wenn ja, dann demount ausführen
-    controller_ = new ContainerController::ContainerController([this](container_event e) { myfunc(e); }, "/Users/jochen/Desktop/tempest/temp");
-    controller_->create(name.toStdString(), "/Users/jochen/Desktop/tempest/local", password.toStdString(), "/Users/jochen/Desktop/tempest/cloud", local_file::storage_type::FOLDER, 0);
+    controller_ = new ContainerController::ContainerController([this](container_event e) { myfunc(e); }, "/Users/jochen/Desktop/tempest/temp/");
+    controller_->create(name.toStdString(), "/Users/jochen/Desktop/tempest/local/", password.toStdString(), "/Users/jochen/Desktop/tempest/cloud/", local_file::storage_type::FOLDER, 53687091200);
 }
 
 ContainerObject::~ContainerObject()
@@ -39,20 +39,6 @@ void ContainerObject::setPath(const QString& path)
     {
         path_ = path;
         emit pathChanged();
-    }
-}
-
-QString ContainerObject::password() const
-{
-    return password_;
-}
-
-void ContainerObject::setPassword(const QString& password)
-{
-    if (password != password_)
-    {
-        password_ = password;
-        emit passwordChanged();
     }
 }
 
@@ -103,13 +89,20 @@ bool ContainerObject::exportHistory(const QString& url)
     return true;
 }
 
-bool ContainerObject::encrypt(const QString& password)
+bool ContainerObject::mount(const QString& password)
 {
     // TODO
-    // if password == password_
-    // setEncrypted(false)
+    return controller_->open("/Users/jochen/Desktop/tempest/local/", password.toUtf8().constData(), local_file::storage_type::FOLDER);
+}
 
-    return false;
+void ContainerObject::unmount()
+{
+    // TODO
+}
+
+bool ContainerObject::sync()
+{
+    return controller_->sync_now();
 }
 
 void ContainerObject::openDirectory(const QString& url)
@@ -131,12 +124,7 @@ void ContainerObject::myfunc(container_event e)
 ContainerModel::ContainerModel(QObject* parent)
     : QAbstractListModel(parent)
 {
-    //add(new ContainerObject("Container0", "file:///Users/jochen/Desktop", "", false));
-    //add(new ContainerObject("Container1", "file:///Users/jochen/Desktop", "", true));
-    //add(new ContainerObject("Container2", "file:///Users/jochen/Desktop", "", true));
-    //add(new ContainerObject("Container3", "file:///Users/jochen/Desktop", "", false));
-
-    // TODO: load container on startup (see: read())
+    read();
 }
 
 ContainerModel::~ContainerModel()
@@ -206,7 +194,17 @@ void ContainerModel::remove(int idx)
 
 void ContainerModel::read()
 {
+    using Poco::Glob;
+    std::string containerLocation("/Users/jochen/Desktop/tempest/local/");
 
+    std::set<std::string> files;
+    Glob::glob(containerLocation +"*.cco", files);
+
+    for (std::string f : files)
+    {
+        Poco::Path p(f);
+        add(QString::fromStdString(p.getBaseName()), QString::fromStdString(f));
+    }
 }
 
 
