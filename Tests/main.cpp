@@ -345,7 +345,7 @@ int main()
 
 		if (cmd == "exit")
 		{
-			f.close();
+			controller.close();
 			break;
 		}
 		else if (cmd == "create")

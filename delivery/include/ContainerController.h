@@ -76,6 +76,8 @@ public:
 	 * second string contains the path
 	 */
 	std::vector<std::pair<std::string, std::string> > get_providers();
+  
+  void close();
 
 private:
 	callback_t event_callback_;

@@ -1,15 +1,14 @@
 verbose - initializing container
-verbose - extract files
-information - extract filecontainer/README.txt
-information - extract filecontainer/README.md
-information - extract filecontainer/TODO.txt
-information - extract filecontainer/setup.py
-information - sync
-information - updating fileREADME.txt
-information - finished sync
+verbose - extract files 
+information - extract file container/README.md
+information - extract file container/setup.py
+information - extract file container/TODO.txt
+information - extract file container/README.txt
+information - succ
 information - closing container
 information - sync
 information - finished sync
 information - succ
+information - closing container
 information - closing container
 information - closing container
