@@ -6,6 +6,7 @@ import QtQuick.Dialogs 1.1
 import "UIComponents"
 
 Item {
+    Component.onCompleted: passwordText.forceActiveFocus()
     ColumnLayout {
         anchors.centerIn: parent
         width: 300

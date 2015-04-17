@@ -11,6 +11,8 @@ Item {
         id: randomSeedGenerator
     }
 
+    Component.onCompleted: nameText.forceActiveFocus()
+
     /*
     Timer {
         id: timer
