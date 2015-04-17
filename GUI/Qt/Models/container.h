@@ -18,14 +18,14 @@ class ContainerObject : public QObject
     Q_OBJECT
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(QString path READ path WRITE setPath NOTIFY pathChanged)
-    Q_PROPERTY(bool encrypted READ isEncrypted WRITE setEncrypted NOTIFY encryptedChanged)
+    Q_PROPERTY(bool open READ isOpen NOTIFY openChanged)
     Q_PROPERTY(QString history READ history WRITE setHistory NOTIFY historyChanged)
 public:
     ContainerObject(QObject* parent = 0);
     ContainerObject(const QString& name,
                     const QString& path = QString(),
                     const QString& password = QString(),
-                    bool encrypted = false,
+                    bool isOpen = true,
                     QObject* parent = 0);
     ~ContainerObject();
 
@@ -33,8 +33,7 @@ public:
     void setName(const QString& name);
     QString path() const;
     void setPath(const QString& path);
-    bool isEncrypted() const;
-    void setEncrypted(bool encrypted);
+    bool isOpen() const;
     QString history() const;
     void setHistory(const QString& entry = QString());
 
@@ -47,12 +46,12 @@ public:
 signals:
     void nameChanged();
     void pathChanged();
-    void encryptedChanged();
+    void openChanged();
     void historyChanged();
 private:
     QString name_;
     QString path_; // containerLocation
-    bool encrypted_;
+    bool isOpen_;
     QString history_;
     void myfunc(container_event e);
     ContainerController* controller_; // libcrypt, contains and controlls mounted container
@@ -78,10 +77,11 @@ public:
     Q_INVOKABLE bool add(const QString& name,
                          const QString& path = QString(),
                          const QString& password = QString(),
-                         bool encrypted = false);
+                         bool isOpen = true);
     Q_INVOKABLE void remove(int idx);
     Q_INVOKABLE void read();
     // Q_INVOKABLE void import(const QString& path /*const QDir& dir*/);
+
     Q_INVOKABLE ContainerObject* currentContainer();
     Q_INVOKABLE void setCurrentContainer(int idx);
 protected:
@@ -90,6 +90,7 @@ private:
     QList<ContainerObject*> containerList_;
     ContainerObject* currentContainer_;
     bool contains(ContainerObject* container);
+    void closeAll();
 signals :
     void countChanged(/*int*/);
 };

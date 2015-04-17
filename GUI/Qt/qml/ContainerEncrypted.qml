@@ -3,28 +3,48 @@ import QtQuick.Layouts 1.1
 import QtQuick.Controls 1.2
 import QtQuick.Dialogs 1.1
 
+import "UIComponents"
+
 Item {
     ColumnLayout {
-        anchors.centerIn : parent
-        Label {
-            text: qsTr("The selected container is encrypted.\nPlease enter the password to decrypt the container.")
+        anchors.centerIn: parent
+        width: 300
+        Text {
+            text: qsTr("The selected container <strong>" + _containerModel.currentContainer().name + "</strong> is encrypted. Please enter the password to decrypt the container.")
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
             horizontalAlignment: Text.AlignHCenter
         }
 
         TextField {
             id: passwordText
-            anchors.left: parent.left
-            anchors.right: parent.right
             placeholderText: qsTr("Password")
             echoMode: TextInput.Password
-            //onAccepted: console.log("TODO: decrypt container")
+            Layout.fillWidth: true
+            onAccepted: mount()
+            onTextChanged: closeMessageBar()
         }
 
         Button {
             text: qsTr("Decrypt and mount container")
             enabled: (passwordText.length ? true : false)
-            onClicked: _containerModel.currentContainer().mount(passwordText)
+            onClicked: mount()
+            Layout.fillWidth: true
         }
+    }
+
+    function mount() {
+        if (_containerModel.currentContainer().mount(passwordText.text)) {
+            updateView();
+        }
+        else {
+            messageBar.show("Mounting failed. Wrong password?", "error");
+            passwordText.selectAll();
+        }
+    }
+
+    function closeMessageBar() {
+        if (messageBar.visible) messageBar.close();
     }
 
     /* MessageDialog (ERROR)

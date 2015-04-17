@@ -108,7 +108,6 @@ Item {
             currentIndex: 0
             model: providersModel
             textRole: "placeholderName"
-            // onCurrentIndexChanged: console.debug(providersModel.get(currentIndex).placeholder + ", " + providersModel.get(currentIndex).location)
             onCurrentIndexChanged: pathText.text = providersModel.get(currentIndex).location
         }
 
@@ -152,7 +151,7 @@ Item {
             }
 
             CheckBox {
-                id: isDecrypted
+                id: isMounted
                 text: qsTr("Mount container after saving")
                 checked: true
             }
@@ -162,12 +161,7 @@ Item {
             Button {
                 text: "Save"
                 anchors.verticalCenter: parent.verticalCenter
-                onClicked: {
-                    if (_containerModel.add(nameText.text, pathText.text, passwordText.text, !isDecrypted.checked))
-                        viewLoader.source = "Welcome.qml"
-                    else
-                        messageDialog.show("TODO: Fehler")
-                }
+                onClicked: addContainer()
                 enabled: (isValid()) ? true : false
             }
             Button {
@@ -179,9 +173,17 @@ Item {
     }
 
     // Returns true, if the form is valid
-    function isValid()
-    {
+    function isValid() {
         return (nameText.text.length && passwordText.text.length)
+    }
+
+    function addContainer() {
+        if (isValid()) {
+            if (_containerModel.add(nameText.text, pathText.text, passwordText.text, isMounted.checked))
+                viewLoader.source = "Welcome.qml"
+            else
+                messageDialog.show("TODO: Fehler")
+        }
     }
 
     FileDialog {
