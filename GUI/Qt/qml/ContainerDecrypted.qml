@@ -62,6 +62,7 @@ Item {
         ColumnLayout {
             Button {
                 text: qsTr("Unmount")
+                onClicked: unmount()
             }
 
             Button {
@@ -73,7 +74,7 @@ Item {
 
             Button {
                 text: qsTr("Sync")
-                // TODO
+                onClicked: sync()
             }
 
             Button {
@@ -82,6 +83,14 @@ Item {
                 appendHistory("foo bar", "blue", "bold")}
             }
         }
+    }
+
+    function unmount() {
+        _containerModel.currentContainer().unmount();
+        updateView();
+    }
+    function sync() {
+        _containerModel.currentContainer().sync();
     }
 
     // TODO

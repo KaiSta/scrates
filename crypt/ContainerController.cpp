@@ -6,7 +6,7 @@
 #include <limits>
 #include "CloudManager.h"
 
-ContainerController::ContainerController(callback_t event_callback, const std::string& vhd_path) : 
+ContainerController::ContainerController(callback_t event_callback, const std::string& vhd_path) :
 event_callback_(event_callback), vhd_path_(vhd_path)
 {
 }
@@ -22,10 +22,10 @@ container_event ContainerController::create(const std::string& container_name, c
 {
 	container_event ev;
 	path filepath = path(container_location).append_filename(container_name + ".cco");
-	
+
 	if(store_size == 0)
 	  store_size = std::numeric_limits< int >::max();
-	
+
 	try
 	{
 	    path v(vhd_path_);
@@ -56,7 +56,7 @@ bool ContainerController::open(const std::string& container_location, const std:
 		send_callback(CONFLICT, WRONG_PASSWORD, what);
 		return false;
 	}
-	
+
 }
 
 bool ContainerController::sync_now()
@@ -64,7 +64,7 @@ bool ContainerController::sync_now()
 	send_callback(INFORMATION, SYNCHRONIZING);
 
 	container_.manual_sync();
-	
+
 	send_callback(INFORMATION, FINISHED_SYNCHRONIZING);
 	return true;
 }
@@ -108,6 +108,18 @@ void ContainerController::add_provider(std::string name_with_sign, std::string l
 {
 	auto& manager = CloudManager::instance();
 	manager.add_provider(name_with_sign, location);
+}
+
+void ContainerController::delete_provider(std::string name_with_sign)
+{
+  auto& manager = CloudManager::instance();
+  manager.delete_provider(name_with_sign);
+}
+
+bool ContainerController::contains_provider(std::string name_with_sign)
+{
+  auto& manager = CloudManager::instance();
+  return manager.contains_provider(name_with_sign);
 }
 
 std::vector<std::pair<std::string, std::string> > ContainerController::get_providers()

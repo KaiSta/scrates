@@ -17,14 +17,14 @@ Item {
         }
 
         Label {
-            text: qsTr("Location for container key files:")
+            text: qsTr("Location for container key files (.cco):")
             Layout.alignment: Qt.AlignTop
         }
         RowLayout {
             Layout.fillWidth: true
             TextField {
                 placeholderText: qsTr("Location")
-                text: _applicationDirPath
+                text: _settings.value("Container/containerLocation")
                 Layout.fillWidth: true
             }
             Button {
@@ -96,7 +96,7 @@ Item {
                     }
                    TextField {
                        placeholderText: qsTr("Location")
-                       text: _homeDirPath
+                       text: _settings.value("Container/vhdLocation")
                        Layout.fillWidth: true
                    }
                    Button {

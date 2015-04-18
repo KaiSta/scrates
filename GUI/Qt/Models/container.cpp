@@ -3,12 +3,17 @@
 ContainerObject::ContainerObject(QObject* parent) : QObject(parent)
 { }
 
-ContainerObject::ContainerObject(const QString& name, const QString& path, const QString& password, bool encrypted, QObject* parent)
-    : QObject(parent), name_(name), path_(path), password_(password), encrypted_(encrypted)
+ContainerObject::ContainerObject(const QString& name, const QString& path, const QString& password, bool isOpen, QObject* parent)
+    : QObject(parent), name_(name), path_(path), isOpen_(isOpen)
 {
-    // TODO: encrypted: wenn ja, dann demount ausführen
-    controller_ = new ContainerController::ContainerController([this](container_event e) { myfunc(e); }, "/Users/jochen/Desktop/tempest/temp");
-    controller_->create(name.toStdString(), "/Users/jochen/Desktop/tempest/local", password.toStdString(), "/Users/jochen/Desktop/tempest/cloud", local_file::storage_type::FOLDER, 0);
+    controller_ = new ContainerController::ContainerController([this](container_event e) { myfunc(e); }, "/Users/jochen/Desktop/tempest/temp/");
+    controller_->create(name.toStdString(), "/Users/jochen/Desktop/tempest/local/", password.toStdString(), "/Users/jochen/Desktop/tempest/cloud/", local_file::storage_type::FOLDER, 0);
+
+    // If the user doesnt want to automount the container after creating, demount it.
+    if (!isOpen && controller_->is_open())
+        controller_->close();
+
+    emit openChanged();
 }
 
 ContainerObject::~ContainerObject()
@@ -42,32 +47,9 @@ void ContainerObject::setPath(const QString& path)
     }
 }
 
-QString ContainerObject::password() const
+bool ContainerObject::isOpen() const
 {
-    return password_;
-}
-
-void ContainerObject::setPassword(const QString& password)
-{
-    if (password != password_)
-    {
-        password_ = password;
-        emit passwordChanged();
-    }
-}
-
-bool ContainerObject::isEncrypted() const
-{
-    return encrypted_;
-}
-
-void ContainerObject::setEncrypted(bool encrypted)
-{
-    if (encrypted != encrypted_)
-    {
-        encrypted_ = encrypted;
-        emit encryptedChanged();
-    }
+    return controller_->is_open();
 }
 
 QString ContainerObject::history() const
@@ -99,17 +81,30 @@ bool ContainerObject::exportHistory(const QString& url)
     out << "data";
     file.close();
 
-
     return true;
 }
 
-bool ContainerObject::encrypt(const QString& password)
+bool ContainerObject::mount(const QString& password)
 {
-    // TODO
-    // if password == password_
-    // setEncrypted(false)
+    std::string containerFullPath("/Users/jochen/Desktop/tempest/local/" + this->name_.toStdString() + ".cco");
 
+    if (controller_->open(containerFullPath, password.toStdString(), local_file::storage_type::FOLDER))
+    {
+        emit openChanged();
+        return true;
+    }
     return false;
+}
+
+void ContainerObject::unmount()
+{
+    controller_->close();
+    emit openChanged();
+}
+
+bool ContainerObject::sync()
+{
+    return controller_->sync_now();
 }
 
 void ContainerObject::openDirectory(const QString& url)
@@ -118,7 +113,6 @@ void ContainerObject::openDirectory(const QString& url)
         QDesktopServices::openUrl(QUrl(url, QUrl::TolerantMode));
     else
         QDesktopServices::openUrl(QUrl(path_, QUrl::TolerantMode));
-
 }
 
 void ContainerObject::myfunc(container_event e)
@@ -131,16 +125,13 @@ void ContainerObject::myfunc(container_event e)
 ContainerModel::ContainerModel(QObject* parent)
     : QAbstractListModel(parent)
 {
-    //add(new ContainerObject("Container0", "file:///Users/jochen/Desktop", "", false));
-    //add(new ContainerObject("Container1", "file:///Users/jochen/Desktop", "", true));
-    //add(new ContainerObject("Container2", "file:///Users/jochen/Desktop", "", true));
-    //add(new ContainerObject("Container3", "file:///Users/jochen/Desktop", "", false));
-
-    // TODO: load container on startup (see: read())
+    read();
 }
 
 ContainerModel::~ContainerModel()
-{ }
+{
+    closeAll();
+}
 
 int ContainerModel::rowCount(const QModelIndex& parent) const
 {
@@ -186,9 +177,9 @@ bool ContainerModel::add(ContainerObject* container)
     return true;
 }
 
-bool ContainerModel::add(const QString& name, const QString& path, const QString& password, bool encrypted)
+bool ContainerModel::add(const QString& name, const QString& path, const QString& password, bool isOpen)
 {
-    return add(new ContainerObject(name, path, password, encrypted));
+    return add(new ContainerObject(name, path, password, isOpen));
 }
 
 void ContainerModel::remove(int idx)
@@ -206,9 +197,27 @@ void ContainerModel::remove(int idx)
 
 void ContainerModel::read()
 {
+    using Poco::Glob;
+    std::string containerLocation("/Users/jochen/Desktop/tempest/local/");
 
+    std::set<std::string> files;
+    Glob::glob(containerLocation +"*.cco", files);
+
+    for (std::string f : files)
+    {
+        Poco::Path p(f);
+        add(QString::fromStdString(p.getBaseName()), QString::fromStdString(f));
+    }
 }
 
+void ContainerModel::closeAll()
+{
+    for (auto c : containerList_)
+    {
+        c->sync();
+        c->unmount();
+    }
+}
 
 void ContainerModel::setCurrentContainer(int idx)
 {

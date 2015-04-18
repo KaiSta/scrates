@@ -4,21 +4,14 @@ import QtQuick.Layouts 1.1
 import QtQuick.Controls.Styles 1.2
 import QtQuick.Dialogs 1.2
 
-import Qt.labs.settings 1.0
-import tempest.Container 1.0
 import tempest.RandomSeedGenerator 1.0
 
 Item {
-    Container {
-        id: container
-        name: "testHELLO"
-        password: "testPASSWORD"
-        path: "testPATH"
-    }
-
     RandomSeedGenerator {
         id: randomSeedGenerator
     }
+
+    Component.onCompleted: nameText.forceActiveFocus()
 
     /*
     Timer {
@@ -31,10 +24,6 @@ Item {
    */
 
     SystemPalette { id: palette }
-    Settings {
-        //property alias text: pathText.text
-    }
-
     MouseArea {
         anchors.fill: parent
         onPositionChanged: randomSeedGenerator.randomSeed(mouseX, mouseY)
@@ -121,7 +110,6 @@ Item {
             currentIndex: 0
             model: providersModel
             textRole: "placeholderName"
-            // onCurrentIndexChanged: console.debug(providersModel.get(currentIndex).placeholder + ", " + providersModel.get(currentIndex).location)
             onCurrentIndexChanged: pathText.text = providersModel.get(currentIndex).location
         }
 
@@ -165,7 +153,7 @@ Item {
             }
 
             CheckBox {
-                id: isDecrypted
+                id: isMounted
                 text: qsTr("Mount container after saving")
                 checked: true
             }
@@ -175,12 +163,7 @@ Item {
             Button {
                 text: "Save"
                 anchors.verticalCenter: parent.verticalCenter
-                onClicked: {
-                    if (_containerModel.add(nameText.text, pathText.text, passwordText.text, !isDecrypted.checked))
-                        viewLoader.source = "Welcome.qml"
-                    else
-                        messageDialog.show("TODO: Fehler")
-                }
+                onClicked: addContainer()
                 enabled: (isValid()) ? true : false
             }
             Button {
@@ -192,9 +175,17 @@ Item {
     }
 
     // Returns true, if the form is valid
-    function isValid()
-    {
+    function isValid() {
         return (nameText.text.length && passwordText.text.length)
+    }
+
+    function addContainer() {
+        if (isValid()) {
+            if (_containerModel.add(nameText.text, pathText.text, passwordText.text, isMounted.checked))
+                viewLoader.source = "Welcome.qml"
+            else
+                messageDialog.show("TODO: Fehler")
+        }
     }
 
     FileDialog {

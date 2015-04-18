@@ -83,7 +83,7 @@ void CloudManager::autodetect()
 		detect_onedrive();
 		detect_googledrive();
 		detect_local();
-		
+
 		pugi::xml_node providers = providerlist_->append_child("providers");
 		for (auto& x : provider_locations_)
 		{
@@ -93,7 +93,7 @@ void CloudManager::autodetect()
 		}
 		providerlist_->save_file("providers.xml");
 	}
-	
+
 }
 
 void CloudManager::create_providerlist()
@@ -120,7 +120,7 @@ void CloudManager::detect_dropbox()
 	delete[] appdata;
 	appd.append("\\Dropbox\\host.db");
 	//if (!FileSystem::file_exists(appd)){ return; }
-	
+
 	std::ifstream in(appd, std::ios::in | std::ios::binary);
 	std::string content((std::istreambuf_iterator<char>(in)),
 		std::istreambuf_iterator<char>());
@@ -133,7 +133,7 @@ void CloudManager::detect_dropbox()
 	std::string decoded;
 	CryptoPP::StringSource(content, true,
 		new CryptoPP::Base64Decoder(new CryptoPP::StringSink(decoded)));
-	
+
 	provider_locations_["$Dropbox"] = decoded;
 #endif
 }
@@ -186,7 +186,7 @@ void CloudManager::detect_googledrive()
 		std::string appdatalocal(x);
 		appdatalocal.append("\\Google\\Drive\\sync_config.db");
 		if (!FileSystem::file_exists(appdatalocal)){ return; }
-		
+
 		std::ifstream in(appdatalocal, std::ios::in | std::ios::binary);
 		std::string content((std::istreambuf_iterator<char>(in)),
 			std::istreambuf_iterator<char>());
@@ -245,4 +245,28 @@ void CloudManager::add_provider(std::string name_with_sign, std::string location
 	current.append_attribute("placeholder") = name_with_sign.c_str();
 	current.append_attribute("location") = location.c_str();
 	providerlist_->save_file("providers.xml");
+}
+
+void CloudManager::delete_provider(std::string name_with_sign)
+{
+	pugi::xpath_variable_set vars;
+	vars.add("name_with_sign", pugi::xpath_type_string);
+	vars.set("name_with_sign", name_with_sign.c_str());
+
+	provider_locations_.erase(name_with_sign);
+	pugi::xml_node providers = providerlist_->child("providers");
+	providers.remove_child("/providers/provider[@placeholder='$name_with_sign']");
+	providerlist_->save_file("providers.xml");
+}
+
+bool CloudManager::contains_provider(std::string name_with_sign)
+{
+	pugi::xpath_variable_set vars;
+	vars.add("name_with_sign", pugi::xpath_type_string);
+	vars.set("name_with_sign", name_with_sign.c_str());
+
+	pugi::xml_node providers = providerlist_->child("providers");
+	pugi::xpath_node temp_node = providers.select_single_node("/providers/provider[@placeholder='$name_with_sign']");
+
+	return temp_node;
 }
