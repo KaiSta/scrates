@@ -110,13 +110,13 @@ void ContainerController::add_provider(std::string name_with_sign, std::string l
 	manager.add_provider(name_with_sign, location);
 }
 
-void delete_provider(std::string name_with_sign)
+void ContainerController::delete_provider(std::string name_with_sign)
 {
   auto& manager = CloudManager::instance();
   manager.delete_provider(name_with_sign);
 }
 
-bool contains_provider(std::string name_with_sign)
+bool ContainerController::contains_provider(std::string name_with_sign)
 {
   auto& manager = CloudManager::instance();
   return manager.contains_provider(name_with_sign);
