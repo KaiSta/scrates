@@ -262,12 +262,10 @@ void CloudManager::delete_provider(std::string name_with_sign)
 
 bool CloudManager::contains_provider(std::string name_with_sign)
 {
-	pugi::xpath_variable_set vars;
-	vars.add("name_with_sign", pugi::xpath_type_string);
-	vars.set("name_with_sign", name_with_sign.c_str());
+	auto it = std::find_if(std::begin(provider_locations_), std::end(provider_locations_), [&](const std::pair<std::string, std::string>& p)
+	{
+		return p.first == name_with_sign;
+	});
 
-	pugi::xml_node providers = providerlist_->child("providers");
-	pugi::xpath_node temp_node = providers.select_single_node("/providers/provider[@placeholder=$name_with_sign]", &vars);
-
-	return temp_node;
+	return it != std::end(provider_locations_);
 }

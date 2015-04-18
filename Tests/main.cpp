@@ -320,10 +320,6 @@ void callback_func(container_event e)
 
 int main()
 {
-	/*filesys_replace();
-	system("pause");
-	return 0;*/
-
 	using namespace CryptoPP;
 
 	local_file f;
