@@ -7,6 +7,7 @@ class Settings : public QSettings
 {
     Q_OBJECT
 public:
+    // static Settings& instance();
     Settings(QObject* parent = 0);
     Settings(Format format, Scope scope, const QString& organization, const QString& application = QString(), QObject * parent = 0);
     ~Settings();

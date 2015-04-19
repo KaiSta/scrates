@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.4
 
 Rectangle {
     SystemPalette { id: palette }
@@ -8,7 +8,6 @@ Rectangle {
         right: parent.right
         bottom: parent.bottom
     }
-    height: buttonRow.height * 1.2
     color: Qt.darker(palette.window, 1.1)
 
     ButtonBar { }

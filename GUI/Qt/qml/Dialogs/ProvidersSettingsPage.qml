@@ -5,11 +5,25 @@ import QtQuick.Controls.Styles 1.2
 import QtQuick.Dialogs 1.2
 import QtQuick.Window 2.0
 
-
 Item {
     clip: true
 
+    property alias columnHeight: columnLayout.height
+
+    // Message Dialog: Deleting Provider
+    MessageDialog {
+        id: removeProviderMsgDialog
+        modality: Qt.WindowModal
+        title: qsTr("Removing selected provider")
+        text: qsTr("Removing provider")
+        informativeText: "The selected provider will be removed and deleted permanently in the provider.xml file. Are you sure?"
+        icon: StandardIcon.Warning
+        standardButtons: StandardButton.Yes | StandardButton.No
+        onYes: removeProvider()
+    }
+
     ColumnLayout {
+        id: columnLayout
         anchors {
             top: parent.top
             left: parent.left
@@ -21,7 +35,7 @@ Item {
         Label {
             text: qsTr("Providers:")
         }
-        Label {
+        Text {
             text: qsTr("(Info) Your encrypted containers will be stored under the selected provider location.")
             font.italic: true
             font.pixelSize: 10
@@ -41,11 +55,19 @@ Item {
             }
         }
 
-        Button {
-            text: qsTr("Remove")
-            anchors.right: parent.right
-            enabled: (providersTable.currentRow >= 0 ? true : false)
-            onClicked: removeProviderMsgDialog.open()
+        RowLayout {
+            Button {
+                // TODO
+                text: qsTr("Refresh")
+                visible: false
+                onClicked: refreshProviders()
+            }
+
+            Button {
+                text: qsTr("Remove")
+                enabled: (providersTable.currentRow >= 0 ? true : false)
+                onClicked: removeProviderMsgDialog.open()
+            }
         }
 
         Label {
@@ -81,24 +103,34 @@ Item {
             text: qsTr("Add")
             enabled: validate()
             anchors.right: parent.right
-            // TODO: onClicked: call backend method
+            onClicked: addProvider()
         }
     }
-    // Message Dialog: Deleting Provider
-    MessageDialog {
-        id: removeProviderMsgDialog
-        modality: Qt.WindowModal
-        title: qsTr("Removing selected provider")
-        text: qsTr("Removing provider")
-        informativeText: "The selected provider will be removed and deleted permanently in the provider.xml file. Are you sure?"
-        icon: StandardIcon.Warning
-        standardButtons: StandardButton.Yes | StandardButton.No
-        onYes: {
-            // TODO: call backend method
-        }
-    }
+
     function validate() {
         var regex = /[$][a-zA-Z]+[0-9]*/;
-        return regex.test(placeholderText.text) && locationText.text.length;
+        return regex.test(placeholderText.text) && locationText.text.length && !_containerModel.containsProvider(placeholderText.text);
+    }
+
+    function addProvider() {
+        _containerModel.addProvider(placeholderText.text, locationText.text);
+        providersModel.reload();
+        placeholderText.text = "";
+        locationText.text = "";
+        providersTable.forceActiveFocus();
+    }
+
+    function removeProvider() {
+        _containerModel.deleteProvider(providersModel.get(providersTable.currentRow).placeholder);
+        providersModel.reload();
+    }
+
+    function refreshProviders() {
+        _containerModel.refreshProviderList();
+        providersModel.reload();
+    }
+
+    function save() {
+        // Nothing to save so far. Maybe someday.
     }
 }

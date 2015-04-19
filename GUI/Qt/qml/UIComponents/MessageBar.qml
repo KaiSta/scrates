@@ -12,7 +12,7 @@ Rectangle {
     id: informationMessage
     z: 100
     visible: false
-    height: closeMessage.height + 10
+    height: closeMessage.height + 4
     Layout.fillWidth: true
     color: "lightblue"
     opacity: 1
@@ -25,15 +25,17 @@ Rectangle {
     Row {
         anchors.verticalCenter: parent.verticalCenter
         spacing: 5
-        Label {
+        Text {
             id: informationText
-            text: "error message or something like thatttt"
+            font.pixelSize: 10
             anchors.leftMargin: 10
         }
 
         ToolButton {
             id: closeMessage
             text: "X"
+            height: 16
+            width: 16
             onClicked: informationMessage.close()
         }
     }
