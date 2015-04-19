@@ -1,12 +1,10 @@
-import QtQuick 2.0
+import QtQuick 2.4
+import QtQuick.Layouts 1.1
 
-Row {
-    id: buttonRow
-    spacing: 5
+RowLayout {
+    id: buttonBar
     anchors {
         verticalCenter: parent.verticalCenter
-        left: parent.left
-        leftMargin: 10
     }
     width: parent.width
 }
