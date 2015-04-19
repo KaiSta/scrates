@@ -21,9 +21,8 @@ ApplicationWindow {
     property alias containerList: containerTable
 
     onClosing: {
-        // TODO: forced sync for all encrypted/mounted containers
-        _settings.setValue("ApplicationWindow/width", width)
-        _settings.setValue("ApplicationWindow/height", height)
+        close.accepted = false
+        closeApplicationMessageDialog.open()
     }
 
     XmlListModel {
@@ -35,23 +34,51 @@ ApplicationWindow {
         XmlRole {name: "location"; query: "@location/string()"}
     }
 
+    // Message Dialog: Deleting Container
+    MessageDialog {
+        id: closeApplicationMessageDialog
+        modality: Qt.WindowModal
+        title: qsTr("Quit application")
+        text: qsTr("Quit application")
+        informativeText: "All opened containers will be synced and unmounted. Do you want to close the application?"
+        icon: StandardIcon.Warning
+        standardButtons: StandardButton.Yes | StandardButton.No
+        onYes: {
+            _settings.setValue("ApplicationWindow/width", width)
+            _settings.setValue("ApplicationWindow/height", height)
+            Qt.quit()
+        }
+    }
+
+    // Message Dialog: Deleting Container
+    MessageDialog {
+        id: removeContainerMsgDialog
+        modality: Qt.WindowModal
+        title: qsTr("Removing selected container")
+        text: qsTr("Removing container")
+        informativeText: "The selected container will be removed permanently from your hard drive. Are you sure?"
+        icon: StandardIcon.Warning
+        standardButtons: StandardButton.Yes | StandardButton.No
+        onYes: {
+            _containerModel.remove(containerList.currentRow)
+            viewLoader.source = "Welcome.qml"
+        }
+    }
+
     FileDialog {
-        id: fileDialog
-        title: "TODO"
+        id: openContainerFileDialog
+        title: qsTr("Choose container")
         modality: Qt.NonModal
-        folder: "file:///Users"
-        selectFolder: true
-        onAccepted: console.log(fileUrl)
+        nameFilters: [ "Containerfiles (*.cco)" ]
+        //onAccepted: console.log(Qt.resolvedUrl(fileUrl))
     }
 
     FileDialog {
         id: importContainerFileDialog
-        title: "Import"
+        title: qsTr("Choose container")
         modality: Qt.NonModal
-        folder: "file:///Users"
-        nameFilters: [ "Image files (*.png *.jpg)", "All files (*)" ]
-        selectedNameFilter: "Image files (*.png *.jpg)"
-        onAccepted: console.log(fileUrl)
+        nameFilters: [ "Containerfiles (*.cco)" ]
+        //onAccepted: console.log(Qt.resolvedUrl(fileUrl).toString())
     }
 
     SettingsDialog {
@@ -60,8 +87,7 @@ ApplicationWindow {
 
     Action {
         id: openAction
-        text: "Open Container"
-        onTriggered: fileDialog.open()
+        onTriggered: openContainerFileDialog.open()
         shortcut: "Ctrl+O"
     }
 
@@ -90,7 +116,7 @@ ApplicationWindow {
             MenuSeparator { }
             MenuItem {
                 text: qsTr("E&xit")
-                onTriggered: Qt.quit();
+                onTriggered: closeApplicationMessageDialog.open()
             }
         }
         Menu {
@@ -128,7 +154,7 @@ ApplicationWindow {
             Button {
                 text: qsTr("Import")
                 tooltip: qsTr("Import an existing container")
-                onClicked: messageDialog.open()
+                onClicked: importContainerFileDialog.open()
             }
             Item { Layout.fillWidth: true }
         }
@@ -136,7 +162,7 @@ ApplicationWindow {
 
     // In progress. TODO.
     MessageBar {
-
+        id: messageBar
     }
 
     // Main Window
@@ -175,45 +201,22 @@ ApplicationWindow {
         }
     }
 
-    MessageDialog {
-        id: messageDialog
-        title: qsTr("May I have your attention, please?")
-
-        function show(caption) {
-            messageDialog.text = caption;
-            messageDialog.open();
-        }
-    }
-
-    // Message Dialog: Deleting Container
-    MessageDialog {
-        id: removeContainerMsgDialog
-        modality: Qt.WindowModal
-        title: qsTr("Removing selected container")
-        text: qsTr("Removing container")
-        informativeText: "The selected container will be removed permanently from your hard drive. Are you sure?"
-        icon: StandardIcon.Warning
-        standardButtons: StandardButton.Yes | StandardButton.No
-        onYes: {
-            _containerModel.remove(containerList.currentRow)
-            viewLoader.source = "Welcome.qml"
-        }
-    }
-
-
-
-    function updateView()
-    {
-        viewLoader.source = "";
+    function updateView() {
+        viewLoader.source = ""
 
         if (containerList.currentRow < 0)
             viewLoader.source = "Welcome.qml";
 
         var container = _containerModel.get(containerList.currentRow)
 
-        if (container.encrypted)
-            viewLoader.source = "ContainerEncrypted.qml";
-        else
+        if (container.open)
             viewLoader.source = "ContainerDecrypted.qml";
+        else
+            viewLoader.source = "ContainerEncrypted.qml";
+    }
+
+    function importContainer(fileUrl) {
+        //console.log(fileUrl);
+        //console.log("resolved:" + Qt.resolvedUrl(fileUrl));
     }
 }
