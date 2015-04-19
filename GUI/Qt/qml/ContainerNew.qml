@@ -47,6 +47,7 @@ Item {
         TextField {
             id: nameText
             Layout.fillWidth: true
+            maximumLength: 32
             validator: RegExpValidator {
                 regExp: /[a-zA-Z0-9_-]*/ // TODO
             }

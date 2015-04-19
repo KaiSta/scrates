@@ -12,6 +12,7 @@
 #include "Poco/Path.h"
 #include "Poco/Glob.h"
 #include "ContainerController.h"
+#include "settings.h"
 
 class ContainerObject : public QObject
 {
@@ -53,7 +54,8 @@ private:
     QString path_; // containerLocation
     bool isOpen_;
     QString history_;
-    void myfunc(container_event e);
+    Settings* settings_;
+    void callbackFunc(container_event e);
     ContainerController* controller_; // libcrypt, contains and controlls mounted container
 };
 
@@ -79,9 +81,13 @@ public:
                          const QString& password = QString(),
                          bool isOpen = true);
     Q_INVOKABLE void remove(int idx);
-    Q_INVOKABLE void read();
-    // Q_INVOKABLE void import(const QString& path /*const QDir& dir*/);
-
+    Q_INVOKABLE void open(const QString& file);
+    Q_INVOKABLE void import(const QString& file);
+    Q_INVOKABLE void read();    
+    Q_INVOKABLE void addProvider(const QString& placeholder, const QString& location);
+    Q_INVOKABLE void deleteProvider(const QString& placeholder);
+    Q_INVOKABLE bool containsProvider(const QString& placeholder);
+    Q_INVOKABLE void refreshProviderList();
     Q_INVOKABLE ContainerObject* currentContainer();
     Q_INVOKABLE void setCurrentContainer(int idx);
 protected:
@@ -89,6 +95,9 @@ protected:
 private:
     QList<ContainerObject*> containerList_;
     ContainerObject* currentContainer_;
+    ContainerController* controller_; // libcrypt, contains and controlls mounted container
+    Settings* settings_;
+    void callbackFunc(container_event e);
     bool contains(ContainerObject* container);
     void closeAll();
 signals :
