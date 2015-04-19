@@ -11,33 +11,36 @@ Window {
     title: qsTr("Preferences")
     width: 480
     minimumWidth: 480
-    height: 400
+    height: 420
     minimumHeight: 400
     modality: Qt.ApplicationModal
 
     ColumnLayout {
         anchors.fill: parent
         TabView {
+            id: tabView
             anchors {
                 fill: parent
                 margins: 5
             }
             Tab {
-                id: generalPage
+                id: generalPageTab
                 title: qsTr("General")
-                GeneralSettingsPage {}
+                GeneralSettingsPage { }
             }
             Tab {
-                id: providersPage
+                id: providersPageTab
                 title: qsTr("Providers")
-                ProvidersSettingsPage {}
+                ProvidersSettingsPage { }
             }
         }
         BottomBar {
-            height: 40
+            height: buttonBar.height + 10
             ButtonBar {
+                id: buttonBar
+                Item { Layout.fillWidth: true }
                 Button {
-                    text: "Save"
+                    text: "OK"
                     onClicked: saveSettings()
                 }
                 Button {
@@ -49,11 +52,15 @@ Window {
     }
 
     function saveSettings() {
-        // TODO
-        _settings.setValue("Settings/")
-        if (true)
-            settingsDialog.close()
+        if (generalPageTab.item) generalPageTab.item.save();
+        if (providersPageTab.item) providersPageTab.item.save();
+        settingsDialog.close();
     }
 
-
+    // unused
+    function updateWindowHeight() {
+        var currentTabIdx = tabView.currentIndex;
+        if (currentTabIdx == 0) settingsWindow.height = generalPageTab.item.columnHeight + 100;
+        if (currentTabIdx == 1) settingsWindow.height = providersPageTab.item.columnHeight + 100;
+    }
 }
