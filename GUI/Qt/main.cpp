@@ -38,11 +38,11 @@ int main(int argc, char *argv[])
     PasswordStrengthCheckerModel pwStrengthCheckerModel;
     engine.rootContext()->setContextProperty("_pwStrengthCheckerModel", &pwStrengthCheckerModel);
 
-    //RandomSeedGeneratorModel randomSeedGeneratorModel;
-    //engine.rootContext()->setContextProperty("_randomSeedGeneratorModel", &randomSeedGeneratorModel);
+    RandomSeedGeneratorModel randomSeedGeneratorModel;
+    engine.rootContext()->setContextProperty("_randomSeedGeneratorModel", &randomSeedGeneratorModel);
 
-    qmlRegisterType<ContainerObject>("tempest.Container", 1, 0, "Container");
-    qmlRegisterType<RandomSeedGeneratorModel>("tempest.RandomSeedGenerator", 1, 0, "RandomSeedGenerator");
+    // qmlRegisterType<ContainerObject>("tempest.Container", 1, 0, "Container");
+    // qmlRegisterType<RandomSeedGeneratorModel>("tempest.RandomSeedGenerator", 1, 0, "RandomSeedGenerator");
 
     //#ifdef Q_OS_OSX
     //#endif
