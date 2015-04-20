@@ -2,7 +2,7 @@
 #include <QQmlApplicationEngine>
 #include <QtQml>
 #include <QSettings>
-#include "Models/container.h"
+#include "Models/containermodel.h"
 #include "Models/passwordstrengthchecker.h"
 #include "Models/randomseedgenerator.h"
 #include "Models/settings.h"

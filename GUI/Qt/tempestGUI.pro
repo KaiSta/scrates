@@ -10,7 +10,8 @@ SOURCES += main.cpp \
     Models/passwordstrengthchecker.cpp \
     Models/randomseedgenerator.cpp \
     include/pugixml.cpp \ # only if needed for the GUI
-    Models/settings.cpp
+    Models/settings.cpp \
+    Models/containermodel.cpp
 
 RESOURCES += qml.qrc
 
@@ -26,7 +27,8 @@ HEADERS += \
     Models/randomseedgenerator.h \
     include/pugixml.hpp \
     include/pugiconfig.hpp \
-    Models/settings.h
+    Models/settings.h \
+    Models/containermodel.h
 
 # Poco C++
 INCLUDEPATH += /usr/local/include
