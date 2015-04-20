@@ -24,3 +24,13 @@ QVariant Settings::value(const QString& key, const QVariant& defaultValue) const
 {
     return QSettings::value(key, defaultValue);
 }
+
+std::string Settings::containerLocation()
+{
+    return QSettings(QSettings::IniFormat, QSettings::UserScope, QCoreApplication::organizationName()).value("Container/containerLocation").toString().toStdString();
+}
+
+std::string Settings::vhdLocation()
+{
+    return QSettings(QSettings::IniFormat, QSettings::UserScope, QCoreApplication::organizationName()).value("Container/vhdLocation").toString().toStdString();
+}

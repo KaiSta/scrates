@@ -4,13 +4,7 @@ import QtQuick.Layouts 1.1
 import QtQuick.Controls.Styles 1.2
 import QtQuick.Dialogs 1.2
 
-import tempest.RandomSeedGenerator 1.0
-
 Item {
-    RandomSeedGenerator {
-        id: randomSeedGenerator
-    }
-
     Component.onCompleted: nameText.forceActiveFocus()
 
     /*
@@ -26,7 +20,7 @@ Item {
     SystemPalette { id: palette }
     MouseArea {
         anchors.fill: parent
-        onPositionChanged: randomSeedGenerator.randomSeed(mouseX, mouseY)
+        onPositionChanged: _randomSeedGeneratorModel.randomSeed(mouseX, mouseY)
         hoverEnabled: true
     }
 
@@ -100,7 +94,7 @@ Item {
             id: randomSeedText
             Layout.fillWidth: true
             readOnly: true
-            text: randomSeedGenerator.seed
+            text: _randomSeedGeneratorModel.seed
         }
 
         Label {
@@ -111,7 +105,11 @@ Item {
             currentIndex: 0
             model: providersModel
             textRole: "placeholderName"
-            onCurrentIndexChanged: pathText.text = providersModel.get(currentIndex).location
+            onCurrentIndexChanged: {
+                pathText.text = providersModel.get(currentIndex).location
+                pathText.forceActiveFocus()
+                pathText.selectAll()
+            }
         }
 
         Label {
@@ -162,9 +160,9 @@ Item {
             Item { Layout.fillWidth: true }
 
             Button {
-                text: "Save"
+                text: "Add"
                 anchors.verticalCenter: parent.verticalCenter
-                onClicked: addContainer()
+                onClicked: createContainer()
                 enabled: (isValid()) ? true : false
             }
             Button {
@@ -180,12 +178,15 @@ Item {
         return (nameText.text.length && passwordText.text.length)
     }
 
-    function addContainer() {
+    function createContainer() {
         if (isValid()) {
-            if (_containerModel.add(nameText.text, pathText.text, passwordText.text, isMounted.checked))
-                viewLoader.source = "Welcome.qml"
-            else
-                messageDialog.show("TODO: Fehler")
+            if (_containerModel.create(nameText.text, passwordText.text, pathText.text, isMounted.checked)) {
+                _randomSeedGeneratorModel.setSeed();
+                viewLoader.source = "Welcome.qml";
+            }
+            else {
+                console.log("error: createContainer");
+            }
         }
     }
 

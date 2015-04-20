@@ -1,22 +1,10 @@
 #pragma once
 
+#include <QtGui>
 #include <QObject>
-#include <QString>
-#include <QByteArray>
-#include <QDebug>
 #include <vector>
-#include <Container.h>
 #include "ContainerController.h"
-
-
-class RandomSeedGenerator
-{
-public:
-    RandomSeedGenerator();
-    ~RandomSeedGenerator();
-
-private:
-};
+#include "settings.h"
 
 class RandomSeedGeneratorModel : public QObject
 {
@@ -25,19 +13,15 @@ class RandomSeedGeneratorModel : public QObject
 public:
     explicit RandomSeedGeneratorModel(QObject *parent = 0);
     ~RandomSeedGeneratorModel();
+    Q_INVOKABLE void setSeed();
     Q_INVOKABLE void randomSeed(double x, double y);
-    //Q_INVOKABLE void mousePosition(double x, double y);
-    //Q_INVOKABLE void windowPosition(double x, double y);
     Q_INVOKABLE void time();
-
     QString seed() const;
-
 signals:
     void seedChanged();
-
 private:
     std::vector<unsigned char> seed_;
     size_t time_;
-    void myfunc(container_event e);
-    ContainerController* controller_;
+    void callbackFunc(container_event e);
+    ContainerController controller_;
 };

@@ -1,26 +1,16 @@
 #include "randomseedgenerator.h"
 
-
-
-RandomSeedGenerator::RandomSeedGenerator()
-{ }
-
-RandomSeedGenerator::~RandomSeedGenerator()
-{ }
-
-
-
-
-
 RandomSeedGeneratorModel::RandomSeedGeneratorModel(QObject *parent)
-    : QObject(parent)
-{
-    controller_ = new ContainerController::ContainerController([this](container_event e) { myfunc(e); }, "/home/jochen");
-    seed_ = controller_->get_pseudo_seed();
-}
+    : QObject(parent), controller_([this](container_event e) { callbackFunc(e); }, Settings::vhdLocation()), seed_(controller_.get_pseudo_seed())
+{ }
 
 RandomSeedGeneratorModel::~RandomSeedGeneratorModel()
 { }
+
+void RandomSeedGeneratorModel::setSeed()
+{
+    controller_.set_seed(seed_);
+}
 
 void RandomSeedGeneratorModel::randomSeed(double x, double y)
 {
@@ -61,7 +51,7 @@ QString RandomSeedGeneratorModel::seed() const
     return QString(bytes.toBase64());
 }
 
-void RandomSeedGeneratorModel::myfunc(container_event e)
+void RandomSeedGeneratorModel::callbackFunc(container_event e)
 {
     // TODO
 }

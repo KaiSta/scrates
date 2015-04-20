@@ -15,7 +15,16 @@ Window {
     minimumHeight: 400
     modality: Qt.ApplicationModal
 
+    Action {
+        id: closeWindowAction
+        text: qsTr("Cancel")
+        shortcut: StandardKey.Close
+        onTriggered: settingsDialog.close()
+    }
+
     ColumnLayout {
+        focus: true
+        Keys.onEscapePressed: settingsDialog.close()
         anchors.fill: parent
         TabView {
             id: tabView
@@ -44,8 +53,8 @@ Window {
                     onClicked: saveSettings()
                 }
                 Button {
-                    text: "Cancel"
-                    onClicked: settingsDialog.close()
+                    action: closeWindowAction
+
                 }
             }
         }

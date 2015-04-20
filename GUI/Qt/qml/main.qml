@@ -21,8 +21,8 @@ ApplicationWindow {
     property alias containerList: containerTable
 
     onClosing: {
-        close.accepted = false
-        closeApplicationMessageDialog.open()
+        // close.accepted = false
+        // closeApplicationMessageDialog.open()
     }
 
     XmlListModel {
@@ -40,7 +40,7 @@ ApplicationWindow {
         modality: Qt.WindowModal
         title: qsTr("Quit application")
         text: qsTr("Quit application")
-        informativeText: "All opened containers will be synced and unmounted. Do you want to close the application?"
+        informativeText: qsTr("Are you sure to quit the application? All opened containers will be synced and unmounted.")
         icon: StandardIcon.Warning
         standardButtons: StandardButton.Yes | StandardButton.No
         onYes: {
@@ -56,7 +56,7 @@ ApplicationWindow {
         modality: Qt.WindowModal
         title: qsTr("Removing selected container")
         text: qsTr("Removing container")
-        informativeText: "The selected container will be removed permanently from your hard drive. Are you sure?"
+        informativeText: qsTr("Are you sure to delete the selected container?")
         icon: StandardIcon.Warning
         standardButtons: StandardButton.Yes | StandardButton.No
         onYes: {
@@ -70,7 +70,7 @@ ApplicationWindow {
         title: qsTr("Choose container")
         modality: Qt.NonModal
         nameFilters: [ "Containerfiles (*.cco)" ]
-        //onAccepted: console.log(Qt.resolvedUrl(fileUrl))
+        onAccepted: _containerModel.open(fileUrl)
     }
 
     FileDialog {
@@ -105,11 +105,13 @@ ApplicationWindow {
             }
             MenuSeparator { }
             MenuItem {
+                enabled: false
                 text: qsTr("&Import")
                 shortcut: "Ctrl+I"
                 onTriggered: importContainerFileDialog.open()
             }
             MenuItem {
+                enabled: false
                 text: qsTr("&Export")
                 shortcut: "Ctrl+E"
             }
@@ -150,11 +152,6 @@ ApplicationWindow {
                 onClicked: removeContainerMsgDialog.open()
                 enabled: (containerList.currentRow > -1 & containerList.currentRow < containerList.rowCount ? true : false)
                 // Damn it! After removing the last row (of containerList) no item is selected (visually)
-            }
-            Button {
-                text: qsTr("Import")
-                tooltip: qsTr("Import an existing container")
-                onClicked: importContainerFileDialog.open()
             }
             Item { Layout.fillWidth: true }
         }
