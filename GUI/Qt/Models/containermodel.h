@@ -32,12 +32,13 @@ public:
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
 
     Q_INVOKABLE ContainerObject* get(int idx/*const QModelIndex& index*/) const;
+    // Adds a container item to the container list.
     Q_INVOKABLE bool add(ContainerObject* container);
-    Q_INVOKABLE bool add(const QString& name,
-                         const QString& path = QString(),
-                         const QString& password = QString(),
-                         bool isOpen = true);
+    // Removes a container item to the container list.
     Q_INVOKABLE void remove(int idx);
+    // Adds a container item to the container list and creates a container on the hard drive.
+    Q_INVOKABLE bool create(const QString& name, const QString& password = QString(),
+        const QString& syncLocation = QString(), bool isOpen = true);
     Q_INVOKABLE void open(const QString& file);
     Q_INVOKABLE void import(const QString& file);
     Q_INVOKABLE void read();
@@ -52,8 +53,7 @@ protected:
 private:
     QList<ContainerObject*> containerList_;
     ContainerObject* currentContainer_;
-    ContainerController* controller_; // libcrypt, contains and controlls mounted container
-    Settings* settings_;
+    ContainerController controller_; // libcrypt, contains and controlls mounted container
     void callbackFunc(container_event e);
     bool contains(ContainerObject* container);
     void closeAll();

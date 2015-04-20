@@ -23,6 +23,5 @@ private:
     std::vector<unsigned char> seed_;
     size_t time_;
     void callbackFunc(container_event e);
-    ContainerController* controller_;
-    Settings* settings_;
+    ContainerController controller_;
 };
