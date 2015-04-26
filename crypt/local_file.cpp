@@ -260,7 +260,7 @@ void local_file::open(path& p, const std::string& passphrase,
 	}
 	else if (stor_type == storage_type::FOLDER)
 	{
-		storage_->create(vhdpath.str(), 0, vhd_);  //C:\tmp\folder on error case
+		storage_->create(vhdpath.str(), 0, vhd_);
 	}
 	std::string containerf = vhdpath.str() + FileSystem::path_separator + containername;
 	FileSystem::make_folders(containerf);
