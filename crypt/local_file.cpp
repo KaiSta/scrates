@@ -93,7 +93,9 @@ void local_file::create(const std::string& containername,
 		locationnode.append_attribute("quota") = ss.str().data();
 		//locationnode.append_attribute("used") = "0";
 	}
-	file_.save_file("C:\\Users\\kaivm\\Desktop\\dumb.xml");
+#ifdef TDEBUG
+	file_.save_file("C:\\Users\\Kai\\Desktop\\dumb.xml");
+#endif
 	//create and open vhd
 	if (stor_type == storage_type::VHD)
 	{
@@ -258,8 +260,10 @@ void local_file::open(path& p, const std::string& passphrase,
 	}
 	else if (stor_type == storage_type::FOLDER)
 	{
-		storage_->create(vhdpath.str(), 0, vhd_);
+		storage_->create(vhdpath.str(), 0, vhd_);  //C:\tmp\folder on error case
 	}
+	std::string containerf = vhdpath.str() + FileSystem::path_separator + containername;
+	FileSystem::make_folders(containerf);
 
 	container_.set_seed(random_num_);
 	container_.set_vhd(&vhd_);

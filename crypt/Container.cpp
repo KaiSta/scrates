@@ -122,7 +122,7 @@ void Container::init(const path& location, const std::string& pw, encryption_alg
 	}
 	container_name_ = location.get_filename();
 	container_name_.erase(container_name_.find_first_of('.'), container_name_.size());
-	path_ = location;
+	path_ = location; //fehler filename muss noch raus aus dem string
 	location.create_folderpath();
 	algo_ = algo;
 }
@@ -171,8 +171,9 @@ void Container::create(std::vector<std::pair<std::string, size_t>> locations)
 		
 		update_containerCrC();
 		container_open_ = true;
+		save();
 #ifdef TDEBUG
-//		handle_.dump(std::string("C:\\Users\\Kai\\Desktop\\new_test.xml"));
+		handle_.dump(std::string("C:\\Users\\Kai\\Desktop\\new_test.xml"));
 #endif
 	}
 	else
@@ -424,9 +425,9 @@ void Container::sync(bool ignore_container_state)
 }
 void Container::close()
 {
-	send_callback(INFORMATION, CLOSING);
 	if (!container_open_)
 		return;
+	send_callback(INFORMATION, CLOSING);
 	container_open_ = false;
 	syncer.stop();
 	sync(true);

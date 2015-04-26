@@ -1,0 +1,12 @@
+verbose - initializing container
+verbose - extract files 
+information - extract file container/dumb.xml
+information - extract file container/containerfiledump.xml
+information - extract file container/new_test.xml
+information - extract file container/test.txt
+information - succ
+information - closing container
+information - sync
+information - finished sync
+information - succ
+information - closing container

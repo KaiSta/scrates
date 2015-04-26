@@ -427,6 +427,7 @@ std::vector<container_handle::location_node> container_handle::get_locations()
 {
 	std::lock_guard<std::mutex> guard(mtx_);
 	auto locs = container_file_.select_nodes("/container/locations/location");
+	container_file_.save_file("C:\\Users\\Kai\\Desktop\\containerfiledump.xml");
 	std::vector<location_node> tmp(locs.size());
 	for (size_t idx = 0; idx < locs.size(); ++idx)
 	{
