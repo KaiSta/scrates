@@ -133,7 +133,7 @@ void ContainerController::close()
   container_.close();
 }
 
-bool ContainerController::is_open()
+bool ContainerController::is_open() const
 {
 	return container_.is_open();
 }
