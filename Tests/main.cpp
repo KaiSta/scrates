@@ -382,10 +382,28 @@ int main()
 		}
 		else if (cmd == "sync")
 		{
-			f.manual_sync();
+			//f.manual_sync();
+			controller.sync_now();
 			std::cin.clear();
 			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 		}
+		else if (cmd == "open")
+		{
+			std::cout << "container name:\n";
+			std::string containername;
+			std::cin >> containername;
+			std::cout << "container location:\n";
+			std::string location;
+			std::cin >> location;
+			std::cout << "password:\n";
+			std::string password;
+			std::cin >> password;
+			path loc(location);
+			loc = loc.append_filename(containername + ".cco");
+			
+			controller.open(loc.str(), password, local_file::storage_type::FOLDER);
+		}
+
 		cmd.clear();
 	}
 	system("pause");
