@@ -98,34 +98,23 @@ Item {
         }
 
         Label {
-            text: qsTr("Cloud Service:")
-        }
-
-        ComboBox{
-            currentIndex: 0
-            model: providersModel
-            textRole: "placeholderName"
-            onCurrentIndexChanged: {
-                pathText.text = providersModel.get(currentIndex).location
-                pathText.forceActiveFocus()
-                pathText.selectAll()
-            }
-        }
-
-        Label {
-            text: qsTr("Directory:")
+            text: qsTr("Sync Location:")
         }
         RowLayout {
+            ComboBox{
+                currentIndex: 0
+                model: providersModel
+                textRole: "placeholderName"
+                onCurrentIndexChanged: {
+                    syncLocationText.text = providersModel.get(currentIndex).location
+                    syncLocationText.forceActiveFocus()
+                    syncLocationText.selectAll()
+                }
+            }
             TextField {
-                id: pathText
+                id: syncLocationText
                 Layout.fillWidth: true
                 text: providersModel.get(0).location
-            }
-
-            Button {
-                text: qsTr("Open...")
-                onClicked: containerPathFileDialog.open()
-                // TODO: open container path if exists
             }
         }
     }
@@ -180,7 +169,7 @@ Item {
 
     function createContainer() {
         if (isValid()) {
-            if (_containerModel.create(nameText.text, passwordText.text, pathText.text, isMounted.checked)) {
+            if (_containerModel.create(nameText.text, passwordText.text, syncLocationText.text, isMounted.checked)) {
                 _randomSeedGeneratorModel.setSeed();
                 viewLoader.source = "Welcome.qml";
             }
@@ -188,14 +177,5 @@ Item {
                 console.log("error: createContainer");
             }
         }
-    }
-
-    FileDialog {
-        id: containerPathFileDialog
-        title: "Choose container directory"
-        modality: Qt.NonModal
-        folder: pathText.text // BUG
-        selectFolder: true
-        onAccepted: pathText.text = fileUrl
     }
 }
