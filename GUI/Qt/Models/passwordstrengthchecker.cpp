@@ -59,12 +59,11 @@ size_t PasswordStrengthChecker::calculatePossibilities(const std::string& pw)
 
 double PasswordStrengthChecker::calculateNormalizedStrength(const QString &str)
 {
-    // Notice: no (german) accents in utf8 (use std::wstring and utf16)
-    std::string pw(str.simplified().replace(" ", "").toUtf8().constData());
     double strength = 0.0;
 
-    if (pw.length())
+    if (str.length())
     {
+        std::string pw(str.toStdString());
         auto possibilities = calculatePossibilities(pw);
         auto entropy = calculateEntropy(possibilities, pw.length());
         strength = normalizeEntropy(entropy);
