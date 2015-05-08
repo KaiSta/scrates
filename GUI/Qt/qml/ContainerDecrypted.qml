@@ -76,12 +76,6 @@ Item {
                 text: qsTr("Sync")
                 onClicked: sync()
             }
-
-            Button {
-                text: qsTr("Insert test string")
-                onClicked: {appendHistory("sweet", "red", "normal")
-                appendHistory("foo bar", "blue", "bold")}
-            }
         }
     }
 
@@ -91,11 +85,6 @@ Item {
     }
     function sync() {
         _containerModel.currentContainer().sync();
-    }
-
-    // TODO
-    function appendHistory(text, color, style) {
-        _containerModel.currentContainer().history = "<span style='color: " + color + ";'>" + text +  "</span><br>";
     }
 
     function test() {
