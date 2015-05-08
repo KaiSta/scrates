@@ -68,17 +68,17 @@ void ContainerModel::remove(int idx)
     emit countChanged(/*rowCount()*/);
 }
 
-bool ContainerModel::create(const QString& name, const QString& password, const QString& syncLocation, bool isOpen)
+bool ContainerModel::create(const QString& name, const QString& password, const QString& syncLocation, bool mount)
 {
-    ContainerObject* container = new ContainerObject(name, syncLocation, isOpen);
-    container->create(password);
+    ContainerObject* container = new ContainerObject(name, syncLocation);
+    container->create(password, mount);
     return add(container);
 }
 
 void ContainerModel::open(const QString& file)
 {
     Poco::Path p(file.toStdString());
-    add(new ContainerObject(QString::fromStdString(p.getBaseName()), QString(), false));
+    add(new ContainerObject(QString::fromStdString(p.getBaseName()), QString() /*TODO: syncLocation*/));
 }
 
 void ContainerModel::import(const QString& file)
@@ -92,14 +92,15 @@ void ContainerModel::read()
     using Poco::Glob;
     std::string containerLocation(Settings::containerLocation());
 
+    qDebug() << QString::fromStdString(containerLocation);
+
     std::set<std::string> files;
     Glob::glob(containerLocation + "*.cco", files);
 
     for (std::string f : files)
     {
         Poco::Path p(f);
-        add(new ContainerObject(QString::fromStdString(p.getBaseName()), QString(), false));
-
+        add(new ContainerObject(QString::fromStdString(p.getBaseName()), QString()));
     }
 }
 

@@ -96,7 +96,7 @@ public:
 	/**
 	 * Returns whether the container is mounted or not.
 	 */
-	bool is_open();
+	bool is_open() const;
 
 private:
 	callback_t event_callback_;

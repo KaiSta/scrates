@@ -38,7 +38,7 @@ public:
     Q_INVOKABLE void remove(int idx);
     // Adds a container item to the container list and creates a container on the hard drive.
     Q_INVOKABLE bool create(const QString& name, const QString& password = QString(),
-        const QString& syncLocation = QString(), bool isOpen = true);
+        const QString& syncLocation = QString(), bool mount = true);
     Q_INVOKABLE void open(const QString& file);
     Q_INVOKABLE void import(const QString& file);
     Q_INVOKABLE void read();

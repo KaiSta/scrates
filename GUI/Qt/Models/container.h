@@ -25,17 +25,17 @@ public:
     ContainerObject(QObject* parent = 0);
     ContainerObject(const QString& name,
                     const QString& syncLocation = QString(),
-                    bool isOpen = true,
                     QObject* parent = 0);
     ~ContainerObject();
 
     QString name() const;
     QString path() const;
-    bool isOpen();
+    bool isOpen() const;
+
     QString history() const;
     void setHistory(const QString& entry = QString());
 
-    void create(const QString& password, local_file::storage_type storeType = local_file::storage_type::FOLDER, size_t storeSize = 0);
+    void create(const QString& password, bool mount, local_file::storage_type storeType = local_file::storage_type::FOLDER, size_t storeSize = 0);
     Q_INVOKABLE bool exportHistory(const QString& url = QString());
     Q_INVOKABLE bool mount(const QString& password);
     Q_INVOKABLE void unmount();
@@ -50,7 +50,6 @@ private:
     QString name_;
     QString path_; // containerLocation
     QString syncLocation_;
-    bool isOpen_;
     QString history_;
     ContainerController controller_; // libcrypt, contains and controlls mounted container
     void callbackFunc(container_event e);
