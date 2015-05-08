@@ -8,6 +8,7 @@
 #include <QtGui>
 #include <QFile>
 #include <QTextStream>
+#include <QDateTime>
 
 #include "Poco/Path.h"
 #include "Poco/Glob.h"
