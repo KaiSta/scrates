@@ -40,7 +40,7 @@ void ContainerObject::setHistory(const QString& entry)
     QTime time(QTime::currentTime());
 
     if (entry.length())
-        history_.append(time.toString("hh:mm:ss") + ": \t" + entry + "\n\n");
+        history_.append(time.toString("hh:mm:ss") + ": \t" + entry);
     else
         history_ = QString();
     emit historyChanged();
@@ -113,21 +113,28 @@ void ContainerObject::callbackFunc(container_event e)
     // TODO: VERBOSE = debug infos. also am besten makro rein, dass nur bei debug build das ausgegeben wird
     std::string type;
     std::string message;
+    QColor color;
+
     switch (e.type)
     {
     case INFORMATION:
         type = "information";
+        color = Qt::darkBlue;
         break;
     case CONFLICT:
         type = "error";
+        color = Qt::darkRed;
         break;
     case WARNING:
         type = "warning";
+        color = Qt::darkYellow;
         break;
     case VERBOSE:
         type = "verbose";
+        color = Qt::darkGray;
         break;
     }
+
     switch (e.message)
     {
     case NONE:
@@ -182,5 +189,5 @@ void ContainerObject::callbackFunc(container_event e)
         message = "initializing container";
         break;
     }
-    setHistory(QString::fromStdString(type) + ": " + QString::fromStdString(message) + "<br/>");
+    setHistory("<span style='color: " + color.name() + "'>" + QString::fromStdString(type) + "</span>: " + QString::fromStdString(message) + "<br/>");
 }
