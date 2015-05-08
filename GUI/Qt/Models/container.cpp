@@ -37,8 +37,10 @@ QString ContainerObject::history() const
 
 void ContainerObject::setHistory(const QString& entry)
 {
+    QTime time(QTime::currentTime());
+
     if (entry.length())
-        history_.append(entry + "\n\n");
+        history_.append(time.toString("hh:mm:ss") + ": \t" + entry + "\n\n");
     else
         history_ = QString();
     emit historyChanged();
