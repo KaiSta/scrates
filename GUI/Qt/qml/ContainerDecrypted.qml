@@ -22,6 +22,10 @@ Item {
                 wrapMode: Text.WrapAnywhere
                 textFormat: TextEdit.RichText
                 textMargin: 5
+                verticalAlignment: TextEdit.AlignBottom
+                onTextChanged: {
+                    __verticalScrollBar.value = __verticalScrollBar.maximumValue // scroll to bottom
+                }
             }
 
             Rectangle {
@@ -50,10 +54,11 @@ Item {
                         enabled: (_containerModel.currentContainer().history.length ? true : false)
                     }
                     Button {
-                        text: "Export"
+                        text: "Copy to clipboard"
                         anchors.verticalCenter: parent.verticalCenter
                         enabled: (_containerModel.currentContainer().history.length ? true : false)
-                        onClicked: _containerModel.currentContainer().exportHistory("/Users/jochen/Desktop/test")
+                        //onClicked: _containerModel.currentContainer().exportHistory("/Users/jochen/Desktop/test")
+                        onClicked: copyToClipboard()
                     }
                 }
             }
@@ -85,6 +90,11 @@ Item {
     }
     function sync() {
         _containerModel.currentContainer().sync();
+    }
+    function copyToClipboard() {
+        history.selectAll()
+        history.copy()
+        history.deselect()
     }
 
     function test() {

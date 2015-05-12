@@ -37,7 +37,6 @@ public:
     void setHistory(const QString& entry = QString());
 
     void create(const QString& password, bool mount, local_file::storage_type storeType = local_file::storage_type::FOLDER, size_t storeSize = 0);
-    Q_INVOKABLE bool exportHistory(const QString& url = QString());
     Q_INVOKABLE bool mount(const QString& password);
     Q_INVOKABLE void unmount();
     Q_INVOKABLE bool sync();
