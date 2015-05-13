@@ -57,24 +57,6 @@ void ContainerObject::create(const QString& password, bool mount, local_file::st
     emit openChanged();
 }
 
-bool ContainerObject::exportHistory(const QString& url)
-{
-    // Move to backend, using poco++
-    if (url.isEmpty())
-        return false;
-
-    QFile file(url);
-    // file.open(QIODevice::WriteOnly | QIODevice::Text);
-    if (!file.open(QFile::WriteOnly | QFile::Truncate))
-        return false;
-
-    QTextStream out(&file);
-    out << "data";
-    file.close();
-
-    return true;
-}
-
 bool ContainerObject::mount(const QString& password)
 {
     std::string containerFullPath(Settings::containerLocation() + this->name_.toStdString() + ".cco");

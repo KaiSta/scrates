@@ -62,6 +62,10 @@ void ContainerModel::remove(int idx)
 
     beginRemoveRows(QModelIndex(), idx, idx);
     ContainerObject* container = containerList_.takeAt(idx);
+
+    if (container->isOpen())
+        container->unmount();
+
     delete container;
     container = NULL;
     endRemoveRows();
