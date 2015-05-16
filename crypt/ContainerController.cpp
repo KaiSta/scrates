@@ -23,6 +23,8 @@ container_event ContainerController::create(const std::string& container_name, c
 	container_event ev;
 	path filepath = path(container_location).append_filename(container_name + ".cco");
 
+  FileSystem::make_folders(path(sync_location).str());
+
 	if(store_size == 0)
 	  store_size = std::numeric_limits< int >::max();
 
