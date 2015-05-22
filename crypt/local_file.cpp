@@ -278,10 +278,10 @@ CryptoPP::SecByteBlock local_file::get_seed()
 	return random_num_;
 }
 
-void local_file::manual_sync()
+void local_file::forced_sync()
 {
 	container_.sync();
-	container_.manual_sync();
+	container_.manual_sync(true);
 }
 
 void local_file::close()

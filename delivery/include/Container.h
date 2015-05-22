@@ -75,7 +75,7 @@ public:
 	  Needed for updates inside the Virtual Hard Drive. Updates the lof inside
 	  cloud storage.
 	*/
-	void manual_sync(bool ignore_container_state = false);
+  void manual_sync(bool forced_sync, bool ignore_container_state = false);
 
 	/**
 	  \brief Will sync the local files and the cloud files and closes the container.

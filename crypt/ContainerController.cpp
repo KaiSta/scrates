@@ -26,7 +26,7 @@ container_event ContainerController::create(const std::string& container_name, c
   FileSystem::make_folders(path(sync_location).str());
 
 	if(store_size == 0)
-	  store_size = std::numeric_limits< int >::max();
+	  store_size = std::numeric_limits< uint64_t >::max();
 
 	try
 	{
@@ -65,7 +65,7 @@ bool ContainerController::sync_now()
 {
 	send_callback(INFORMATION, SYNCHRONIZING);
 
-	container_.manual_sync();
+	container_.forced_sync();
 
 	send_callback(INFORMATION, FINISHED_SYNCHRONIZING);
 	return true;

@@ -32,7 +32,7 @@ public:
 
 	CryptoPP::SecByteBlock get_seed();
 
-	void manual_sync();
+	void forced_sync();
 
 	path get_cloudpath();
 

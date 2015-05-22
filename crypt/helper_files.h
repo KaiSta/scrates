@@ -30,7 +30,7 @@ static bool secure_crc(const std::string& path, std::string& crc)
 	{
 		try
 		{
-		        CRC32 crcfunc;
+		  CRC32 crcfunc;
 			FileSource(path.data(), true, new HashFilter(crcfunc,
 				new HexEncoder(new StringSink(crc))));
 			ret = true;
@@ -88,4 +88,28 @@ static bool secure_encrypt(const std::string& src, bool compressed, CryptoPP::St
 	}
 	
 	return ret;
+}
+
+static bool file_ready(const std::string& path)
+{
+  using namespace CryptoPP;
+
+  if (!FileSystem::file_exists(path) || FileSystem::file_size(path) == 0)
+  {
+    return false;
+  }
+  std::string crc;
+
+  try
+  {
+    CRC32 crcfunc;
+    FileSource(path.data(), true, new HashFilter(crcfunc,
+      new HexEncoder(new StringSink(crc))));
+    return true;
+  }
+  catch (Exception e)
+  {
+    return false;
+  }
+
 }

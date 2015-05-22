@@ -30,8 +30,8 @@ public:
 	{
 		std::string name;
 		path location;
-		int64_t quota;
-		int64_t used;
+		uint64_t quota;
+		uint64_t used;
 	};
 
 	struct container_node

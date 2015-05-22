@@ -165,7 +165,7 @@ void Container::create(std::vector<std::pair<std::string, size_t>> locations)
 		}, Synchronizer::CLOUD);
 		syncer.add_listener([&](std::vector<Synchronizer::file_item>)
 		{
-			manual_sync();
+			manual_sync(true);
 		}, Synchronizer::VHD);
 		syncer.init();
 		
@@ -218,7 +218,7 @@ void Container::open()
 	}, Synchronizer::CLOUD);
 	syncer.add_listener([&](std::vector<Synchronizer::file_item>)
 	{
-		manual_sync();
+		manual_sync(true);
 	}, Synchronizer::VHD);
 	syncer.init();
 
@@ -270,7 +270,7 @@ void Container::save()
 #endif
 }
 //vhd update
-void Container::manual_sync(bool ignore_container_state)
+void Container::manual_sync(bool forced_sync, bool ignore_container_state)
 {
 	std::lock_guard<std::mutex> syncguard(sync_lock_);
 
@@ -319,6 +319,13 @@ void Container::manual_sync(bool ignore_container_state)
 	//#pragma omp parallel for
 	for (int i = 0; i < tmp.size(); ++i)
 	{
+    if (forced_sync)
+    {
+      if (!file_ready(tmp[i]))
+      {
+        continue;
+      }
+    }
 		add_file(tmp[i], handle_.get_containername());
 	}
 
@@ -431,7 +438,7 @@ void Container::close()
 	container_open_ = false;
 	syncer.stop();
 	sync(true);
-	manual_sync(true);
+	manual_sync(true, true);
 	save();
 	std::string p((*volume_).drive_letter);
 	p.append(handle_.get_containername());
