@@ -178,20 +178,18 @@ void container_handle::add_file_node(const file_node& node)
 	{
 		std::string revstr(nodes_found[0].node().child("rev").child_value());
 		auto rev = s_to_int64(revstr) + 1;
-		std::stringstream ss;
-		ss << rev;
-		rev_to_add = ss.str();
+
+    rev_to_add = std::to_string(rev);
 		root.remove_child(nodes_found[0].node());
 	}
 
 	auto filenode = root.append_child("file");
-	std::stringstream ss;
 
 	filenode.append_attribute("filename") = node.filename.data();
-	ss << node.size;
-	filenode.append_child("size").append_child(
-		pugi::node_pcdata).set_value(ss.str().data());
-	ss.str(std::string());
+	
+  filenode.append_child("size").append_child(
+    pugi::node_pcdata).set_value(std::to_string(node.size).c_str());
+	
 	filenode.append_child("path").append_child(
 		pugi::node_pcdata).set_value(node.p.std_str().data());
 	filenode.append_child("crc").append_child(
@@ -203,9 +201,7 @@ void container_handle::add_file_node(const file_node& node)
 	for (auto& e : node.blocks)
 	{
 		auto blocknode = blocksnode.append_child("block");
-		ss << e.id;
-		blocknode.append_attribute("id") = ss.str().data();
-		ss.str(std::string());
+    blocknode.append_attribute("id") = std::to_string(e.id).c_str();
 		blocknode.append_attribute("location") = e.location.data();
 		blocknode.append_attribute("crc") = e.crc.data();
 		blocknode.append_attribute("filename") = e.filename.data();
@@ -231,8 +227,6 @@ void container_handle::update_file_node(const file_node& node)
 	std::string xpath_query("/container/file[@filename = \"" + filename + "\"]");
 	pugi::xpath_node_set possible = container_file_.select_nodes(xpath_query.data());
 
-	std::stringstream ss;
-
 	for (auto& e : possible)
 	{
 		path p(e.node().child("path").child_value());
@@ -240,12 +234,10 @@ void container_handle::update_file_node(const file_node& node)
 		{
 			if (node.size != old_node.size/* && old_node.size != 0 && old_node.size != -1*/)
 			{
-				ss << node.size;
 				e.node().remove_child("size");
 				auto size_node = e.node().insert_child_before("size",
 					e.node().child("path"));
-				size_node.append_child(pugi::node_pcdata).set_value(ss.str().data());
-				ss.str(std::string());
+        size_node.append_child(pugi::node_pcdata).set_value(std::to_string(node.size).c_str());
 			}
 
 			if (node.crc != old_node.crc)
@@ -257,11 +249,9 @@ void container_handle::update_file_node(const file_node& node)
 
 				//update is sure so update rev
 				auto revnum = node.rev + 1;
-				std::stringstream ssrev;
-				ssrev << revnum;
 				e.node().remove_child("rev");
 				auto rev_node = e.node().insert_child_after("rev", e.node().child("crc"));
-				rev_node.append_child(pugi::node_pcdata).set_value(ssrev.str().data());
+        rev_node.append_child(pugi::node_pcdata).set_value(std::to_string(revnum).c_str());
 			}
 
 			for (auto& x : node.blocks)
@@ -354,9 +344,8 @@ void container_handle::add_locations_node(std::vector<std::pair<std::string, siz
 //		location_path.create_folderpath();
 		FileSystem::make_folders(location_path.str());
 		locationnode.append_attribute("path") = FileSystem::standardize_path(location_path.raw_str()).data();
-		std::stringstream ss;
-		ss << e.second;
-		locationnode.append_attribute("quota") = ss.str().data();
+
+    locationnode.append_attribute("quota") = std::to_string(e.second).c_str();
 		locationnode.append_attribute("used") = "0";
 	}
 }
@@ -374,12 +363,8 @@ void container_handle::add_locations_node(std::vector<location_node>& loc_nodes)
 		locationnode.append_attribute("name") = e.name.data();
 		e.location.create_folderpath();
 		locationnode.append_attribute("path") = e.location.raw_std_str().data();
-		std::stringstream ss;
-		ss << e.quota;
-		locationnode.append_attribute("quota") = ss.str().data();
-		ss.str(std::string());
-		ss << e.used;
-		locationsnode.append_attribute("used") = ss.str().data();
+    locationnode.append_attribute("quota") = std::to_string(e.quota).c_str();
+    locationsnode.append_attribute("used") = std::to_string(e.used).c_str();
 	}
 }
 bool container_handle::update_memusage_location(const std::string& locationname, int64_t size, bool is_locked)
@@ -393,9 +378,7 @@ bool container_handle::update_memusage_location(const std::string& locationname,
 
 		used += size;
 		((*locations.begin()).node().remove_attribute("used"));
-		std::stringstream ss;
-		ss << used;
-		(*locations.begin()).node().append_attribute("used") = ss.str().data();
+    (*locations.begin()).node().append_attribute("used") = std::to_string(used).c_str();
 	}
 
 	return true;
@@ -436,9 +419,9 @@ std::vector<container_handle::location_node> container_handle::get_locations()
 		tmp[idx].location = locs[idx].node().attribute("path").value();
 		tmp[idx].name = locs[idx].node().attribute("name").value();
 		std::string s(locs[idx].node().attribute("quota").value());
-		tmp[idx].quota = s_to_int64(s);//atol(locs[idx].node().attribute("quota").value());
+		tmp[idx].quota = s_to_int64(s);
 		std::string s2(locs[idx].node().attribute("used").value());
-		tmp[idx].used = s_to_int64(s2);//atol(locs[idx].node().attribute("used").value());
+		tmp[idx].used = s_to_int64(s2);
 	}
 	return tmp;
 }
@@ -476,22 +459,25 @@ void container_handle::dump(const path& dest)
 void container_handle::delete_filenode(const path& relative_path)
 {
 	auto node = get_filenode(relative_path);
-	auto rev = node.rev + 1;
+  auto locations = get_locations();
 
-	std::stringstream ssrev;
-	ssrev << rev;
+  {
+    std::lock_guard<std::mutex> guard(mtx_);
+	  auto rev = node.rev + 1;
 
-	std::string xpath_q("/container/file[@filename = \"" + node.filename + "\" and path = \"" + node.p.raw_std_str() + "\" ]");
-	pugi::xpath_node_set nodes_found = container_file_.select_nodes(xpath_q.data());
+    auto ssrev = std::to_string(rev);
 
-	if (nodes_found.size() > 0)
-	{
-		nodes_found[0].node().remove_child("rev");
-		auto revnode = nodes_found[0].node().insert_child_after("rev", nodes_found[0].node().child("crc"));
-		revnode.append_child(pugi::node_pcdata).set_value(ssrev.str().c_str());
-	}
+	  std::string xpath_q("/container/file[@filename = \"" + node.filename + "\" and path = \"" + node.p.raw_std_str() + "\" ]");
+	  pugi::xpath_node_set nodes_found = container_file_.select_nodes(xpath_q.data());
 
-	auto locations = get_locations();
+	  if (nodes_found.size() > 0)
+	  {
+		  nodes_found[0].node().remove_child("rev");
+		  auto revnode = nodes_found[0].node().insert_child_after("rev", nodes_found[0].node().child("crc"));
+		  revnode.append_child(pugi::node_pcdata).set_value(ssrev.c_str());
+	  }
+  }
+	
 	auto locationname = locations[0].name;
 	auto s = node.size;
 	update_file_size(-1, relative_path);

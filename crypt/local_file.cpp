@@ -88,9 +88,8 @@ void local_file::create(const std::string& containername,
 		locationnode.append_attribute("name") = name.data();
 		FileSystem::make_folders(location_path.str());
 		locationnode.append_attribute("path") = location_path.raw_std_str().data();
-		std::stringstream ss;
-		ss << e.second;
-		locationnode.append_attribute("quota") = ss.str().data();
+    auto quota_str = std::to_string(e.second);
+    locationnode.append_attribute("quota") = quota_str.c_str();
 		//locationnode.append_attribute("used") = "0";
 	}
 #ifdef TDEBUG
