@@ -165,7 +165,7 @@ void Container::create(std::vector<std::pair<std::string, size_t>> locations)
 		}, Synchronizer::CLOUD);
 		syncer.add_listener([&](std::vector<Synchronizer::file_item>)
 		{
-			manual_sync(true);
+			manual_sync(false);
 		}, Synchronizer::VHD);
 		syncer.init();
 		
@@ -218,7 +218,7 @@ void Container::open()
 	}, Synchronizer::CLOUD);
 	syncer.add_listener([&](std::vector<Synchronizer::file_item>)
 	{
-		manual_sync(true);
+		manual_sync(false);
 	}, Synchronizer::VHD);
 	syncer.init();
 
@@ -319,7 +319,7 @@ void Container::manual_sync(bool forced_sync, bool ignore_container_state)
 	//#pragma omp parallel for
 	for (int i = 0; i < tmp.size(); ++i)
 	{
-    if (forced_sync)
+    if (!forced_sync)
     {
       if (!file_ready(tmp[i]))
       {

@@ -1,19 +1,22 @@
 verbose - initializing container
+verbose - extract files 
+information - extract file container/test - Copy (4).txt
+information - extract file container/test - Copy (7).txt
+information - extract file container/test - Copy (2).txt
+information - extract file container/test - Copy (3).txt
+information - extract file container/test.txt
+information - extract file container/test - Copy (6).txt
+information - extract file container/test - Copy.txt
+information - extract file container/test - Copy (5).txt
 information - succ
 information - sync
 information - sync
 information - finished sync
+information - finished sync
+information - sync
 information - finished sync
 information - sync
 information - finished sync
 information - sync
 information - sync
 information - adding file C:/tmp/folder/container/IRM_CCSA_X64FRE_DE-DE_DV5.iso
-information - finished sync
-information - finished sync
-information - sync
-information - closing container
-information - finished sync
-information - sync
-information - finished sync
-information - succ

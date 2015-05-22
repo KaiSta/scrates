@@ -25,9 +25,9 @@ public:
 
 	//Container(const std::string& path, const std::string& pw, encryption_algorithm algo = SERPENT);
 
-	Container(encryption_algorithm algo = SERPENT);
-	Container(Storage::volume_handle*, encryption_algorithm algo = SERPENT);
-	Container(const path& location, const std::string& pw, Storage::volume_handle*, encryption_algorithm algo = SERPENT);
+	Container(encryption_algorithm algo = AES);
+	Container(Storage::volume_handle*, encryption_algorithm algo = AES);
+	Container(const path& location, const std::string& pw, Storage::volume_handle*, encryption_algorithm algo = AES);
 	~Container();
 
 	void set_vhd(Storage::volume_handle*);
@@ -41,7 +41,7 @@ public:
 	  \param pw passphrase used for encryption
 	  \param algo the encryption algorithm that should be used.
 	*/
-	void init(const path& location, const std::string& pw, encryption_algorithm algo = SERPENT);
+	void init(const path& location, const std::string& pw, encryption_algorithm algo = AES);
 	
 	/**
 	  \brief Second init step for containers. Adds cloud locations.
