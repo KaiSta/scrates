@@ -80,7 +80,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LibraryPath>$(SolutionDir)\lib\poco\lib;$(SolutionDir)\lib\cryptopp;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)\lib\poco\include;$(SolutionDir)\lib\pugixml\src;$(SolutionDir)\lib\cryptopp\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\lib\poco\include;$(SolutionDir)\lib\mtl;$(SolutionDir)\lib\pugixml\src;$(SolutionDir)\lib\cryptopp\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -131,6 +131,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PreprocessorDefinitions>NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

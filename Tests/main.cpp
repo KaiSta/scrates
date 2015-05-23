@@ -12,6 +12,8 @@
 #include <cryptopp/serpent.h>
 #include <cryptopp/aes.h>
 #include <cryptopp/twofish.h>
+#define CRYPTOPP_ENABLE_NAMESPACE_WEAK 1
+#include <cryptopp/md5.h>
 
 #include <istream>
 #include <FileSystem.h>
@@ -237,6 +239,47 @@ void filesys_replace()
 
 }
 
+void hash_test()
+{
+  using namespace CryptoPP;
+  std::string pa("C:\\Users\\Kai\\Desktop\\IRM_CCSA_X64FRE_DE-DE_DV5.iso");
+
+  {
+    CRC32 crcfunc;
+    std::string crc;
+    auto start = std::chrono::high_resolution_clock::now();
+    FileSource(pa.data(), true, new HashFilter(crcfunc,
+      new HexEncoder(new StringSink(crc))));
+    auto end = std::chrono::high_resolution_clock::now();
+    std::cout << "CRC: " << crc << "\n";
+    std::cout << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "\n";
+  }
+
+  {
+    SHA1 shafunc;
+    std::string sha1;
+    auto start = std::chrono::high_resolution_clock::now();
+    FileSource(pa.data(), true, new HashFilter(shafunc,
+      new HexEncoder(new StringSink(sha1))));
+    auto end = std::chrono::high_resolution_clock::now();
+    std::cout << "SHA1: " << sha1 << "\n";
+    std::cout << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "\n";
+  }
+
+  {   
+    Weak::MD5 md5func;
+    std::string md5;
+    auto start = std::chrono::high_resolution_clock::now();
+    FileSource(pa.data(), true, new HashFilter(md5func,
+      new HexEncoder(new StringSink(md5))));
+    auto end = std::chrono::high_resolution_clock::now();
+    std::cout << "MD5: " << md5 << "\n";
+    std::cout << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "\n";
+  }
+}
+
+
+
 static std::ofstream logfile("log.txt");
 static std::mutex m;
 
@@ -321,7 +364,9 @@ void callback_func(container_event e)
 int main()
 {
 	using namespace CryptoPP;
-
+  hash_test();
+  system("pause");
+  return 0;
 	local_file f;
 	
 	path vhdp("C:\\tmp\\local\\");

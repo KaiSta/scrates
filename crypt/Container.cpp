@@ -135,6 +135,14 @@ void Container::update_containerCrC()
 	secure_crc(clouddbloc.str(), containercrc_);
 }
 
+void Container::update_containerHash()
+{
+  path clouddbloc(handle_.get_locations()[0].location.str());
+  clouddbloc = clouddbloc.append_filename(container_name_ + ".db");
+  containerhash_.clear();
+  secure_hash(clouddbloc.str(), containerhash_);
+}
+
 void Container::create(std::vector<std::pair<std::string, size_t>> locations)
 {
 	if (!FileSystem::file_exists(path_.str()))
@@ -169,7 +177,8 @@ void Container::create(std::vector<std::pair<std::string, size_t>> locations)
 		}, Synchronizer::VHD);
 		syncer.init();
 		
-		update_containerCrC();
+		//update_containerCrC();
+    update_containerHash();
 		container_open_ = true;
 		save();
 #ifdef TDEBUG
@@ -222,7 +231,8 @@ void Container::open()
 	}, Synchronizer::VHD);
 	syncer.init();
 
-	update_containerCrC();
+	//update_containerCrC();
+  update_containerHash();
 	container_open_ = true;
 
 #ifdef TDEBUG
@@ -234,7 +244,7 @@ void Container::save()
 {
 	if (!container_open_)
 		return;
-	std::string oldcrc;
+	/*std::string oldcrc;
 	CryptoPP::CRC32 crcfunc;
 	CryptoPP::StringSource(container_raw_, true, new CryptoPP::HashFilter(crcfunc,
 		new CryptoPP::HexEncoder(new CryptoPP::StringSink(oldcrc))));
@@ -246,7 +256,21 @@ void Container::save()
 	if (oldcrc == ncrc)
 	{
 		return;
-	}
+	}*/
+
+  std::string oldhash;
+  CryptoPP::SHA1 func;
+  CryptoPP::StringSource(container_raw_, true, new CryptoPP::HashFilter(func,
+    new CryptoPP::HexEncoder(new CryptoPP::StringSink(oldhash))));
+  std::string nhash;
+  CryptoPP::SHA1 func2;
+  CryptoPP::StringSource(handle_.str(), true, new CryptoPP::HashFilter(func2,
+    new CryptoPP::HexEncoder(new CryptoPP::StringSink(nhash))));
+
+  if (oldhash == nhash)
+  {
+    return;
+  }
 
 	switch (algo_)
 	{
@@ -262,7 +286,8 @@ void Container::save()
 	default:
 		return;
 	}
-	update_containerCrC();
+	//update_containerCrC();
+  update_containerHash();
 	container_raw_ = handle_.str();
 
 #ifdef TDEBUG
@@ -329,7 +354,8 @@ void Container::manual_sync(bool forced_sync, bool ignore_container_state)
 		add_file(tmp[i], handle_.get_containername());
 	}
 
-	update_containerCrC();
+	//update_containerCrC();
+  update_containerHash();
 #ifdef TDEBUG
 	handle_.dump(std::string("C:\\Users\\Kai\\Desktop\\new_test.xml"));
 #endif
@@ -346,10 +372,14 @@ void Container::sync(bool ignore_container_state)
 		return;
 
 	//check if external sync is needed
-	std::string oldcrc = containercrc_;
+	/*std::string oldcrc = containercrc_;
 	update_containerCrC();
 	if (oldcrc == containercrc_)
-		return;
+		return;*/
+  std::string oldhash = containerhash_;
+  update_containerHash();
+  if (oldhash == containerhash_)
+    return;
 
 	auto oldhandle = handle_;
 	container_raw_ = "";
@@ -400,7 +430,7 @@ void Container::sync(bool ignore_container_state)
 		}
 		else
 		{
-			if (node.crc != xnode.crc) // both contain a conflicting node
+			if (node.hash != xnode.hash) // both contain a conflicting node
 			{
 				//merge newer one into new handle.
 				if (node.rev > xnode.rev)
@@ -417,12 +447,13 @@ void Container::sync(bool ignore_container_state)
 		tmp = tmp.append_filename(node.filename);
 
 		auto oldnode = oldhandle.get_filenode(tmp);
-		if (node.crc != oldnode.crc)
+		if (node.hash != oldnode.hash)
 		{
 			extract_file(tmp);
 		}
 	}
-	update_containerCrC();
+	//update_containerCrC();
+  update_containerHash();
 #ifdef TDEBUG
 	handle_.dump(std::string("C:\\Users\\Kai\\Desktop\\new_test.xml"));
 #endif
@@ -461,11 +492,16 @@ void Container::add_file(const path& src, const std::string& rootfolder)
 	std::string file_name = src.get_filename();
 
 	using namespace CryptoPP;
-	std::string crc;
+	/*std::string crc;
 	if (!secure_crc(location, crc))
 	{
 		return;
-	}
+	}*/
+  std::string hash;
+  if (!secure_hash(location, hash))
+  {
+    return;
+  }
 
 	auto folderstart = location.find(rootfolder);
 	auto folderend = location.find(src.get_filename());
@@ -494,7 +530,8 @@ void Container::add_file(const path& src, const std::string& rootfolder)
 			file.size = size;
 			file.p = relativepath.std_str();
 
-			file.crc = crc;
+			//file.crc = crc;
+      file.hash = hash;
 
 			std::string key;
 			std::string iv;
@@ -526,7 +563,8 @@ void Container::add_file(const path& src, const std::string& rootfolder)
 			container_handle::block_node block_node;
 			block_node.id = 1;
 			block_node.location = location_name;
-			block_node.crc = crc;
+      block_node.hash = hash;
+			//block_node.crc = crc;
 			block_node.filename = hashname;
 			file.blocks.push_back(block_node);
 			handle_.add_file_node(file);
@@ -618,19 +656,25 @@ void Container::update_file(const std::string& filename, const path& relative_pa
 		}
 
 		using namespace CryptoPP;
-		std::string crc;
+		/*std::string crc;
 		if (!secure_crc(src.str(), crc))
 		{
 			return;
-		}
+		}*/
+    std::string hash;
+    if (!secure_hash(src.str(), hash))
+    {
+      return;
+    }
 
 		if (fnode.p == relative_path)
 		{
 			container_handle::block_node block_node = fnode.blocks[0];
 			std::string hashname = block_node.filename;
-			std::string old_crc = block_node.crc;
+			//std::string old_crc = block_node.crc;
+      std::string old_hash = block_node.hash;
 			
-			if (old_crc == crc) { return; }
+			if (old_hash == hash) { return; }
 			send_callback(INFORMATION, UPDATE_FILE, filename);
 			std::string location_name = block_node.location;
 
@@ -670,8 +714,10 @@ void Container::update_file(const std::string& filename, const path& relative_pa
 				return;
 			}
 
-			handle_.update_file_crc(crc, location);
-			handle_.update_block_crc(crc, location, 1);
+			//handle_.update_file_crc(crc, location);
+      handle_.update_file_hash(hash, location);
+			//handle_.update_block_crc(crc, location, 1);
+      handle_.update_block_hash(hash, location, 1);
 			handle_.update_file_size(size, location);
 		}
 	}

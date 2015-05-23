@@ -128,6 +128,7 @@ public:
 	void list_files(std::vector<path>& files);
 
 	void update_containerCrC();
+  void update_containerHash();
 	bool validate();
 	
 private:
@@ -155,6 +156,7 @@ private:
 	std::mutex sync_lock_;
 	bool container_open_;
 	std::string containercrc_;
+  std::string containerhash_;
 
 	callback_t event_callback_;
 	bool has_callback_;

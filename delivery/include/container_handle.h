@@ -11,17 +11,19 @@ public:
 		size_t id;
 		std::string location;
 		std::string crc;
+    std::string hash;
 		std::string filename;
 	};
 
 	struct file_node
 	{
-		file_node() : filename(""), p(""), size(0), crc(""), rev(0)
+    file_node() : filename(""), p(""), size(0), crc(""), rev(0), hash("")
 		{}
 		std::string filename;
 		path p;//ath;
 		int64_t size;
-		std::string crc;	
+		std::string crc;
+    std::string hash;
 		std::vector<block_node> blocks;
 		int64_t rev;
 	};
@@ -60,12 +62,14 @@ public:
 	int64_t get_size(const path& relative_path);
 	path get_path(const path& relative_path);
 	std::string get_crc(const path& relative_path);
+  std::string get_hash(const path& relative_path);
 
 	size_t get_block_count(const path& relative_path);
 	std::vector<block_node> get_blocks(const path& relative_path);
 	block_node get_block(const path& relative_path, size_t block_id);
 	std::string get_block_location(const path& relative_path, size_t block_id);
 	std::string get_block_crc(const path& relative_path, size_t block_id);
+  std::string get_block_hash(const path& relative_path, size_t block_id);
 	std::string get_block_filename(const path& relative_path, size_t block_id);
 
 	path get_location_path(const std::string& location);
@@ -84,7 +88,9 @@ public:
 	void update_file_size(int64_t size, const path& relative_path);
 	void update_file_path(const path& location, const path& relative_path);
 	void update_file_crc(const std::string& crc, const path& relative_path);
+  void update_file_hash(const std::string& hash, const path& relative_path);
 
+  void update_block_hash(const std::string& hash, const path& relative_path, int64_t block_id);
 	void update_block_crc(const std::string& crc, const path& relative_path, int64_t block_id);
 	void update_block_filename(const std::string& filename, const path& relative_path, int64_t block_id);
 

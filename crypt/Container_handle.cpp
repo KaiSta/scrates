@@ -89,7 +89,8 @@ container_handle::file_node container_handle::get_filenode(const path& relative_
 			node.filename = e.node().attribute("filename").value();
 			node.size = s_to_int64(e.node().child("size").child_value());//std::stoi(e.node().child("size").child_value());
 			node.p = p;
-			node.crc = e.node().child("crc").child_value();
+			//node.crc = e.node().child("crc").child_value();
+      node.hash = e.node().child("hash").child_value();
 			node.rev = s_to_int64(e.node().child("rev").child_value());
 
 			auto blocksnode = e.node().child("blocks");
@@ -99,7 +100,8 @@ container_handle::file_node container_handle::get_filenode(const path& relative_
 				block_node blocknode;
 				blocknode.id = std::stoi(block.attribute("id").value());
 				blocknode.location = block.attribute("location").value();
-				blocknode.crc = block.attribute("crc").value();
+        blocknode.hash = block.attribute("hash").value();
+				//blocknode.crc = block.attribute("crc").value();
 				blocknode.filename = block.attribute("filename").value();
 				node.blocks.push_back(blocknode);
 			}
@@ -128,6 +130,10 @@ std::string container_handle::get_crc(const path& relative_path)
 {
 	return get_filenode(relative_path).crc;
 }
+std::string container_handle::get_hash(const path& relative_path)
+{
+  return get_filenode(relative_path).hash;
+}
 
 size_t container_handle::get_block_count(const path& relative_path)
 {
@@ -148,6 +154,10 @@ std::string container_handle::get_block_location(const path& relative_path, size
 std::string container_handle::get_block_crc(const path& relative_path, size_t block_id)
 {
 	return get_filenode(relative_path).blocks[block_id-1].crc;
+}
+std::string container_handle::get_block_hash(const path& relative_path, size_t block_id)
+{
+  return get_filenode(relative_path).blocks[block_id - 1].hash;
 }
 std::string container_handle::get_block_filename(const path& relative_path, size_t block_id)
 {
@@ -192,8 +202,10 @@ void container_handle::add_file_node(const file_node& node)
 	
 	filenode.append_child("path").append_child(
 		pugi::node_pcdata).set_value(node.p.std_str().data());
-	filenode.append_child("crc").append_child(
-		pugi::node_pcdata).set_value(node.crc.data());
+	/*filenode.append_child("crc").append_child(
+		pugi::node_pcdata).set_value(node.crc.data());*/
+  filenode.append_child("hash").append_child(
+    pugi::node_pcdata).set_value(node.hash.data());
 	filenode.append_child("rev").append_child(
 		pugi::node_pcdata).set_value(rev_to_add.c_str());
 
@@ -203,7 +215,8 @@ void container_handle::add_file_node(const file_node& node)
 		auto blocknode = blocksnode.append_child("block");
     blocknode.append_attribute("id") = std::to_string(e.id).c_str();
 		blocknode.append_attribute("location") = e.location.data();
-		blocknode.append_attribute("crc") = e.crc.data();
+		//blocknode.append_attribute("crc") = e.crc.data();
+    blocknode.append_attribute("hash") = e.hash.c_str();
 		blocknode.append_attribute("filename") = e.filename.data();
 	}		
 }
@@ -240,17 +253,22 @@ void container_handle::update_file_node(const file_node& node)
         size_node.append_child(pugi::node_pcdata).set_value(std::to_string(node.size).c_str());
 			}
 
-			if (node.crc != old_node.crc)
+			if (node.hash != old_node.hash)//node.crc != old_node.crc)
 			{
-				e.node().remove_child("crc");
+				/*e.node().remove_child("crc");
 				auto crc_node = e.node().insert_child_after("crc",
 					e.node().child("path"));
-				crc_node.append_child(pugi::node_pcdata).set_value(node.crc.data());
+				crc_node.append_child(pugi::node_pcdata).set_value(node.crc.data());*/
+        e.node().remove_child("hash");
+        auto hash_node = e.node().insert_child_after("hash",
+          e.node().child("path"));
+        hash_node.append_child(pugi::node_pcdata).set_value(node.hash.data());
 
 				//update is sure so update rev
 				auto revnum = node.rev + 1;
 				e.node().remove_child("rev");
-				auto rev_node = e.node().insert_child_after("rev", e.node().child("crc"));
+				//auto rev_node = e.node().insert_child_after("rev", e.node().child("crc"));
+        auto rev_node = e.node().insert_child_after("rev", e.node().child("hash"));
         rev_node.append_child(pugi::node_pcdata).set_value(std::to_string(revnum).c_str());
 			}
 
@@ -264,15 +282,18 @@ void container_handle::update_file_node(const file_node& node)
 
 				auto iti = std::end(node.blocks);
 				
-				if (it != std::end(old_node.blocks) && (*it).crc != x.crc)
+				if (it != std::end(old_node.blocks) && (*it).hash != x.hash)//(*it).crc != x.crc)
 				{
 					auto blocks_node = e.node().child("blocks");
 					std::string query("./block[@filename = \"" + x.filename
 						+ "\"]");
 					pugi::xpath_node block = blocks_node.select_single_node(query.data());
-					block.node().remove_attribute("crc");
+					/*block.node().remove_attribute("crc");
 					block.node().insert_attribute_after("crc",
-						block.node().attribute("location")) = x.crc.data();
+						block.node().attribute("location")) = x.crc.data();*/
+          block.node().remove_attribute("hash");
+          block.node().insert_attribute_after("hash",
+            block.node().attribute("location")) = x.hash.c_str();
 				}
 			}
 		}
@@ -297,11 +318,25 @@ void container_handle::update_file_crc(const std::string& crc, const path& relat
 	update_file_node(node);
 }
 
+void container_handle::update_file_hash(const std::string& hash, const path& relative_path)
+{
+  file_node node = get_filenode(relative_path);
+  node.hash = hash;
+  update_file_node(node);
+}
+
 void container_handle::update_block_crc(const std::string& crc, const path& relative_path, int64_t block_id)
 {
 	file_node node = get_filenode(relative_path);
 	node.blocks[block_id-1].crc = crc;
 	update_file_node(node);
+}
+
+void container_handle::update_block_hash(const std::string& hash, const path& relative_path, int64_t block_id)
+{
+  file_node node = get_filenode(relative_path);
+  node.blocks[block_id - 1].hash = hash;
+  update_file_node(node);
 }
 
 std::string container_handle::str()
@@ -473,7 +508,8 @@ void container_handle::delete_filenode(const path& relative_path)
 	  if (nodes_found.size() > 0)
 	  {
 		  nodes_found[0].node().remove_child("rev");
-		  auto revnode = nodes_found[0].node().insert_child_after("rev", nodes_found[0].node().child("crc"));
+		  /*auto revnode = nodes_found[0].node().insert_child_after("rev", nodes_found[0].node().child("crc"));*/
+      auto revnode = nodes_found[0].node().insert_child_after("rev", nodes_found[0].node().child("hash"));
 		  revnode.append_child(pugi::node_pcdata).set_value(ssrev.c_str());
 	  }
   }
@@ -593,7 +629,8 @@ std::vector<container_handle::file_node> container_handle::get_all_filenodes()
 				node.filename = e.node().attribute("filename").value();
 				node.size = s_to_int64(e.node().child("size").child_value());//std::stoi(e.node().child("size").child_value());
 				node.p = p;
-				node.crc = e.node().child("crc").child_value();
+				//node.crc = e.node().child("crc").child_value();
+        node.hash = e.node().child("hash").child_value();
 				node.rev = s_to_int64(e.node().child("rev").child_value());
 
 				auto blocksnode = e.node().child("blocks");
@@ -603,7 +640,8 @@ std::vector<container_handle::file_node> container_handle::get_all_filenodes()
 					block_node blocknode;
 					blocknode.id = std::stoi(block.attribute("id").value());
 					blocknode.location = block.attribute("location").value();
-					blocknode.crc = block.attribute("crc").value();
+					//blocknode.crc = block.attribute("crc").value();
+          blocknode.hash = block.attribute("hash").value();
 					blocknode.filename = block.attribute("filename").value();
 					node.blocks.push_back(blocknode);
 				}

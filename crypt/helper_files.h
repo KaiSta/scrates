@@ -13,6 +13,7 @@
 #include <cryptopp/osrng.h>
 #include <cryptopp/zlib.h>
 #include <cryptopp/secblock.h>
+#include "tempest.h"
 #include <thread>
 
 static bool secure_crc(const std::string& path, std::string& crc)
@@ -47,6 +48,40 @@ static bool secure_crc(const std::string& path, std::string& crc)
 		}
 	}
 	return ret;
+}
+
+static bool secure_hash(const std::string& path, std::string& hash)
+{
+  using namespace CryptoPP;
+
+  if (!FileSystem::file_exists(path) || FileSystem::file_size(path) == 0)
+  {
+    return false;
+  }
+
+  bool ret = false;
+
+  while (!ret)
+  {
+    try
+    {
+      SHA1 func;
+      FileSource(path.data(), true, new HashFilter(func,
+        new HexEncoder(new StringSink(hash))));
+      ret = true;
+    }
+    catch (CryptoPP::FileStore::OpenErr e)
+    {
+      hash.clear();
+      std::this_thread::sleep_for(std::chrono::milliseconds(500));
+      //Sleep(200);
+    }
+    catch (Exception e)
+    {
+      break;
+    }
+  }
+  return ret;
 }
 
 
@@ -98,13 +133,14 @@ static bool file_ready(const std::string& path)
   {
     return false;
   }
-  std::string crc;
+
+  std::string hash;
 
   try
   {
-    CRC32 crcfunc;
-    FileSource(path.data(), true, new HashFilter(crcfunc,
-      new HexEncoder(new StringSink(crc))));
+    SHA1 func;
+    FileSource(path.data(), true, new HashFilter(func,
+      new HexEncoder(new StringSink(hash))));
     return true;
   }
   catch (Exception e)
