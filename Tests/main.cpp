@@ -14,6 +14,8 @@
 #include <cryptopp/twofish.h>
 #define CRYPTOPP_ENABLE_NAMESPACE_WEAK 1
 #include <cryptopp/md5.h>
+#include <cryptopp/adler32.h>
+#include <cryptopp/sha3.h>
 
 #include <istream>
 #include <FileSystem.h>
@@ -242,8 +244,10 @@ void filesys_replace()
 void hash_test()
 {
   using namespace CryptoPP;
-  std::string pa("C:\\Users\\Kai\\Desktop\\IRM_CCSA_X64FRE_DE-DE_DV5.iso");
+  std::string pa("C:\\Users\\Kai\\Downloads\\ubuntu-14.04.2-desktop-amd64.iso");
+  uint64_t sum = 0;
 
+  for (size_t i = 0; i < 3; ++i)
   {
     CRC32 crcfunc;
     std::string crc;
@@ -252,9 +256,12 @@ void hash_test()
       new HexEncoder(new StringSink(crc))));
     auto end = std::chrono::high_resolution_clock::now();
     std::cout << "CRC: " << crc << "\n";
-    std::cout << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "\n";
+    sum += std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+   // std::cout << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "\n";
   }
-
+  std::cout << "CRC Avg Time: " << sum / 3.0 << "\n";
+  sum = 0;
+  for (size_t i = 0; i < 3; ++i)
   {
     SHA1 shafunc;
     std::string sha1;
@@ -263,9 +270,12 @@ void hash_test()
       new HexEncoder(new StringSink(sha1))));
     auto end = std::chrono::high_resolution_clock::now();
     std::cout << "SHA1: " << sha1 << "\n";
-    std::cout << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "\n";
+    sum += std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+    //std::cout << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "\n";
   }
-
+  std::cout << "SHA Avg Time: " << sum / 3.0 << "\n";
+  sum = 0;
+  for (size_t i = 0; i < 3; ++i)
   {   
     Weak::MD5 md5func;
     std::string md5;
@@ -274,8 +284,81 @@ void hash_test()
       new HexEncoder(new StringSink(md5))));
     auto end = std::chrono::high_resolution_clock::now();
     std::cout << "MD5: " << md5 << "\n";
-    std::cout << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "\n";
+    //std::cout << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "\n";
+    sum += std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
   }
+  std::cout << "MD5 Avg Time: " << sum / 3.0 << "\n";
+  sum = 0;
+  for (size_t i = 0; i < 3; ++i)
+  {
+    SHA256 func;
+    std::string hash;
+    auto start = std::chrono::high_resolution_clock::now();
+    FileSource(pa.data(), true, new HashFilter(func,
+      new HexEncoder(new StringSink(hash))));
+    auto end = std::chrono::high_resolution_clock::now();
+    std::cout << "SHA256: " << hash << "\n";
+    //std::cout << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "\n";
+    sum += std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+  }
+  std::cout << "SHA256 Avg Time: " << sum / 3.0 << "\n";
+  sum = 0;
+  for (size_t i = 0; i < 3; ++i)
+  {
+    SHA3_256 func;
+    std::string hash;
+    auto start = std::chrono::high_resolution_clock::now();
+    FileSource(pa.data(), true, new HashFilter(func,
+      new HexEncoder(new StringSink(hash))));
+    auto end = std::chrono::high_resolution_clock::now();
+    std::cout << "SHA3 256: " << hash << "\n";
+    //std::cout << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "\n";
+    sum += std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+  }
+  std::cout << "SHA3 256 Avg Time: " << sum / 3.0 << "\n";
+  sum = 0;
+  for (size_t i = 0; i < 3; ++i)
+  {
+    SHA512 func;
+    std::string hash;
+    auto start = std::chrono::high_resolution_clock::now();
+    FileSource(pa.data(), true, new HashFilter(func,
+      new HexEncoder(new StringSink(hash))));
+    auto end = std::chrono::high_resolution_clock::now();
+    std::cout << "SHA512: " << hash << "\n";
+    //std::cout << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "\n";
+    sum += std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+  }
+  std::cout << "SHA512 Avg Time: " << sum / 3.0 << "\n";
+  sum = 0;
+  for (size_t i = 0; i < 3; ++i)
+  {
+    SHA3_512 func;
+    std::string hash;
+    auto start = std::chrono::high_resolution_clock::now();
+    FileSource(pa.data(), true, new HashFilter(func,
+      new HexEncoder(new StringSink(hash))));
+    auto end = std::chrono::high_resolution_clock::now();
+    std::cout << "SHA3 512: " << hash << "\n";
+    //std::cout << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "\n";
+    sum += std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+  }
+  std::cout << "SHA3 512 Avg Time: " << sum / 3.0 << "\n";
+  sum = 0;
+  for (size_t i = 0; i < 3; ++i)
+  {
+    Adler32 func;
+    std::string hash;
+    auto start = std::chrono::high_resolution_clock::now();
+    FileSource(pa.data(), true, new HashFilter(func,
+      new HexEncoder(new StringSink(hash))));
+    auto end = std::chrono::high_resolution_clock::now();
+    std::cout << "Adler32: " << hash << "\n";
+    //std::cout << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "\n";
+    sum += std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+  }
+  std::cout << "Adler32 Avg Time: " << sum / 3.0 << "\n";
+  sum = 0;
 }
 
 
