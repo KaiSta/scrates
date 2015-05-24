@@ -13,6 +13,7 @@
 #include <cryptopp/osrng.h>
 #include <cryptopp/zlib.h>
 #include <cryptopp/secblock.h>
+#include <cryptopp/adler32.h>
 #include "tempest.h"
 #include <thread>
 
@@ -138,7 +139,7 @@ static bool file_ready(const std::string& path)
 
   try
   {
-    SHA1 func;
+    Adler32 func;
     FileSource(path.data(), true, new HashFilter(func,
       new HexEncoder(new StringSink(hash))));
     return true;

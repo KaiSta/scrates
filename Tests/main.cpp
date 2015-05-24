@@ -447,9 +447,9 @@ void callback_func(container_event e)
 int main()
 {
 	using namespace CryptoPP;
-  hash_test();
+  /*hash_test();
   system("pause");
-  return 0;
+  return 0;*/
 	local_file f;
 	
 	path vhdp("C:\\tmp\\local\\");

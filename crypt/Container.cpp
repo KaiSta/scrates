@@ -341,7 +341,7 @@ void Container::manual_sync(bool forced_sync, bool ignore_container_state)
 	tmp = FileSystem::list_files(p.str(), true);
 	fnodes = handle_.get_filenodes();
 
-	//#pragma omp parallel for
+	#pragma omp parallel for
 	for (int i = 0; i < tmp.size(); ++i)
 	{
     if (!forced_sync)
