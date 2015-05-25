@@ -77,68 +77,60 @@ information - extract file container/test - Copy (9) - Copy.txt
 information - extract file container/test - Copy (9).txt
 information - extract file container/test - Copy - Copy (2).txt
 information - extract file container/test - Copy - Copy.txt
+information - extract file container/master - Copy/Thesis/rsc/visio files/arghashmap.vsdx
+information - extract file container/master - Copy/Thesis/rsc/visio files/namehashmap.vsdx
+information - extract file container/master - Copy/Thesis/rsc/visio files/optAasgoal.vsdx
+information - extract file container/master - Copy/Thesis/rsc/visio files/optAllConstrFound.vsdx
+information - extract file container/master - Copy/Thesis/rsc/visio files/optBFailedWithAlt.vsdx
+information - extract file container/master - Copy/Thesis/rsc/visio files/optCmissing.vsdx
+information - extract file container/master - Copy/Thesis/rsc/visio files/optCstolen.vsdx
+information - extract file container/master - Copy/Thesis/rsc/visio files/optimisticCollecting.vsdx
+information - extract file container/master - Copy/Thesis/rsc/visio files/optsucc.vsdx
+information - extract file container/master - Copy/Thesis/rsc/visio files/pessBFailedWithAlt.vsdx
+information - extract file container/master - Copy/Thesis/rsc/visio files/pessCFailed.vsdx
+information - extract file container/master - Copy/Thesis/rsc/visio files/pessClaimedSucc.vsdx
+information - extract file container/master - Copy/Thesis/rsc/visio files/storeInitialState.vsdx
+information - extract file container/master - Copy/Thesis/rsc/arghashmap.pdf
+information - extract file container/master - Copy/Thesis/rsc/hashmapperformance.pdf
+information - extract file container/master - Copy/Thesis/rsc/namehashmap.pdf
+information - extract file container/master - Copy/Thesis/rsc/nplusplus.asm
+information - extract file container/master - Copy/Thesis/rsc/optAasgoal.pdf
+information - extract file container/master - Copy/Thesis/rsc/optAllConstrFound.pdf
+information - extract file container/master - Copy/Thesis/rsc/optBFailedWithAlt.pdf
+information - extract file container/master - Copy/Thesis/rsc/optCmissing.pdf
+information - extract file container/master - Copy/Thesis/rsc/optCstolen.pdf
+information - extract file container/master - Copy/Thesis/rsc/optsucc.pdf
+information - extract file container/master - Copy/Thesis/rsc/pessBFailedWithAlt.pdf
+information - extract file container/master - Copy/Thesis/rsc/pessCFailed.pdf
+information - extract file container/master - Copy/Thesis/rsc/pessClaimedSucc.pdf
+information - extract file container/master - Copy/Thesis/rsc/storeInitialState.pdf
+information - extract file container/master - Copy/Thesis/async.tex
+information - extract file container/master - Copy/Thesis/atomic.tex
+information - extract file container/master - Copy/Thesis/backoff.tex
+information - extract file container/master - Copy/Thesis/checklist.tex
+information - extract file container/master - Copy/Thesis/chr.tex
+information - extract file container/master - Copy/Thesis/chrlang.tex
+information - extract file container/master - Copy/Thesis/chrvsjoin.tex
+information - extract file container/master - Copy/Thesis/components.tex
+information - extract file container/master - Copy/Thesis/constraintcl.tex
+information - extract file container/master - Copy/Thesis/einleitung.tex
+information - extract file container/master - Copy/Thesis/implementations.tex
+information - extract file container/master - Copy/Thesis/joincalc.tex
+information - extract file container/master - Copy/Thesis/langext.tex
+information - extract file container/master - Copy/Thesis/literaturverzeichnis.tex
+information - extract file container/master - Copy/Thesis/matchstrat.tex
+information - extract file container/master - Copy/Thesis/optmatching.tex
+information - extract file container/master - Copy/Thesis/partialrestart.tex
+information - extract file container/master - Copy/Thesis/pessmatching.tex
+information - extract file container/master - Copy/Thesis/store.tex
+information - extract file container/master - Copy/Thesis/strategies.tex
+information - extract file container/master - Copy/Thesis/sync.tex
+information - extract file container/master - Copy/Thesis/task.tex
+information - extract file container/master - Copy/Thesis/tests.tex
+information - extract file container/master - Copy/Thesis/ThesisMaster.tex
+information - extract file container/master - Copy/main.bib
+information - extract file container/master - Copy/ThePlan.tex
 information - succ
-information - sync
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/rsc/visio files/arghashmap.vsdx
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/rsc/visio files/namehashmap.vsdx
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/rsc/visio files/optAasgoal.vsdx
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/rsc/visio files/optAllConstrFound.vsdx
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/rsc/visio files/optBFailedWithAlt.vsdx
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/rsc/visio files/optCmissing.vsdx
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/rsc/visio files/optCstolen.vsdx
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/rsc/visio files/optimisticCollecting.vsdx
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/rsc/visio files/optsucc.vsdx
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/rsc/visio files/pessBFailedWithAlt.vsdx
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/rsc/visio files/pessCFailed.vsdx
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/rsc/visio files/pessClaimedSucc.vsdx
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/rsc/visio files/storeInitialState.vsdx
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/rsc/arghashmap.pdf
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/rsc/hashmapperformance.pdf
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/rsc/namehashmap.pdf
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/rsc/nplusplus.asm
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/rsc/optAasgoal.pdf
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/rsc/optAllConstrFound.pdf
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/rsc/optBFailedWithAlt.pdf
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/rsc/optCmissing.pdf
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/rsc/optCstolen.pdf
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/rsc/optsucc.pdf
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/rsc/pessBFailedWithAlt.pdf
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/rsc/pessCFailed.pdf
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/rsc/pessClaimedSucc.pdf
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/rsc/storeInitialState.pdf
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/async.tex
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/atomic.tex
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/backoff.tex
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/checklist.tex
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/chr.tex
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/chrlang.tex
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/chrvsjoin.tex
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/components.tex
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/constraintcl.tex
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/einleitung.tex
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/implementations.tex
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/joincalc.tex
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/langext.tex
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/literaturverzeichnis.tex
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/matchstrat.tex
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/optmatching.tex
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/partialrestart.tex
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/pessmatching.tex
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/store.tex
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/strategies.tex
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/sync.tex
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/task.tex
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/tests.tex
-information - adding file C:/tmp/folder/container/master - Copy/Thesis/ThesisMaster.tex
-information - adding file C:/tmp/folder/container/master - Copy/main.bib
-information - adding file C:/tmp/folder/container/master - Copy/ThePlan.tex
-information - finished sync
-information - sync
-information - sync
-information - finished sync
-information - finished sync
-information - sync
-information - finished sync
 information - closing container
 information - sync
 information - finished sync
