@@ -6,6 +6,7 @@ import QtQuick.Dialogs 1.2
 
 Item {
     Component.onCompleted: nameText.forceActiveFocus()
+    property string syncLocationProvider: ""
 
     /*
     Timer {
@@ -45,6 +46,7 @@ Item {
             validator: RegExpValidator {
                 regExp: /[a-zA-Z0-9_-]*/ // TODO
             }
+            onTextChanged: if (isCreateNewDirectory.checked) updateSyncLocation()
         }
 
         Label {
@@ -106,16 +108,27 @@ Item {
                 model: providersModel
                 textRole: "placeholderName"
                 onCurrentIndexChanged: {
+                    syncLocationProvider = providersModel.get(currentIndex).location
                     syncLocationText.text = providersModel.get(currentIndex).location
                     syncLocationText.forceActiveFocus()
                     syncLocationText.selectAll()
+                    if (isCreateNewDirectory.checked) updateSyncLocation()
                 }
             }
             TextField {
                 id: syncLocationText
                 Layout.fillWidth: true
                 text: providersModel.get(0).location
+                readOnly: true
             }
+        }
+
+        Label { }
+        CheckBox {
+            id: isCreateNewDirectory
+            text: qsTr("Creates new directory for syncing container files")
+            checked: true
+            onCheckedChanged: (this.checked ? updateSyncLocation() : syncLocationText.text = syncLocationProvider)
         }
     }
 
@@ -165,6 +178,11 @@ Item {
     // Returns true, if the form is valid
     function isValid() {
         return (nameText.text.length && passwordText.text.length)
+    }
+
+    function updateSyncLocation() {
+        syncLocationText.text = syncLocationProvider + nameText.text;
+        if (nameText.length) syncLocationText.text += "/";
     }
 
     function createContainer() {
