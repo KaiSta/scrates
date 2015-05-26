@@ -178,6 +178,7 @@ class MyFrame : public wxFrame
   {
     id_menu_quit,
     id_menu_about,
+    id_menu_options,
     id_new_container,
     id_open_container,
     id_close_container,
@@ -198,6 +199,10 @@ public:
     fileMenu_->Append(id_menu_quit, _("&Quit\tAlt-F4"), _("Quit Scrates"));
     Connect(id_menu_quit, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MyFrame::OnExit));
     bar_->Append(fileMenu_, _("&File"));
+    extraMenu_ = new wxMenu(_T(""));
+    extraMenu_->Append(id_menu_options, _("&Settings\tAlt-o"), _("Scrates Settings"));
+    Connect(id_menu_options, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MyFrame::OnSettings));
+    bar_->Append(extraMenu_, _("&Extras"));
     helpMenu_ = new wxMenu(_T(""));
     helpMenu_->Append(id_menu_about, _("&About\tF1"), _("About Scrates"));
     bar_->Append(helpMenu_, _("&Help"));
@@ -249,12 +254,17 @@ protected:
   {
     wizard_->Show(true);
   }
+  void OnSettings(wxCommandEvent& event)
+  {
+
+  }
 
 private:
   //menu bar
   wxMenuBar* bar_;
   wxMenu* fileMenu_;
   wxMenu* helpMenu_;
+  wxMenu* extraMenu_;
 
   //sizer
   wxBoxSizer* sizer_;

@@ -451,6 +451,8 @@ int main()
   system("pause");
   return 0;*/
 	local_file f;
+
+  std::cout << std::boolalpha << ContainerController::contains_provider("$Dropbox") << "\n";
 	
 	path vhdp("C:\\tmp\\local\\");
 #ifdef _WIN32

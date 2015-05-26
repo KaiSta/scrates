@@ -61,7 +61,11 @@ public:
 	 * \brief Deletes the old providerlist and tries to detect them again.
 	 * providers.xml will be deleted and recreated! Ensure that open handles are closed and reopened!
 	 */
-	void refresh_providerlist();
+  static void refresh_providerlist()
+  {
+    auto& manager = CloudManager::instance();
+    manager.create_providerlist();
+  }
 
 	/**
 	 * \brief adds a new storage location with a defined shortcut name
@@ -69,27 +73,43 @@ public:
 	 * @param name_with_sign is the shortcut name, beginning with $.
 	 * @param location is the path to the location that is used to replace the shortcutname
 	 */
-	void add_provider(std::string name_with_sign, std::string location);
+  static void add_provider(std::string name_with_sign, std::string location)
+  {
+    auto& manager = CloudManager::instance();
+    manager.add_provider(name_with_sign, location);
+  }
 
 	/**
 	* \brief removes a provider.
 	*
 	* @param name_with_sign is the shortcut name, beginning with $.
 	*/
-	void delete_provider(std::string name_with_sign);
+  static void delete_provider(std::string name_with_sign)
+  {
+    auto& manager = CloudManager::instance();
+    manager.delete_provider(name_with_sign);
+  }
 
 	/**
 	* \brief checks if the providerlist contains a given provider.
 	*
 	* @param name_with_sign is the shortcut name, beginning with $.
 	*/
-	bool contains_provider(std::string name_with_sign);
+  static bool contains_provider(std::string name_with_sign)
+  {
+    auto& manager = CloudManager::instance();
+    return manager.contains_provider(name_with_sign);
+  }
 
 	/**
 	 * Returns all providers, first string contains the shortcutname beginning with $
 	 * second string contains the path
 	 */
-	std::vector<std::pair<std::string, std::string> > get_providers();
+  static std::vector<std::pair<std::string, std::string> > get_providers()
+  {
+    auto& manager = CloudManager::instance();
+    return manager.get_providers();
+  }
 
   void close();
 

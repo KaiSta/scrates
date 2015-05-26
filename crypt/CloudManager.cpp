@@ -119,7 +119,7 @@ void CloudManager::detect_dropbox()
 	std::string appd(appdata);
 	delete[] appdata;
 	appd.append("\\Dropbox\\host.db");
-	//if (!FileSystem::file_exists(appd)){ return; }
+	if (!FileSystem::file_exists(appd)){ return; }
 
 	std::ifstream in(appd, std::ios::in | std::ios::binary);
 	std::string content((std::istreambuf_iterator<char>(in)),

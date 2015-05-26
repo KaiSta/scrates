@@ -100,35 +100,35 @@ void ContainerController::send_callback(event_type t, event_message m, std::stri
 	th.detach();
 }
 
-void ContainerController::refresh_providerlist()
-{
-	auto& manager = CloudManager::instance();
-	manager.create_providerlist();
-}
+//void ContainerController::refresh_providerlist()
+//{
+//	auto& manager = CloudManager::instance();
+//	manager.create_providerlist();
+//}
 
-void ContainerController::add_provider(std::string name_with_sign, std::string location)
-{
-	auto& manager = CloudManager::instance();
-	manager.add_provider(name_with_sign, location);
-}
+//void ContainerController::add_provider(std::string name_with_sign, std::string location)
+//{
+//	auto& manager = CloudManager::instance();
+//	manager.add_provider(name_with_sign, location);
+//}
 
-void ContainerController::delete_provider(std::string name_with_sign)
-{
-  auto& manager = CloudManager::instance();
-  manager.delete_provider(name_with_sign);
-}
+//void ContainerController::delete_provider(std::string name_with_sign)
+//{
+//  auto& manager = CloudManager::instance();
+//  manager.delete_provider(name_with_sign);
+//}
 
-bool ContainerController::contains_provider(std::string name_with_sign)
-{
-  auto& manager = CloudManager::instance();
-  return manager.contains_provider(name_with_sign);
-}
+//bool ContainerController::contains_provider(std::string name_with_sign)
+//{
+//  auto& manager = CloudManager::instance();
+//  return manager.contains_provider(name_with_sign);
+//}
 
-std::vector<std::pair<std::string, std::string> > ContainerController::get_providers()
-{
-	auto& manager = CloudManager::instance();
-	return manager.get_providers();
-}
+//std::vector<std::pair<std::string, std::string> > ContainerController::get_providers()
+//{
+//	auto& manager = CloudManager::instance();
+//	return manager.get_providers();
+//}
 
 void ContainerController::close()
 {

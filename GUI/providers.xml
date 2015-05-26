@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<providers>
+	<provider placeholder="$Local" location="C:\Users\Kai" />
+	<provider placeholder="$OneDrive" location="C:\Users\Kai\OneDrive" />
+</providers>
