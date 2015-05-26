@@ -230,6 +230,11 @@ public:
     SetMinSize(wxSize(640, 480));
     Fit();
 	}
+  
+  ~MyFrame()
+  {
+    wizard_->Close(true);
+  }
 
 protected:
   void OnHello(wxCommandEvent& event);
