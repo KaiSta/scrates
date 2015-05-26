@@ -16,6 +16,7 @@
 #include <wx/sizer.h>
 #include <wx/filepicker.h>
 #include <wx/frame.h>
+#include <memory>
 #include "GUI_controller.h"
 
 GUI_controller controller;
@@ -167,6 +168,7 @@ private:
     controller.create_container(std::string(textctrl_containername_->GetValue().mb_str()),
       std::string(txtctrl_password_->GetValue().mb_str()),
       std::string(txtctrl_cloud_loc_->GetValue().mb_str()));
+    close(event);
   }
 };
 
@@ -185,7 +187,7 @@ class MyFrame : public wxFrame
 
 public:
 	MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size) :
-		wxFrame(nullptr, wxID_ANY, title, pos, size)
+    wxFrame(nullptr, wxID_ANY, title, pos, size), wizard_(new ContainerWizard(wxT("Wizard"), wxDefaultPosition, wxDefaultSize))
 	{
     SetBackgroundColour(*wxWHITE);
     bar_ = new wxMenuBar;
@@ -194,6 +196,7 @@ public:
     Connect(id_new_container, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MyFrame::OnNew));
     fileMenu_->AppendSeparator();
     fileMenu_->Append(id_menu_quit, _("&Quit\tAlt-F4"), _("Quit Scrates"));
+    Connect(id_menu_quit, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MyFrame::OnExit));
     bar_->Append(fileMenu_, _("&File"));
     helpMenu_ = new wxMenu(_T(""));
     helpMenu_->Append(id_menu_about, _("&About\tF1"), _("About Scrates"));
@@ -220,7 +223,7 @@ public:
     button_sizer_->Add(sync_all_, 0, wxALL, 5);
     button_sizer_->Add(close_container_, 0, wxALL, 5);
 
-    wizard = new ContainerWizard(wxT("Wizard"), wxDefaultPosition, wxDefaultSize);
+   // wizard = new ContainerWizard(wxT("Wizard"), wxDefaultPosition, wxDefaultSize);
 
     SetSizer(sizer_);
     Layout();
@@ -232,13 +235,14 @@ protected:
   void OnHello(wxCommandEvent& event);
   void OnExit(wxCommandEvent& event)
   {
+    wizard_->Close(true);
     Close(true);
   }
   void OnAbout(wxCommandEvent& event);
 
   void OnNew(wxCommandEvent& event)
   {
-    wizard->Show(true);
+    wizard_->Show(true);
   }
 
 private:
@@ -262,7 +266,8 @@ private:
   wxDataViewColumn* container_view_status_;
   wxDataViewColumn* container_view_log_;
 
-  ContainerWizard* wizard;
+  //ContainerWizard* wizard;
+  std::unique_ptr<ContainerWizard> wizard_;
 };
 
 class MyApp : public wxApp
