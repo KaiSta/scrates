@@ -26,5 +26,14 @@
     <ClInclude Include="GUI_controller.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ContainerWizard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MainFrame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PasswordDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

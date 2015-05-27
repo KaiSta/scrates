@@ -2,11 +2,14 @@
 #include <string>
 #include <ContainerController.h>
 #include <unordered_map>
+#include <functional>
 
 class GUI_controller
 {
 public:
   GUI_controller();
+
+  void init();
   
   bool create_container(const std::string& container_name, const std::string& password, const std::string& sync_location);
   bool open_container(const std::string& container_name, const std::string& password);
@@ -14,6 +17,11 @@ public:
   void sync(const std::string& container_name);
   void close_all();
   void close(const std::string& container_name);
+  void set_gui_update(std::function<void()> f);
+
+  void exit();
+
+  void get_containers(std::vector<std::pair<std::string, std::string> >& cts);
 
   std::string get_dropbox_path()
   {
@@ -42,8 +50,10 @@ public:
   ~GUI_controller();
 
 private:
-  std::unordered_map<std::string, ContainerController*> scrates_;
+//  std::unordered_map<std::string, ContainerController*> scrates_;
+  std::vector<std::pair<std::string, ContainerController*> > scrates_;
   void callback_func(container_event e, std::string container_name)
   {}
+  std::function<void()> gui_update_;
 };
 

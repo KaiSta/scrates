@@ -44,7 +44,7 @@ void local_file::create(const std::string& containername,
 	containernode.append_attribute("name") = containername.c_str();
 	containernode.append_attribute("version") = "1.00";
 
-#ifdef _WIN32
+#ifdef _WIN32_
 	//create random number for further encryptions
 	UARNG uarng;
 	uarng.generate(random_num_);

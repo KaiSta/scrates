@@ -2,4 +2,5 @@
 <providers>
 	<provider placeholder="$Local" location="C:\Users\Kai" />
 	<provider placeholder="$OneDrive" location="C:\Users\Kai\OneDrive" />
+	<provider placeholder="$tmp" location="C:\tmp" />
 </providers>

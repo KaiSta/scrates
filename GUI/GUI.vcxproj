@@ -70,6 +70,10 @@
     <IncludePath>$(SolutionDir)\delivery\include;$(SolutionDir)\lib\pugixml\src;$(SolutionDir)\lib\cryptopp\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)\delivery;$(SolutionDir)\lib\cryptopp\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(SolutionDir)\delivery\include;$(SolutionDir)\lib\pugixml\src;$(SolutionDir)\lib\cryptopp\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\delivery;$(SolutionDir)\lib\cryptopp\;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -116,11 +120,15 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)\lib\wxwidget\vc_x64_lib\mswud;$(SolutionDir)\lib\wxwidget\include;$(SolutionDir)\lib\poco\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(SolutionDir)\lib\wxwidget\vc_x64_lib;$(SolutionDir)\lib\poco\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>wxmsw30u_core.lib;wxmsw30u_adv.lib;wxbase30u.lib;wxtiff.lib;wxjpeg.lib;wxpng.lib;wxzlib.lib;wxregexu.lib;wxexpat.lib;kernel32.lib;user32.lib;gdi32.lib;comdlg32.lib;winspool.lib;winmm.lib;shell32.lib;comctl32.lib;ole32.lib;oleaut32.lib;uuid.lib;rpcrt4.lib;advapi32.lib;wsock32.lib;wininet.lib;cryptlib.lib;crypt.lib;virtdisk.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -128,7 +136,10 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ContainerWizard.h" />
     <ClInclude Include="GUI_controller.h" />
+    <ClInclude Include="MainFrame.h" />
+    <ClInclude Include="PasswordDialog.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
