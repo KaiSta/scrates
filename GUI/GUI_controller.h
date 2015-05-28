@@ -3,6 +3,8 @@
 #include <ContainerController.h>
 #include <unordered_map>
 #include <functional>
+#include <memory>
+#include <Poco/Util/IniFileConfiguration.h>
 
 class GUI_controller
 {
@@ -55,5 +57,7 @@ private:
   void callback_func(container_event e, std::string container_name)
   {}
   std::function<void()> gui_update_;
+  
+  Poco::AutoPtr<Poco::Util::IniFileConfiguration> config_;
 };
 

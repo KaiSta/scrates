@@ -1,7 +1,7 @@
 #include "GUI_controller.h"
 
 
-GUI_controller::GUI_controller()
+GUI_controller::GUI_controller() : config_(new Poco::Util::IniFileConfiguration("config.ini"))
 {
 }
 
@@ -21,10 +21,12 @@ GUI_controller::~GUI_controller()
 
 void GUI_controller::init()
 {
-  FileSystem::make_folders("C:\\tmp\\Scrates\\mounted");
+  //FileSystem::make_folders("C:\\tmp\\Scrates\\mounted");
+  FileSystem::make_folders(Poco::Path::expand(config_->getString("Scrates.MountPath")));
   CloudManager& mgr = CloudManager::instance();
 
-  auto files = FileSystem::list_files("C:\\tmp\\Scrates", false);
+ // auto files = FileSystem::list_files("C:\\tmp\\Scrates", false);
+  auto files = FileSystem::list_files(Poco::Path::expand(config_->getString("Scrates.ScrateLocation")), false);
   for (auto& e : files)
   {
     path p(e);
@@ -65,8 +67,9 @@ bool GUI_controller::create_container(const std::string& container_name, const s
   if (it)
     return false;
 
-  ContainerController* scrate = new ContainerController([=](container_event e) { callback_func(e, container_name); }, "C:\\tmp\\Scrates\\mounted\\");
-  scrate->create(container_name, "C:\\tmp\\Scrates", password, sync_location, ContainerController::stor_t::FOLDER, 0);
+  ContainerController* scrate = new ContainerController([=](container_event e) { callback_func(e, container_name); }, 
+    Poco::Path::expand(config_->getString("Scrates.MountPath"))/*"C:\\tmp\\Scrates\\mounted\\"*/);
+  scrate->create(container_name, Poco::Path::expand(config_->getString("Scrates.ScrateLocation"))/*"C:\\tmp\\Scrates"*/, password, sync_location, ContainerController::stor_t::FOLDER, 0);
 
   scrates_.push_back(std::pair<std::string, ContainerController*>(container_name, scrate));
   gui_update_();
@@ -87,19 +90,29 @@ bool GUI_controller::open_container(const std::string& container_name, const std
   if (!it)
     return false;
 
+  bool succ = false;
+
   if (it->second == nullptr)
   {
-    it->second = new ContainerController([=](container_event e) { callback_func(e, container_name); }, "C:\\tmp\\Scrates\\mounted\\");
-    std::string loc("C:\\tmp\\Scrates\\");
+    it->second = new ContainerController([=](container_event e) { callback_func(e, container_name); }, Poco::Path::expand(config_->getString("Scrates.MountPath"))
+      /*"C:\\tmp\\Scrates\\mounted\\"*/);
+   // std::string loc("C:\\tmp\\Scrates\\");
+    std::string loc(Poco::Path::expand(config_->getString("Scrates.ScrateLocation")));
     loc.append(container_name);
-    loc.append(".cco");
-    it->second->open(loc, password, ContainerController::stor_t::FOLDER);
+    loc.append(config_->getString("Scrates.FileExtension"));
+    //loc.append(".cco");
+    succ = it->second->open(loc, password, ContainerController::stor_t::FOLDER);
+    if (!succ)
+    {
+      delete it->second;
+      it->second = nullptr;
+    }
   }
   else
     return false; //already opened
   
   gui_update_();
-  return true;
+  return succ;
 }
 
 void GUI_controller::sync_all()

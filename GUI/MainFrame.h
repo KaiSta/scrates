@@ -149,7 +149,10 @@ protected:
       pwdialog_ = new PasswordDialog("Enter Password", pw);
       pwdialog_->Show(true);
       
-      controller_->open_container(std::string(val.mb_str()), pw);
+      if (!controller_->open_container(std::string(val.mb_str()), pw))
+      {
+        wxMessageBox(wxT("Wrong password"), wxT("Error"), wxICON_ERROR);
+      }
       container_view_->SetFocus();
       container_view_->SelectRow(selected);
     }
