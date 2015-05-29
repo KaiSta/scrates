@@ -18,10 +18,12 @@
 #include <wx/sizer.h>
 #include <wx/filepicker.h>
 #include <wx/frame.h>
+#include <wx/wxprec.h>
 #include <memory>
 #include <functional>
 #include <mutex>
 #include <condition_variable>
+#include <thread>
 #include "GUI_controller.h"
 
 class PasswordDialog : public wxDialog
@@ -30,7 +32,8 @@ class PasswordDialog : public wxDialog
   {
     id_txtctrl_password,
     id_button_ok,
-    id_button_abort
+    id_button_abort,
+    id_label_val
   };
 
 public:
@@ -44,7 +47,7 @@ public:
     button_sizer_ = new wxBoxSizer(wxHORIZONTAL);
     
     label_pw_ = new wxStaticText(this, wxNewId(), wxT("Password:"));
-    txtctrl_password_ = new wxTextCtrl(this, id_txtctrl_password, wxEmptyString,
+    txtctrl_password_ = new wxTextCtrl(this, wxID_ANY, wxEmptyString,
       wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD, wxTextValidator(wxFILTER_ASCII));
     button_ok_ = new wxButton(this, id_button_ok, wxT("OK"));
     Connect(id_button_ok, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(PasswordDialog::OnOK));
@@ -64,7 +67,7 @@ public:
     Fit();
     //Centre();
     ShowModal();
-    
+    Destroy();
   }
 
   void OnOK(wxCommandEvent& event)
@@ -92,8 +95,10 @@ private:
 
   wxStaticText* label_pw_;
   wxTextCtrl* txtctrl_password_;
+  wxTextCtrl* label_validation_;
   wxButton* button_ok_;
   wxButton* button_abort_;
 
   std::string& password_;
+  std::thread pwvalidator_;
 };

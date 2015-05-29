@@ -242,6 +242,12 @@ void GUI_controller::callback_func(container_event e, std::string container_name
   }
   //logfile << type << " - " << message << std::endl;
   logs_.push_back({ container_name, message });
+  //log_update_(container_name);
+}
+
+void GUI_controller::set_log_update(std::function<void(std::string)> f)
+{
+  log_update_ = f;
 }
 
 std::vector<std::pair<std::string, std::string > > GUI_controller::get_logs(std::string filter)

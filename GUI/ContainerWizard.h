@@ -38,7 +38,8 @@ class ContainerWizard : public wxDialog
     id_label_seed,
     id_label_seed_val,
     id_button_ok,
-    id_button_abort
+    id_button_abort,
+    id_txtctrl_valid
   };
 
 public:
@@ -55,17 +56,21 @@ public:
     col5_sizer_ = new wxBoxSizer(wxHORIZONTAL);
 
     label_containername_ = new wxStaticText(this, id_label_containername, wxT("Scrate name:"));
-    label_containername_->SetMinSize(wxSize(150, -1));
+    label_containername_->SetMinSize(wxSize(100, -1));
     textctrl_containername_ = new wxTextCtrl(this, id_txtctrl_containername, wxEmptyString);
-    textctrl_containername_->SetMinSize(wxSize(400, 32));
+    textctrl_containername_->SetMinSize(wxSize(350, 32));
 
     label_password_ = new wxStaticText(this, id_label_password, wxT("Password:"));
-    label_password_->SetMinSize(wxSize(150, -1));
+    label_password_->SetMinSize(wxSize(100, -1));
     txtctrl_password_ = new wxTextCtrl(this, id_txtctrl_password, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
-    txtctrl_password_->SetMinSize(wxSize(400, 32));
+    txtctrl_password_->SetMinSize(wxSize(350, 32));
+    txtctrl_valid_ = new wxTextCtrl(this, id_txtctrl_valid, wxT("Poor (0 bit)"), wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
+    txtctrl_valid_->SetForegroundColour(*wxRED);
+    txtctrl_valid_->SetMinSize(wxSize(-1, 32));
+    
 
     label_sync_loc_ = new wxStaticText(this, id_label_cloud, wxT("Cloud:"));
-    label_sync_loc_->SetMinSize(wxSize(150, -1));
+    label_sync_loc_->SetMinSize(wxSize(100, -1));
     txtctrl_cloud_loc_ = new wxTextCtrl(this, id_txtctrl_cloud, wxEmptyString);
     txtctrl_cloud_loc_->SetMinSize(wxSize(-1, 32));
     button_dropbox_ = new wxBitmapButton(this, id_button_dropbox,
@@ -82,7 +87,7 @@ public:
     Connect(id_button_googledrive, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(ContainerWizard::set_googledrive));
 
     label_seed_ = new wxStaticText(this, id_label_seed, wxT("Seed:"));
-    label_seed_->SetMinSize(wxSize(150, -1));
+    label_seed_->SetMinSize(wxSize(100, -1));
     label_seed_value_ = new wxStaticText(this, id_label_seed_val, wxT("AABBCCDDEEFFGGHHIIJJKKLLMMNNOO"));
 
     button_ok_ = new wxButton(this, id_button_ok, wxT("OK"));
@@ -90,11 +95,14 @@ public:
     button_abort_ = new wxButton(this, id_button_abort, wxT("Abort"));
     Connect(id_button_abort, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(ContainerWizard::close));
 
+    Connect(id_txtctrl_password, wxEVT_TEXT, wxCommandEventHandler(ContainerWizard::validate));
+
     col1_sizer_->Add(label_containername_, 0, wxALL, 5);
     col1_sizer_->Add(textctrl_containername_, 0, wxALL, 5);
 
     col2_sizer_->Add(label_password_, 0, wxALL, 5);
     col2_sizer_->Add(txtctrl_password_, 0, wxALL, 5);
+    col2_sizer_->Add(txtctrl_valid_, 0, wxALL, 5);
 
     col3_sizer_->Add(label_sync_loc_, 0, wxALL, 5);
     col3_sizer_->Add(txtctrl_cloud_loc_, 0, wxALL, 5);
@@ -119,7 +127,9 @@ public:
     Fit();
     //Centre();
     ShowModal();
+    Destroy();
   }
+
 
 private:
   wxBoxSizer* sizer_;
@@ -134,6 +144,7 @@ private:
 
   wxStaticText* label_password_;
   wxTextCtrl* txtctrl_password_;
+  wxTextCtrl* txtctrl_valid_;
 
   wxStaticText* label_sync_loc_;
   wxTextCtrl* txtctrl_cloud_loc_;
@@ -177,5 +188,76 @@ private:
       std::string(txtctrl_cloud_loc_->GetValue().mb_str()));
     close(event);
    // close(event);
+  }
+
+  void validate(wxCommandEvent& event)
+  {
+    const std::string signs("!$%^&*()_{}~@:./?,<>\\+-'#");
+    std::string tmp = event.GetString().mb_str();
+
+    bool alpha_small = false;
+    bool alpha_big = false;
+    bool numbers = false;
+    bool sign = false;
+
+    uint32_t num_signs = 0;
+
+    for (auto& c : tmp)
+    {
+      if (c >= '0' && c <= '9' && !numbers)
+      {
+        num_signs += 10;
+        numbers = true;
+      }
+      else if (c >= 'a' && c <= 'z' && !alpha_small)
+      {
+        num_signs += 26;
+        alpha_small = true;
+      }
+      else if (c >= 'A' && c <= 'Z' && !alpha_big)
+      {
+        num_signs += 26;
+        alpha_big = true;
+      }
+      else if (!sign && signs.find_first_of(c) != std::string::npos)
+      {
+        sign = true;
+        num_signs += signs.size();
+      }
+    }
+    num_signs--;
+    num_signs |= num_signs >> 1;
+    num_signs |= num_signs >> 2;
+    num_signs |= num_signs >> 4;
+    num_signs |= num_signs >> 8;
+    num_signs |= num_signs >> 16;
+    num_signs++;
+    auto res = std::log(num_signs) / std::log(2);
+    uint32_t strength = res * tmp.size();
+    std::string result;
+    
+    if (strength < 32)
+    {
+      txtctrl_valid_->SetForegroundColour(*wxRED);
+      result = "Poor";
+    }
+    else if (strength < 64)
+    {
+      txtctrl_valid_->SetForegroundColour(*wxYELLOW);
+      result = "OK";
+    }
+    else if (strength < 256)
+    {
+      txtctrl_valid_->SetForegroundColour(*wxGREEN);
+      result = "Good";
+    }
+    else
+    {
+      txtctrl_valid_->SetForegroundColour(*wxGREEN);
+      result = "Very Good";
+    }
+
+    txtctrl_valid_->ChangeValue(result + " (" + std::to_string(strength) + " bit)");
+
   }
 };

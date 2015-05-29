@@ -47,6 +47,7 @@ public:
   {
     SetBackgroundColour(*wxWHITE);
     controller_->set_gui_update(std::bind(&MainFrame::update_scrates_view, this));
+    //controller_->set_log_update(std::bind(&MainFrame::log_update, this));
 
     bar_ = new wxMenuBar;
     fileMenu_ = new wxMenu(_T(""));
@@ -81,7 +82,7 @@ public:
     container_view_->SetMinSize(wxSize(600, 300));
     container_view_name_ = container_view_->AppendTextColumn(wxT("Name"));
     container_view_status_ = container_view_->AppendTextColumn(wxT("Status"));
-    container_view_log_ = container_view_->AppendTextColumn(wxT("Log"));
+    //container_view_log_ = container_view_->AppendTextColumn(wxT("Log"));
 
     sizer_ = new wxBoxSizer(wxVERTICAL);
     button_sizer_ = new wxBoxSizer(wxHORIZONTAL);
@@ -93,14 +94,13 @@ public:
     button_sizer_->Add(close_container_, 0, wxALL, 5);
 
     // wizard = new ContainerWizard(wxT("Wizard"), wxDefaultPosition, wxDefaultSize);
-    std::vector<std::pair<std::string, std::string> > files;
-    controller_->get_containers(files);
-    for (auto& e : files)
+   // std::vector<std::pair<std::string, std::string> > files;
+    controller_->get_containers(files_);
+    for (auto& e : files_)
     {
       wxVector<wxVariant> item;
       item.push_back(wxVariant(e.first));
       item.push_back(e.second);
-      item.push_back("bla");
       container_view_->AppendItem(item);
     }
 
@@ -178,8 +178,9 @@ protected:
   }
   void OnLog(wxCommandEvent& event)
   {
-    auto logd = new LogDialog("Log", wxDefaultPosition, wxDefaultSize, controller_);
+    std::unique_ptr<LogDialog> logd(new LogDialog("Log", wxDefaultPosition, wxDefaultSize, controller_));
     logd->Show(true);
+    logd->Destroy();
   }
 
 private:
@@ -209,18 +210,21 @@ private:
   GUI_controller* controller_;
   //std::unique_ptr<ContainerWizard> wizard_;
 
+  std::vector<std::pair<std::string, std::string> > files_;
+
   void update_scrates_view()
   {
     container_view_->DeleteAllItems();
-    std::vector<std::pair<std::string, std::string> > files;
-    controller_->get_containers(files);
-    for (auto& e : files)
+    //std::vector<std::pair<std::string, std::string> > files;
+    files_.clear();
+    controller_->get_containers(files_);
+    for (auto& e : files_)
     {
       wxVector<wxVariant> item;
       item.push_back(wxVariant(e.first));
       item.push_back(e.second);
-      item.push_back("bla");
       container_view_->AppendItem(item);
     }
   }
+  
 };

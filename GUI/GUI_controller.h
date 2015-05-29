@@ -20,6 +20,7 @@ public:
   void close_all();
   void close(const std::string& container_name);
   void set_gui_update(std::function<void()> f);
+  void set_log_update(std::function<void(std::string)> f);
 
   void exit();
 
@@ -59,6 +60,7 @@ private:
   std::vector<std::pair<std::string, ContainerController*> > scrates_;
   void callback_func(container_event e, std::string container_name);
   std::function<void()> gui_update_;
+  std::function<void(std::string)> log_update_;
   
   Poco::AutoPtr<Poco::Util::IniFileConfiguration> config_;
   std::vector<std::pair<std::string, std::string > > logs_;
