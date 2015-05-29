@@ -23,6 +23,7 @@
 #include <future>
 #include "GUI_controller.h"
 #include "PasswordDialog.h"
+#include "LogDialog.h"
 
 class MainFrame : public wxFrame
 {
@@ -31,6 +32,7 @@ class MainFrame : public wxFrame
     id_menu_quit,
     id_menu_about,
     id_menu_options,
+    id_menu_log,
     id_new_container,
     id_open_container,
     id_close_container,
@@ -59,6 +61,8 @@ public:
     Connect(id_sync_all, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrame::OnSyncAll));
     extraMenu_->Append(id_menu_options, _("&Settings\tAlt-o"), _("Scrates Settings"));
     Connect(id_menu_options, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrame::OnSettings));
+    extraMenu_->Append(id_menu_log, _("&Log\tAlt-l"), _("Log file"));
+    Connect(id_menu_log, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrame::OnLog));
     bar_->Append(extraMenu_, _("&Extras"));
     helpMenu_ = new wxMenu(_T(""));
     helpMenu_->Append(id_menu_about, _("&About\tF1"), _("About Scrates"));
@@ -171,6 +175,11 @@ protected:
   void OnSyncAll(wxCommandEvent& event)
   {
     controller_->sync_all();
+  }
+  void OnLog(wxCommandEvent& event)
+  {
+    auto logd = new LogDialog("Log", wxDefaultPosition, wxDefaultSize, controller_);
+    logd->Show(true);
   }
 
 private:

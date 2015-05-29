@@ -164,3 +164,100 @@ void GUI_controller::get_containers(std::vector<std::pair<std::string, std::stri
     cts.push_back({ e.first, (e.second) ? "open" : "closed" });
   }
 }
+
+void GUI_controller::callback_func(container_event e, std::string container_name)
+{
+  std::lock_guard<std::mutex> guard(mtx_);
+  std::string type;
+  std::string message;
+  switch (e.type)
+  {
+  case INFORMATION:
+    type = "information";
+    break;
+  case CONFLICT:
+    type = "error";
+    break;
+  case WARNING:
+    type = "warning";
+    break;
+  case VERBOSE:
+    type = "verbose";
+    break;
+  }
+
+  switch (e.message)
+  {
+  case NONE:
+    message = "none";
+    break;
+  case CTR_FILE_NOT_FOUND:
+    message = "container file not found";
+    break;
+  case WRONG_PASSWORD:
+    message = "wrong password";
+    break;
+  case MISSING_ENC_FILES:
+    message = "missing encrypted file in cloud";
+    break;
+  case DECRYPTION_ERROR:
+    message = "decryption error";
+    break;
+  case WRONG_ARGUMENTS:
+    message = "wrong arguments";
+    break;
+  case SUCC:
+    message = "succ";
+    break;
+  case SYNCHRONIZING:
+    message = "sync";
+    break;
+  case FINISHED_SYNCHRONIZING:
+    message = "finished sync";
+    break;
+  case NO_WARNING:
+    message = "no warning";
+    break;
+  case CLOSING:
+    message = "closing container";
+    break;
+  case ADD_FILE:
+    message = "adding file " + std::string(e._data_.data());
+    break;
+  case UPDATE_FILE:
+    message = "updating file " + std::string(e._data_.data());
+    break;
+  case DELETE_FILE:
+    message = "delete file " + std::string(e._data_.data());
+    break;
+  case EXTRACT_FILE:
+    message = "extract file " + std::string(e._data_.data());
+    break;
+  case EXTRACT_FILES:
+    message = "extract files ";
+    break;
+  case INIT_CONTAINER:
+    message = "initializing container";
+    break;
+  }
+  //logfile << type << " - " << message << std::endl;
+  logs_.push_back({ container_name, message });
+}
+
+std::vector<std::pair<std::string, std::string > > GUI_controller::get_logs(std::string filter)
+{
+  if (filter == "*")
+    return logs_;
+  else
+  {
+    std::vector<std::pair<std::string, std::string> > ret;
+    for (auto& e : logs_)
+    {
+      if (e.first == filter)
+        ret.push_back(e);
+      else if (e.second.find(filter) != std::string::npos)
+        ret.push_back(e);
+    }
+    return ret;
+  }
+}

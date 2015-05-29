@@ -35,5 +35,8 @@
     <ClInclude Include="PasswordDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="LogDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

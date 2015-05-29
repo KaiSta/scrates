@@ -138,6 +138,7 @@
   <ItemGroup>
     <ClInclude Include="ContainerWizard.h" />
     <ClInclude Include="GUI_controller.h" />
+    <ClInclude Include="LogDialog.h" />
     <ClInclude Include="MainFrame.h" />
     <ClInclude Include="PasswordDialog.h" />
   </ItemGroup>

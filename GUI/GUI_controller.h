@@ -49,15 +49,19 @@ public:
       return "$$error, provider not available";
   }
 
+  std::vector<std::pair<std::string, std::string > > get_logs(std::string filter);
+  std::string get_last_log(std::string scrate_name);
+
   ~GUI_controller();
 
 private:
 //  std::unordered_map<std::string, ContainerController*> scrates_;
   std::vector<std::pair<std::string, ContainerController*> > scrates_;
-  void callback_func(container_event e, std::string container_name)
-  {}
+  void callback_func(container_event e, std::string container_name);
   std::function<void()> gui_update_;
   
   Poco::AutoPtr<Poco::Util::IniFileConfiguration> config_;
+  std::vector<std::pair<std::string, std::string > > logs_;
+  std::mutex mtx_;
 };
 
