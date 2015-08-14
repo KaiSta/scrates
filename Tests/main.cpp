@@ -446,6 +446,13 @@ void callback_func(container_event e)
 
 int main()
 {
+  int n = 1;
+  n = -~n;
+  std::cout << n << "\n";
+  n = ~- n;
+  std::cout << n << "\n";
+  system("pause");
+
 	using namespace CryptoPP;
 	local_file f;
 

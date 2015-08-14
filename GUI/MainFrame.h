@@ -150,7 +150,7 @@ protected:
     {
       auto val = container_view_->GetTextValue(selected, 0);
       std::string pw;
-      pwdialog_ = new PasswordDialog("Enter Password", pw);
+      pwdialog_ = new PasswordDialog("Open", pw);
       pwdialog_->Show(true);
       
       if (!controller_->open_container(std::string(val.mb_str()), pw))

@@ -33,7 +33,9 @@ class PasswordDialog : public wxDialog
     id_txtctrl_password,
     id_button_ok,
     id_button_abort,
-    id_label_val
+    id_label_val,
+    id_txtctrl_folder,
+    id_button_select
   };
 
 public:
@@ -43,10 +45,23 @@ public:
     SetBackgroundColour(*wxWHITE);
    // wxImage::AddHandler(new wxPNGHandler);
     sizer_ = new wxBoxSizer(wxVERTICAL);
+    folder_sizer_ = new wxBoxSizer(wxHORIZONTAL);
     entry_sizer_ = new wxBoxSizer(wxHORIZONTAL);
     button_sizer_ = new wxBoxSizer(wxHORIZONTAL);
+
+    label_folder_ = new wxStaticText(this, wxNewId(), wxT("Folder:"));
+    label_folder_->SetMinSize(wxSize(100, -1));
+    txtctrl_folder_ = new wxTextCtrl(this, id_txtctrl_folder, wxEmptyString);
+    button_select_ = new wxButton(this, id_button_select, wxT("..."));
+    button_select_->SetMinSize(wxSize(-1, 30));
+    button_select_->SetMaxSize(wxSize(32, -1));
+    Connect(id_button_select, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(PasswordDialog::select_folder));
+    folder_sizer_->Add(label_folder_, 0, wxALL, 5);
+    folder_sizer_->Add(txtctrl_folder_, 0, wxALL, 5);
+    folder_sizer_->Add(button_select_, 0, wxALL, 5);
     
     label_pw_ = new wxStaticText(this, wxNewId(), wxT("Password:"));
+    label_pw_->SetMinSize(wxSize(100, -1));
     txtctrl_password_ = new wxTextCtrl(this, wxID_ANY, wxEmptyString,
       wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD, wxTextValidator(wxFILTER_ASCII));
     button_ok_ = new wxButton(this, id_button_ok, wxT("OK"));
@@ -59,6 +74,7 @@ public:
     button_sizer_->Add(button_ok_, 0, wxALL, 5);
     button_sizer_->Add(button_abort_, 0, wxALL, 5);
     
+    sizer_->Add(folder_sizer_, 1, wxALL, 5);
     sizer_->Add(entry_sizer_, 1, wxALL, 5);
     sizer_->Add(button_sizer_, 1, wxALL, 5);
 
@@ -88,14 +104,33 @@ public:
     password_.clear();
   }
 
+  void select_folder(wxCommandEvent& event)
+  {
+    wxDirDialog dialog(this);
+    dialog.ShowModal();
+
+    txtctrl_folder_->ChangeValue(dialog.GetPath());
+  }
+
+  std::string get_folderpath()
+  {
+    return txtctrl_folder_->GetValue().ToStdString();
+  }
+
 private:
   wxBoxSizer* sizer_;
+  wxBoxSizer* folder_sizer_;
   wxBoxSizer* entry_sizer_;
   wxBoxSizer* button_sizer_;
 
   wxStaticText* label_pw_;
   wxTextCtrl* txtctrl_password_;
   wxTextCtrl* label_validation_;
+
+  wxStaticText* label_folder_;
+  wxTextCtrl* txtctrl_folder_;
+  wxButton* button_select_;
+
   wxButton* button_ok_;
   wxButton* button_abort_;
 

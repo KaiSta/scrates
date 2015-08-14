@@ -35,6 +35,7 @@ class ContainerWizard : public wxDialog
     id_button_dropbox,
     id_button_onedrive,
     id_button_googledrive,
+    id_button_others,
     id_label_seed,
     id_label_seed_val,
     id_button_ok,
@@ -72,7 +73,7 @@ public:
     label_sync_loc_ = new wxStaticText(this, id_label_cloud, wxT("Cloud:"));
     label_sync_loc_->SetMinSize(wxSize(100, -1));
     txtctrl_cloud_loc_ = new wxTextCtrl(this, id_txtctrl_cloud, wxEmptyString);
-    txtctrl_cloud_loc_->SetMinSize(wxSize(-1, 32));
+    txtctrl_cloud_loc_->SetMinSize(wxSize(150, 32));
     button_dropbox_ = new wxBitmapButton(this, id_button_dropbox,
       wxBitmap(wxT("icons\\dropbox.png"), wxBITMAP_TYPE_PNG), wxDefaultPosition,
       wxDefaultSize, wxBU_AUTODRAW);
@@ -85,6 +86,9 @@ public:
       wxBitmap(wxT("icons\\googledrive.png"), wxBITMAP_TYPE_PNG), wxDefaultPosition,
       wxDefaultSize, wxBU_AUTODRAW);
     Connect(id_button_googledrive, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(ContainerWizard::set_googledrive));
+    button_others_ = new wxButton(this, id_button_others, wxT("..."));
+    button_others_->SetMaxSize(wxSize(32, 32));
+    Connect(id_button_others, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(ContainerWizard::set_others));
 
     label_seed_ = new wxStaticText(this, id_label_seed, wxT("Seed:"));
     label_seed_->SetMinSize(wxSize(100, -1));
@@ -109,6 +113,7 @@ public:
     col3_sizer_->Add(button_dropbox_, 0, wxALL, 5);
     col3_sizer_->Add(button_onedrive_, 0, wxALL, 5);
     col3_sizer_->Add(button_googledrive_, 0, wxALL, 5);
+    col3_sizer_->Add(button_others_, 0, wxALL, 5);
 
     col4_sizer_->Add(label_seed_, 0, wxALL, 5);
     col4_sizer_->Add(label_seed_value_, 0, wxALL, 5);
@@ -151,6 +156,7 @@ private:
   wxBitmapButton* button_dropbox_;
   wxBitmapButton* button_onedrive_;
   wxBitmapButton* button_googledrive_;
+  wxButton* button_others_;
 
   wxStaticText* label_seed_;
   wxStaticText* label_seed_value_;
@@ -173,6 +179,14 @@ private:
   {
     txtctrl_cloud_loc_->ChangeValue(controller_->get_google_drive_path());
   }
+  void set_others(wxCommandEvent& event)
+  {
+    wxDirDialog dialog(this);
+    dialog.ShowModal();
+
+    txtctrl_cloud_loc_->ChangeValue(dialog.GetPath());
+  }
+
   void close(wxCommandEvent& event)
   {
     txtctrl_cloud_loc_->ChangeValue("");
@@ -192,7 +206,7 @@ private:
 
   void validate(wxCommandEvent& event)
   {
-    const std::string signs("!$%^&*()_{}~@:./?,<>\\+-'#");
+    const std::string signs("`~!@#$%^&*()[]{}-_=;:'\",<.>?+, /\\"/*"!$%^&*()_{}~@:./?,<>\\+-'#"*/);
     std::string tmp = event.GetString().mb_str();
 
     bool alpha_small = false;
@@ -225,15 +239,15 @@ private:
         num_signs += signs.size();
       }
     }
-    num_signs--;
+    /*num_signs--;
     num_signs |= num_signs >> 1;
     num_signs |= num_signs >> 2;
     num_signs |= num_signs >> 4;
     num_signs |= num_signs >> 8;
     num_signs |= num_signs >> 16;
-    num_signs++;
+    num_signs++;*/
     auto res = std::log(num_signs) / std::log(2);
-    uint32_t strength = res * tmp.size();
+    uint32_t strength = tmp.size() * (std::log(num_signs) / std::log(2));  //res * tmp.size();
     std::string result;
     
     if (strength < 32)
