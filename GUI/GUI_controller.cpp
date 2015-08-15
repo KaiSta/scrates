@@ -267,3 +267,11 @@ std::vector<std::pair<std::string, std::string > > GUI_controller::get_logs(std:
     return ret;
   }
 }
+
+std::string GUI_controller::get_path_for(std::string containername)
+{
+  auto path = Poco::Path::expand(config_->getString("Scrates.MountPath"));
+  Poco::Path p(config_->getString("Scrates.MountPath"));
+  p.append(containername);
+  return p.toString();
+}
