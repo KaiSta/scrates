@@ -14,7 +14,7 @@ public:
   void init();
   
   bool create_container(const std::string& container_name, const std::string& password, const std::string& sync_location);
-  bool open_container(const std::string& container_name, const std::string& password);
+  bool open_container(const std::string& container_name, const std::string& password, std::string default_path = "");
   void sync_all();
   void sync(const std::string& container_name);
   void close_all();

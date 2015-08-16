@@ -152,13 +152,13 @@ protected:
       std::string pw;
      // pwdialog_ = new PasswordDialog("Open", pw);
       //pwdialog_->Show(true);
-      PasswordDialog pwdialog("Open");
+      PasswordDialog pwdialog("Open", controller_->get_path_for(val.ToStdString()));
       pwdialog.Show(true);
 
       pw = pwdialog.get_password();
       auto path = pwdialog.get_path();
 
-      if (!controller_->open_container(val.ToStdString(), pw))
+      if (!controller_->open_container(val.ToStdString(), pw, path))
       {
         wxMessageBox(wxT("Wrong password"), wxT("Error"), wxICON_ERROR);
       }

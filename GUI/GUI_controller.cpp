@@ -76,7 +76,7 @@ bool GUI_controller::create_container(const std::string& container_name, const s
   return true;
 }
 
-bool GUI_controller::open_container(const std::string& container_name, const std::string& password)
+bool GUI_controller::open_container(const std::string& container_name, const std::string& password, std::string default_path)
 {
   std::pair<std::string, ContainerController*>* it = nullptr;
   for (auto& e : scrates_)
@@ -94,8 +94,10 @@ bool GUI_controller::open_container(const std::string& container_name, const std
 
   if (it->second == nullptr)
   {
-    it->second = new ContainerController([=](container_event e) { callback_func(e, container_name); }, Poco::Path::expand(config_->getString("Scrates.MountPath"))
-      /*"C:\\tmp\\Scrates\\mounted\\"*/);
+    std::string mountpath = (default_path == "") ? config_->getString("Scrates.MountPath") : default_path;
+    mountpath = Poco::Path::expand(mountpath);
+    it->second = new ContainerController([=](container_event e) { callback_func(e, container_name); }, mountpath/*Poco::Path::expand(config_->getString("Scrates.MountPath")*/);
+      /*"C:\\tmp\\Scrates\\mounted\\"*///);
    // std::string loc("C:\\tmp\\Scrates\\");
     std::string loc(Poco::Path::expand(config_->getString("Scrates.ScrateLocation")));
     loc.append(container_name);

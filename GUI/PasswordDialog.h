@@ -53,6 +53,7 @@ public:
     label_folder_->SetMinSize(wxSize(100, -1));
     txtctrl_folder_ = new wxTextCtrl(this, id_txtctrl_folder, wxEmptyString);
     txtctrl_folder_->ChangeValue(default_path);
+    txtctrl_folder_->SetMinSize(wxSize(300, -1));
     button_select_ = new wxButton(this, id_button_select, wxT("..."));
     button_select_->SetMinSize(wxSize(-1, 30));
     button_select_->SetMaxSize(wxSize(32, -1));
@@ -106,7 +107,8 @@ public:
 
   std::string get_path()
   {
-    return path_;
+    //return path_;
+    return txtctrl_folder_->GetValue().ToStdString();
   }
 
   void reset()
