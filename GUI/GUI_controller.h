@@ -21,6 +21,7 @@ public:
   void close(const std::string& container_name);
   void set_gui_update(std::function<void()> f);
   void set_log_update(std::function<void(std::string)> f);
+  std::string get_path_for(std::string containername);
 
   void exit();
 
