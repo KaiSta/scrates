@@ -150,10 +150,15 @@ protected:
     {
       auto val = container_view_->GetTextValue(selected, 0);
       std::string pw;
-      pwdialog_ = new PasswordDialog("Open", pw);
-      pwdialog_->Show(true);
-      
-      if (!controller_->open_container(std::string(val.mb_str()), pw))
+     // pwdialog_ = new PasswordDialog("Open", pw);
+      //pwdialog_->Show(true);
+      PasswordDialog pwdialog("Open");
+      pwdialog.Show(true);
+
+      pw = pwdialog.get_password();
+      auto path = pwdialog.get_path();
+
+      if (!controller_->open_container(val.ToStdString(), pw))
       {
         wxMessageBox(wxT("Wrong password"), wxT("Error"), wxICON_ERROR);
       }

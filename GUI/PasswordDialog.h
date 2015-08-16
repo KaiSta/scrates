@@ -39,8 +39,8 @@ class PasswordDialog : public wxDialog
   };
 
 public:
-  PasswordDialog(const wxString& title, std::string& pw) :
-    wxDialog(nullptr, wxID_ANY, title, wxDefaultPosition, wxSize(300, 200)), password_(pw)
+  PasswordDialog(const wxString& title, wxString default_path/*, std::string& pw*/) :
+    wxDialog(nullptr, wxID_ANY, title, wxDefaultPosition, wxSize(300, 200))/*, password_(pw)*/
   {
     SetBackgroundColour(*wxWHITE);
    // wxImage::AddHandler(new wxPNGHandler);
@@ -52,6 +52,7 @@ public:
     label_folder_ = new wxStaticText(this, wxNewId(), wxT("Folder:"));
     label_folder_->SetMinSize(wxSize(100, -1));
     txtctrl_folder_ = new wxTextCtrl(this, id_txtctrl_folder, wxEmptyString);
+    txtctrl_folder_->ChangeValue(default_path);
     button_select_ = new wxButton(this, id_button_select, wxT("..."));
     button_select_->SetMinSize(wxSize(-1, 30));
     button_select_->SetMaxSize(wxSize(32, -1));
@@ -88,7 +89,7 @@ public:
 
   void OnOK(wxCommandEvent& event)
   {
-    password_ = txtctrl_password_->GetValue().mb_str();
+    password_ = txtctrl_password_->GetValue().ToStdString();
     Destroy();
   }
 
@@ -96,6 +97,16 @@ public:
   {
     password_ = "";
     Destroy();
+  }
+
+  std::string get_password()
+  {
+    return password_;
+  }
+
+  std::string get_path()
+  {
+    return path_;
   }
 
   void reset()
@@ -110,6 +121,7 @@ public:
     dialog.ShowModal();
 
     txtctrl_folder_->ChangeValue(dialog.GetPath());
+    path_ = dialog.GetPath().ToStdString();
   }
 
   std::string get_folderpath()
@@ -134,6 +146,7 @@ private:
   wxButton* button_ok_;
   wxButton* button_abort_;
 
-  std::string& password_;
+  std::string password_;
+  std::string path_;
   std::thread pwvalidator_;
 };

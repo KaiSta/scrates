@@ -32,6 +32,7 @@ public:
     controller = std::make_shared < GUI_controller >();// .reset(new GUI_controller());
    // controller = new GUI_controller();
     controller->init();
+    
     frame = new MainFrame("Scrates", wxDefaultPosition, wxSize(640, 480), controller.get());
 		frame->Show(true);
 		return true;
