@@ -272,8 +272,48 @@ std::vector<std::pair<std::string, std::string > > GUI_controller::get_logs(std:
 
 std::string GUI_controller::get_path_for(std::string containername)
 {
+  if (FileSystem::file_exists("settings.xml"))
+  {
+    pugi::xml_document doc;
+    doc.load_file("settings.xml");
+    pugi::xpath_node_set provider = doc.select_nodes(std::string("//locations/location[@name = \"" + containername + "\"]").c_str());
+    if (provider.size())
+    {
+      return provider[0].node().attribute("path").as_string();
+    }
+  }
+  
   auto path = Poco::Path::expand(config_->getString("Scrates.MountPath"));
   Poco::Path p(config_->getString("Scrates.MountPath"));
-  p.append(containername);
+  //p.append(containername);
   return p.toString();
+}
+
+void GUI_controller::set_path_for(std::string containername, std::string path)
+{
+  pugi::xml_document doc;
+  pugi::xml_node root;
+  if (FileSystem::file_exists("settings.xml"))
+  {
+    doc.load_file("settings.xml");
+  }
+  else
+  {
+    auto root = doc.append_child("settings");
+    auto locs = root.append_child("locations");
+    doc.save_file("settings.xml");
+  }
+
+  pugi::xpath_node_set found = doc.select_nodes(std::string("/settings/locations/location[@name = \"" + containername + "\"]").c_str());
+  root = doc.child("settings").child("locations");
+  if (found.size())
+  {
+    root.remove_child(found[0].node());
+  }
+
+  auto nnode = root.append_child("location");
+  doc.save_file("settings.xml");
+  nnode.append_attribute("name") = containername.c_str();
+  nnode.append_attribute("path") = path.c_str();
+  doc.save_file("settings.xml");
 }

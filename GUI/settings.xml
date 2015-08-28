@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<settings>
+	<locations>
+		<location name="test2" path="C:\tmp\Scrates\mounted\blaaaa" />
+		<location name="test" path="C:\tmp\Scrates\mounted" />
+	</locations>
+</settings>

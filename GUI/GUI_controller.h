@@ -22,6 +22,7 @@ public:
   void set_gui_update(std::function<void()> f);
   void set_log_update(std::function<void(std::string)> f);
   std::string get_path_for(std::string containername);
+  void set_path_for(std::string containername, std::string path);
 
   void exit();
 

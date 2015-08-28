@@ -427,7 +427,10 @@ private:
 			catch (std::exception e)
 			{
 				std::cout << e.what() << std::endl;
-				std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        send_callback(event_type::CONFLICT, event_message::CTR_FILE_NOT_FOUND, e.what());
+        succ = true;
+        this->close();
+        //std::this_thread::sleep_for(std::chrono::milliseconds(200));
 				//Sleep(200);
 			}
 		}

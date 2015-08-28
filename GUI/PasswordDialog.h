@@ -35,7 +35,8 @@ class PasswordDialog : public wxDialog
     id_button_abort,
     id_label_val,
     id_txtctrl_folder,
-    id_button_select
+    id_button_select,
+    id_cb_default
   };
 
 public:
@@ -48,6 +49,7 @@ public:
     folder_sizer_ = new wxBoxSizer(wxHORIZONTAL);
     entry_sizer_ = new wxBoxSizer(wxHORIZONTAL);
     button_sizer_ = new wxBoxSizer(wxHORIZONTAL);
+    default_sizer_ = new wxBoxSizer(wxHORIZONTAL);
 
     label_folder_ = new wxStaticText(this, wxNewId(), wxT("Folder:"));
     label_folder_->SetMinSize(wxSize(100, -1));
@@ -61,6 +63,12 @@ public:
     folder_sizer_->Add(label_folder_, 0, wxALL, 5);
     folder_sizer_->Add(txtctrl_folder_, 0, wxALL, 5);
     folder_sizer_->Add(button_select_, 0, wxALL, 5);
+
+    label_default_ = new wxStaticText(this, wxNewId(), wxEmptyString);
+    label_default_->SetMinSize({ 100, -1 });
+    cbox_default_ = new wxCheckBox(this, id_cb_default, wxString("Default"));
+    default_sizer_->Add(label_default_, 0, wxALL, 5);
+    default_sizer_->Add(cbox_default_, 0, wxALL, 5);
     
     label_pw_ = new wxStaticText(this, wxNewId(), wxT("Password:"));
     label_pw_->SetMinSize(wxSize(100, -1));
@@ -77,6 +85,7 @@ public:
     button_sizer_->Add(button_abort_, 0, wxALL, 5);
     
     sizer_->Add(folder_sizer_, 1, wxALL, 5);
+    sizer_->Add(default_sizer_, 1, wxALL, 5);
     sizer_->Add(entry_sizer_, 1, wxALL, 5);
     sizer_->Add(button_sizer_, 1, wxALL, 5);
 
@@ -111,6 +120,11 @@ public:
     return txtctrl_folder_->GetValue().ToStdString();
   }
 
+  bool get_default()
+  {
+    return cbox_default_->GetValue();
+  }
+
   void reset()
   {
     txtctrl_password_->ChangeValue("");
@@ -136,6 +150,7 @@ private:
   wxBoxSizer* folder_sizer_;
   wxBoxSizer* entry_sizer_;
   wxBoxSizer* button_sizer_;
+  wxBoxSizer* default_sizer_;
 
   wxStaticText* label_pw_;
   wxTextCtrl* txtctrl_password_;
@@ -147,6 +162,9 @@ private:
 
   wxButton* button_ok_;
   wxButton* button_abort_;
+
+  wxStaticText* label_default_;
+  wxCheckBox* cbox_default_;
 
   std::string password_;
   std::string path_;

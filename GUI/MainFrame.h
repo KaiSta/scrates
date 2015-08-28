@@ -157,6 +157,11 @@ protected:
 
       pw = pwdialog.get_password();
       auto path = pwdialog.get_path();
+      
+      if (pwdialog.get_default())
+      {
+        controller_->set_path_for(val.ToStdString(), path);
+      }
 
       if (!controller_->open_container(val.ToStdString(), pw, path))
       {
