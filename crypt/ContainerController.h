@@ -57,6 +57,11 @@ public:
 	 */
 	void delete_booked_node(container_event& e);
 
+  std::string get_vhd_path()
+  {
+    return vhd_path_;
+  }
+
 	/**
 	 * \brief Deletes the old providerlist and tries to detect them again.
 	 * providers.xml will be deleted and recreated! Ensure that open handles are closed and reopened!

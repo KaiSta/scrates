@@ -38,7 +38,8 @@ class MainFrame : public wxFrame
     id_close_container,
     id_container_grid,
     id_sync_all,
-    id_sync_container
+    id_sync_container,
+    id_container_view
   };
 
 public:
@@ -78,10 +79,11 @@ public:
     close_container_ = new wxButton(this, id_close_container, _("Close"));
     Connect(id_close_container, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrame::OnCloseContainer));
 
-    container_view_ = new wxDataViewListCtrl(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0);
+    container_view_ = new wxDataViewListCtrl(this, id_container_view, wxDefaultPosition, wxDefaultSize, 0);
     container_view_->SetMinSize(wxSize(600, 300));
     container_view_name_ = container_view_->AppendTextColumn(wxT("Name"));
     container_view_status_ = container_view_->AppendTextColumn(wxT("Status"));
+    Connect(id_container_view, wxEVT_DATAVIEW_ITEM_ACTIVATED, wxCommandEventHandler(MainFrame::OnOpenContainer));
     //container_view_log_ = container_view_->AppendTextColumn(wxT("Log"));
 
     sizer_ = new wxBoxSizer(wxVERTICAL);
@@ -149,6 +151,13 @@ protected:
     if (selected != wxNOT_FOUND)
     {
       auto val = container_view_->GetTextValue(selected, 0);
+
+      if (controller_->is_open(val.ToStdString()))
+      {
+        controller_->open_container_folder(val.ToStdString());
+        return;
+      }
+
       std::string pw;
      // pwdialog_ = new PasswordDialog("Open", pw);
       //pwdialog_->Show(true);

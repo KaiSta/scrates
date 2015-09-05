@@ -317,3 +317,29 @@ void GUI_controller::set_path_for(std::string containername, std::string path)
   nnode.append_attribute("path") = path.c_str();
   doc.save_file("settings.xml");
 }
+
+bool GUI_controller::is_open(std::string containername)
+{
+  for (auto& e : scrates_)
+  {
+    if (e.first == containername)
+    {
+      return e.second != nullptr;
+    }
+  }
+  return false;
+}
+
+void GUI_controller::open_container_folder(std::string containername)
+{
+  for (auto& e : scrates_)
+  {
+    if (e.first == containername)
+    {
+      auto p = e.second->get_vhd_path() + FileSystem::path_separator + containername;
+#ifdef _WIN32
+      ShellExecute(nullptr, nullptr, p.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
+#endif
+    }
+  }
+}

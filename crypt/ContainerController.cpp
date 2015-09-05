@@ -30,7 +30,7 @@ container_event ContainerController::create(const std::string& container_name, c
 
 	try
 	{
-	    path v(vhd_path_);
+	  path v(vhd_path_);
 		container_.create(container_name, password, filepath, { std::pair < std::string, size_t >(sync_location, store_size) }, v, store_type, event_callback_);
 		send_callback(INFORMATION, SUCC);
 	}
